@@ -1,0 +1,7 @@
+<?php
+
+define('DB_HOST', 'example.org');
+define('DB_PORT', 5432);
+define('DB_NAME', 'databasename');
+define('DB_USER', 'databaseuser');
+define('DB_PASS', 'password of databaseuser');

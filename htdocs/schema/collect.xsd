@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.portagefilelist.de/xsd/collect" elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.portagefilelist.de/xsd/collect">
+
+
+
+    <complexType name="categories">
+    	<sequence>
+    		<element name="category" type="tns:category"
+    			maxOccurs="unbounded" minOccurs="1">
+    		</element>
+    	</sequence>
+    </complexType>
+
+
+    <element name="pfl" type="tns:categories"></element>
+
+
+    <complexType name="category">
+    	<sequence>
+    		<element name="package" type="tns:package"
+    			maxOccurs="unbounded" minOccurs="0">
+    		</element>
+    	</sequence>
+    	<attribute name="name" type="string" use="required"></attribute>
+    </complexType>
+    
+    <complexType name="package">
+    	<sequence>
+    		<element name="files" type="tns:files" maxOccurs="1"
+    			minOccurs="1">
+    		</element>
+    		<element name="uses" type="tns:uses" maxOccurs="1"
+    			minOccurs="0">
+    		</element>
+    	</sequence>
+    	<attribute name="name" type="string" use="required"></attribute>
+    	<attribute name="version" type="string" use="required"></attribute>
+    	<attribute name="arch" type="string"></attribute>
+    	<attribute name="timestamp" type="int"></attribute>
+    </complexType>
+
+    <complexType name="files">
+    	<sequence>
+    		<element name="file" type="tns:file" maxOccurs="unbounded" minOccurs="1"></element>
+    	</sequence>
+    </complexType>
+
+    <complexType name="file">
+    	<simpleContent>
+    		<extension base="string">
+    			<attribute name="type" type="tns:typeSimpleType"></attribute>
+    		</extension>
+    	</simpleContent>
+    </complexType>
+
+    <complexType name="uses">
+    	<sequence>
+    		<element name="use" type="string" maxOccurs="unbounded" minOccurs="1"></element>
+    	</sequence>
+    </complexType>
+    <simpleType name="typeSimpleType">
+    	<restriction base="string">
+    		<enumeration value="sym"></enumeration>
+    		<enumeration value="obj"></enumeration>
+    		<enumeration value="dir"></enumeration>
+    		<enumeration value="fif"></enumeration>
+    		<enumeration value="dev"></enumeration>
+    	</restriction>
+    </simpleType>
+</schema>
