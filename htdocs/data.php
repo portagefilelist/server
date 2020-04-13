@@ -18,8 +18,8 @@
 	if (move_uploaded_file($_FILES['foo']['tmp_name'], $uploadf)) {
 		if (array_key_exists('test', $_REQUEST)) {
 			rename($uploadf, $uploadtf);
-			system("bunzip2 \"$uploadtf\"");
-			system("xmllint --format --schema \"$schema\" \"$uploadtfu\" 2>&1");
+			system('bunzip2 ' . escapeshellarg($uploadtf));
+			system('xmllint --format --schema ' . escapeshellarg($schema) . ' ' . escapeshellarg($uploadtfu) . ' 2>&1');
 			unlink($uploadtfu);
 			die("uploaded file was deleted because of test/debug flag\n");
 		}
