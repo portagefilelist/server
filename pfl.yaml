@@ -1,0 +1,163 @@
+swagger: "2.0"
+info:
+  description: "PFL request Interface"
+  version: "1.0.0"
+  title: "PFL"
+  contact:
+    email: "bugs@portagefilelist.de"
+host: "portagefilelist.de"
+basePath: "/site/query"
+schemes:
+- "https"
+paths:
+  /robotFile:
+    get:
+      summary: "search for file"
+      description: "search for file"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "file"
+        in: "query"
+        description: "file to search for"
+        required: true
+        type: "string"
+      - name: "unique_packages"
+        in: "query"
+        description: "unique packages"
+        type: "string"
+        enum:
+          - "on"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/FileResults"
+        "400":
+          description: "error while searching"
+          schema:
+            $ref: "#/definitions/Error"
+  /robotListPackageVersions:
+    get:
+      summary: "list versions of package"
+      description: "list versions of package"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "category"
+        in: "query"
+        description: "category"
+        required: true
+        type: "string"
+      - name: "package"
+        in: "query"
+        description: "package"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Versions"
+        "400":
+          description: "error while searching"
+          schema:
+            $ref: "#/definitions/Error"
+  /robotListPackageFiles:
+    get:
+      summary: "list files of package"
+      description: "list versions of package"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "category"
+        in: "query"
+        description: "category"
+        required: true
+        type: "string"
+      - name: "package"
+        in: "query"
+        description: "package"
+        required: true
+        type: "string"
+      - name: "version"
+        in: "query"
+        description: "version"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Files"
+        "400":
+          description: "error while searching"
+          schema:
+            $ref: "#/definitions/Error"
+definitions:
+  FileResults:
+    type: "array"
+    items:
+      $ref: "#/definitions/CPVFile"
+  CPVFile:
+    type: "object"
+    properties:
+      category:
+        type: "string"
+      package:
+        type: "string"
+      path:
+        type: "string"
+      file:
+        type: "string"
+      version:
+        type: "string"
+      archs:
+        type: "array"
+        items:
+          type: "string"
+      useflags:
+        type: "array"
+        items:
+          type: "string"
+  Versions:
+    type: "array"
+    items:
+      $ref: "#/definitions/Version"
+  Version:
+    type: "object"
+    properties:
+      version:
+        type: "string"
+  Files:
+    type: "array"
+    items:
+      $ref: "#/definitions/File"
+  File:
+    type: "object"
+    properties:
+      path:
+        type: "string"
+      file:
+        type: "string"
+      archs:
+        type: "array"
+        items:
+          type: "string"
+      useflags:
+        type: "array"
+        items:
+          type: "string"
+  Error:
+    type: "object"
+    properties:
+      code:
+        type: "string"
+        enum:
+          - "NO_SEARCH_CRITERIA"
+          - "UNKNOWN"
+      message:
+        type: "string"
+externalDocs:
+  description: "Find out more about PFL"
+  url: "https://portagefilelist.de"
