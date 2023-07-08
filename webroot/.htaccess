@@ -1,0 +1,9 @@
+<ifmodule mod_rewrite.c>
+	RewriteEngine On
+	
+	RewriteRule ^site/query/robotFile https://www.portagefilelist.de/query.php [R=301,L,QSA]
+
+	#RewriteCond %{HTTP_HOST} !^www\. [NC,OR]
+	#RewriteCond %{HTTPS} off
+	#RewriteRule (.*) https://www.portagefilelist.de%{REQUEST_URI} [R=301,L]
+</ifmodule>

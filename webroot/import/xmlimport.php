@@ -1,0 +1,265 @@
+<?php
+/**
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+/**
+ * Why not use autoincrement in the mysql tables?
+ * Using autoincrement and unique indexes mix not very well if ON DUPLICATE KEY is used
+ * to avoid any duplicates and to retrive the id with insert_id.
+ */
+
+mb_http_output('UTF-8');
+mb_internal_encoding('UTF-8');
+ini_set('error_reporting',-1); // E_ALL & E_STRICT
+
+## config
+require_once('../config.php');
+
+## set the error reporting
+ini_set('log_errors',true);
+ini_set('error_log',PATH_SYSTEMOUT.'/output.log');
+if(DEBUG === true) {
+	ini_set('display_errors',true);
+}
+else {
+	ini_set('display_errors',false);
+}
+
+# time settings
+date_default_timezone_set(TIMEZONE);
+
+# import start secret is needed
+$argOptions = getopt('s:');
+
+if(!isset($argOptions['s']) || empty($argOptions['s']) || $argOptions['s'] !== IMPORTER_SECRET) {
+	exit();
+}
+
+# get available files from inbox
+$inboxFiles = glob(PATH_INBOX.'/*');
+if(DEBUG) error_log('[DEBUG] Found files: '.var_export($inboxFiles,true));
+
+if(empty($inboxFiles)) {
+	error_log('[INFO] Nothing in inbox.');
+	exit();
+}
+
+## DB connection
+$DB = new mysqli(DB_HOST, DB_USERNAME,DB_PASSWORD, DB_NAME);
+if ($DB->connect_errno) exit('Can not connect to MySQL Server');
+$DB->set_charset("utf8mb4");
+$DB->query("SET collation_connection = 'utf8mb4_bin'");
+$driver = new mysqli_driver();
+$driver->report_mode = MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT;
+
+libxml_use_internal_errors(true);
+
+foreach ($inboxFiles as $fileToImport) {
+	$xmlReader = new XMLReader;
+
+	// check mimetype
+	$finfo = finfo_open(FILEINFO_MIME_TYPE);
+	$mime = finfo_file($finfo, $fileToImport);
+	finfo_close($finfo);
+	if($mime != "application/x-bzip2") {
+		error_log("[ERROR] Import invalid mime type: ".var_export($mime,true));
+		exit();
+	}
+
+	// decompress
+	$fh = bzopen($fileToImport,'r');
+	while(!feof($fh)) {
+		$buffer = bzread($fh);
+		if($buffer === FALSE) { error_log('[ERROR] Decompress read problem'); exit(); }
+		if(bzerrno($fh) !== 0) { error_log('[ERROR] Decompress problem'); exit(); }
+		file_put_contents($fileToImport.'.xml', $buffer, FILE_APPEND | LOCK_EX);
+	}
+	bzclose($fh);
+
+
+	if (!$xmlReader->open($fileToImport.'.xml')) {
+	//if (!$xmlReader->open($fileToImport)) {
+		error_log('[ERROR] Can not read xml file: '.var_export($fileToImport.'.xml',true));
+		continue;
+	}
+
+	// delete compressed file
+	unlink($fileToImport);
+
+	# validation does not work on the complete document
+	# if the document is read in chunks
+	# so the is valid call is while reading the file
+	$xmlReader->setParserProperty(XMLReader::VALIDATE, true);
+	$xmlReader->setSchema('schema.xsd');
+
+	while ($xmlReader->read()) {
+
+		if (!$xmlReader->isValid()) {
+			$_xmlErrors = libxml_get_last_error();
+			if ($_xmlErrors && $_xmlErrors instanceof libXMLError) {
+				error_log('[ERROR] Invalid xml file: '.$_xmlErrors->message);
+				libxml_clear_errors();
+				continue;
+			}
+		}
+
+		// only on element start
+		if ($xmlReader->nodeType == XMLReader::ELEMENT) {
+			switch ($xmlReader->name) {
+				case 'category':
+					$_cat = $xmlReader->getAttribute('name');
+				break;
+
+				case 'package':
+					$_pack = $xmlReader->readOuterXml();;
+				break;
+			}
+			
+			// take only action if there is a category and a package
+			// make sure to jump to the next category at the end
+			if(!empty($_cat) && !empty($_pack)) {
+
+				# the category insert query
+				$_catID = md5($_cat);
+				$queryCat = "INSERT INTO `".DB_PREFIX."_category` SET
+								`name` = '".$DB->real_escape_string($_cat)."',
+								`hash` = '".$DB->real_escape_string($_catID)."'
+								ON DUPLICATE KEY UPDATE `lastmodified` = NOW()";
+				if(QUERY_DEBUG) error_log('[QUERY] Category insert: '.var_export($queryCat,true));
+
+				# the package insert query
+				$_packXML = new SimpleXMLElement($_pack);
+				$_packID = md5((string)$_packXML['name'].(string)$_packXML['version'].(string)$_packXML['arch']);
+				$queryPackage = "INSERT INTO `".DB_PREFIX."_package` SET 
+								`hash` = '".$DB->real_escape_string($_packID)."',
+								`name` = '".$DB->real_escape_string((string)$_packXML['name'])."',
+								`version` = '".$DB->real_escape_string((string)$_packXML['version'])."',
+								`arch` = '".$DB->real_escape_string((string)$_packXML['arch'])."',
+								`category_id` = '".$DB->real_escape_string($_catID)."'
+								ON DUPLICATE KEY UPDATE `lastmodified` = NOW()";
+				if(QUERY_DEBUG) error_log('[QUERY] Package insert: '.var_export($queryPackage,true));
+
+				if(empty($_catID) || empty($_packID)) {
+					error_log("[ERROR] Missing category '$_catID' or package '$_packID' id");
+					exit();
+				}
+
+				# the commit is at the "end"
+				try {
+					$DB->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
+
+					$DB->query($queryCat);
+					$DB->query($queryPackage);
+
+				} catch (Exception $e) {
+					$DB->rollback();
+					error_log("[ERROR] Category or Package insert mysql catch: ".$e->getMessage());
+					exit();
+				}
+
+				# now the package content
+				foreach($_packXML->children() as $child) {
+					switch ($child->getName()) {
+						case 'uses':
+							foreach($child->children() as $use) {
+								if(!empty((string)$use) && !empty($_packID)) {
+									$queryUses = "INSERT IGNORE INTO `".DB_PREFIX."_package_use` SET
+												`useword` = '".$DB->real_escape_string((string)$use)."',
+												`package_id` = '".$DB->real_escape_string($_packID)."'";
+									if(QUERY_DEBUG) error_log('[QUERY] Use insert: '.var_export($queryUses,true));
+									try {
+										$DB->query($queryUses);
+									} catch (Exception $e) {
+										$DB->rollback();
+										error_log("[ERROR] Use insert mysql catch: ".$e->getMessage());
+										exit();
+									}
+								}
+							}
+						break;
+
+						case 'files':
+							foreach($child->children() as $file) {
+								$queryFile = "";
+								$fileinfo = pathinfo((string)$file);
+								$filename = $fileinfo['basename'];
+								$path = $fileinfo['dirname'];
+
+								# ignores
+								if(strstr($filename, '.keep_')) {
+									continue;
+								}
+
+								$hash = md5($_packID.$_catID.$filename.$path);
+
+								switch((string) $file['type']) {
+									case 'sym':
+									case 'obj':
+										$queryFile = "INSERT INTO `".DB_PREFIX."_file` SET
+											`package_id` = '".$DB->real_escape_string($_packID)."',
+											`name` = '".$DB->real_escape_string($filename)."',
+											`path` = '".$DB->real_escape_string($path)."',
+											`hash` = '".$DB->real_escape_string($hash)."'
+											ON DUPLICATE KEY UPDATE `lastmodified` = NOW()";
+									break;
+
+									case 'dir':
+									case 'fif':
+									case 'dev':
+									default:
+										// nothing yet
+								}
+								if(!empty($queryFile)) {
+									if(QUERY_DEBUG) error_log('[QUERY] File insert: '.var_export($queryFile,true));
+									try {
+										$DB->query($queryFile);
+									} catch (Exception $e) {
+										$DB->rollback();
+										error_log("[ERROR] File insert mysql catch: ".$e->getMessage());
+										exit();
+									}
+								}
+							}
+						break;
+					}
+				}
+
+				try {
+					$DB->commit();
+				} catch (Exception $e) {
+					$DB->rollback();
+					error_log("[ERROR] Package commit mysql catch: ".$e->getMessage());
+					exit();
+				}
+
+				unset($_cat);
+				unset($_pack);
+				unset($_catID);
+				unset($_packID);
+				unset($_packXML);
+
+				$xmlReader->next("category");
+			}
+		}
+	}
+
+	$xmlReader->close();
+
+	// @TODO: remove file
+}
