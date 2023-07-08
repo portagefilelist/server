@@ -40,6 +40,10 @@
 			Try it: <a href="index.php?fs=brctl&unique=1">query Portagefilelist for brctl</a><br />
 			Apparently the ebuild is net-misc/bridge-utils.
 		</p>
+		<p>
+			Gentoo wiki: <a href="https://wiki.gentoo.org/wiki/Pfl" target="_blank">PFL</a><br />
+			Gentoo package: <a href="https://packages.gentoo.org/packages/app-portage/pfl" target="_blank">app-portage/pfl</a>
+		</p>
 	</div>
 </div>
 
@@ -51,6 +55,7 @@
 
 <code>emerge app-portage/pfl</code>
 <br /> <br />
+
 <p>
 	This will install a cron job that submits new data to the PFL servers every week. 
 	Don't worry, your privacy mains protected as we are not collecting anything else 
