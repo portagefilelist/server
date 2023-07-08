@@ -179,7 +179,7 @@ class Files {
 					FROM `".DB_PREFIX."_file` AS f
 					LEFT JOIN `".DB_PREFIX."_package` AS p ON f.package_id = p.hash
 					LEFT JOIN `".DB_PREFIX."_category` AS c ON p.category_id = c.hash
-					ORDER BY f.lastmodified
+					ORDER BY f.lastmodified DESC
 					LIMIT 10";
 		if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".var_export($queryStr,true));
 

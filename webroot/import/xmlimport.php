@@ -78,7 +78,7 @@ foreach ($inboxFiles as $fileToImport) {
 	$mime = finfo_file($finfo, $fileToImport);
 	finfo_close($finfo);
 	if($mime != "application/x-bzip2") {
-		error_log("[ERROR] Import invalid mime type: ".var_export($mime,true));
+		error_log("[ERROR] Import '$fileToImport' invalid mime type: ".var_export($mime,true));
 		exit();
 	}
 
