@@ -194,8 +194,8 @@ class Packages {
 		}
 
 		// Amount of packages
-		$queryStr = "SELECT COUNT(*) AS amount
-					FROM `".DB_PREFIX."_package` AS p";
+		$queryStr = "SELECT COUNT(p.hash) AS amount
+					FROM `".DB_PREFIX."_package` AS p WHERE p.hash IS NOT NULL";
 		if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".var_export($queryStr,true));
 
 		try {
@@ -230,9 +230,9 @@ class Packages {
 
 
 		// use
-		$queryStr = "SELECT COUNT(*) AS amount, p.useword 
+		$queryStr = "SELECT COUNT(1) AS amount, p.useword 
 					FROM `".DB_PREFIX."_package_use` AS p
-					GROUP BY useword 
+					GROUP BY p.useword 
 					ORDER BY `amount` DESC 
 					LIMIT 10";
 		if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".var_export($queryStr,true));

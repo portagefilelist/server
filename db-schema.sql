@@ -86,20 +86,25 @@ CREATE TABLE `pfl_package_use` (
 -- Indexes for table `pfl_category`
 --
 ALTER TABLE `pfl_category`
-  ADD PRIMARY KEY (`hash`);
+  ADD PRIMARY KEY (`hash`),
+  ADD KEY `name` (`name`);
 
 --
 -- Indexes for table `pfl_file`
 --
 ALTER TABLE `pfl_file`
   ADD PRIMARY KEY (`hash`),
-  ADD KEY `name` (`name`);
+  ADD KEY `name` (`name`),
+  ADD KEY `path` (`path`),
+  ADD KEY `lastmodified` (`lastmodified`);
 
 --
 -- Indexes for table `pfl_package`
 --
 ALTER TABLE `pfl_package`
-  ADD PRIMARY KEY (`hash`);
+  ADD PRIMARY KEY (`hash`),
+  ADD KEY `name` (`name`),
+  ADD KEY `lastmodified` (`lastmodified`);
 
 --
 -- Indexes for table `pfl_package_use`

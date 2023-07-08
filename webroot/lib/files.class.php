@@ -197,8 +197,9 @@ class Files {
 		}
 
 		// Amount of files
-		$queryStr = "SELECT COUNT(*) AS amount
-					FROM `".DB_PREFIX."_file` AS f";
+		$queryStr = "SELECT COUNT(f.hash) AS amount
+					FROM `".DB_PREFIX."_file` AS f
+					WHERE f.hash IS NOT NULL";
 		if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".var_export($queryStr,true));
 
 		try {
@@ -212,6 +213,7 @@ class Files {
 		catch (Exception $e) {
 			error_log("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
 		}
+		
 
 		return $ret;
 	}

@@ -19,9 +19,11 @@
  */
 ?>
 <h1>Statistics</h1>
-<p>Amount of indexed files: <b><?php echo $TemplateData['f']['amount'] ?? ''; ?></b></p>
-<p>Amount of indexed packages: <b><?php echo $TemplateData['p']['amount'] ?? ''; ?></b></p>
-<p>Indexed architectures: <b><?php echo implode(", ", $TemplateData['p']['arch']); ?></b></p>
+<p>
+	Amount of indexed files: <b><?php echo $TemplateData['f']['amount'] ?? ''; ?></b><br />
+	Amount of indexed packages: <b><?php echo $TemplateData['p']['amount'] ?? ''; ?></b><br />
+	Indexed architectures: <b><?php echo implode(", ", $TemplateData['p']['arch']); ?></b>
+</p>
 
 <div class="container">
 	<div class="columns">
