@@ -7,9 +7,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -40,6 +40,18 @@ date_default_timezone_set(TIMEZONE);
 # static helper class
 require_once 'lib/helper.class.php';
 
+# simple cache based on get
+$_cachekey = md5(var_export($_GET,true));
+$cacheFile = PATH_CACHE.'/'.$_cachekey;
+if(file_exists($cacheFile) && !DEBUG) {
+	header("Pragma: public");
+	header("Cache-Control: maxage=".CACHE_LIVETIME_SEC);
+	header('Expires: '.gmdate('D, d M Y H:i:s', time()+CACHE_LIVETIME_SEC).' GMT');
+	header("Content-type: text/html; charset=UTF-8");
+	echo file_get_contents($cacheFile);
+	exit();
+}
+
 ## DB connection
 $DB = new mysqli(DB_HOST, DB_USERNAME,DB_PASSWORD, DB_NAME);
 if ($DB->connect_errno) exit('Can not connect to MySQL Server');
@@ -48,7 +60,7 @@ $DB->query("SET collation_connection = 'utf8mb4_bin'");
 $driver = new mysqli_driver();
 $driver->report_mode = MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT;
 
-
+# template vars
 $TemplateData = array();
 $TemplateData['pagination'] = array();
 $TemplateData['pageTitle'] = 'Home';
@@ -77,12 +89,14 @@ if(isset($_GET['p']) && !empty($_GET['p'])) {
 	$_requestMode = trim($_GET['p']);
 	$_requestMode = Helper::validate($_requestMode,'nospace') ? $_requestMode : "home";
 
-
 	if(!isset($_validPages[$_requestMode])) $_requestMode = "home";
 
 	$ViewScript = 'view/'.$_requestMode.'/'.$_requestMode.'.inc.php';
 	$View = 'view/'.$_requestMode.'/'.$_requestMode.'.php';
 }
+
+# "cache" the content
+ob_start();
 
 # now include the script
 # this sets information into $Data and can overwrite $View
@@ -90,17 +104,20 @@ if(!empty($ViewScript) && file_exists($ViewScript)) {
 	require_once $ViewScript;
 }
 
-if(!empty($TemplateData['refresh'])) {
-	header("Location: ".$TemplateData['refresh']);
-}
-
-# header information
-header('Content-type: text/html; charset=UTF-8');
-//header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
-//header("Cache-Control: post-check=0, pre-check=0", false);
-//header("Pragma: no-cache");
 
 ## now inlcude the main view
 require_once 'view/main.php';
 
-$DB->close();
+# output the content
+$content = ob_get_contents();
+ob_end_clean();
+file_put_contents($cacheFile,$content);
+
+if(!DEBUG) {
+	header("Pragma: public");
+	header("Cache-Control: maxage=".CACHE_LIVETIME_SEC);
+	header('Expires: ' . gmdate('D, d M Y H:i:s', time()+CACHE_LIVETIME_SEC) . ' GMT');
+}
+header("Content-type: text/html; charset=UTF-8");
+
+echo $content;

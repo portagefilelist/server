@@ -1,12 +1,3 @@
--- phpMyAdmin SQL Dump
--- version 4.9.10
--- https://www.phpmyadmin.net/
---
--- Host: localhost
--- Generation Time: Jun 26, 2023 at 10:18 AM
--- Server version: 10.5.19-MariaDB-1:10.5.19+maria~ubu2004-log
--- PHP Version: 7.4.33
-
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
 START TRANSACTION;
@@ -19,7 +10,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `d03d2829`
+-- Database: `pfl`
 --
 
 -- --------------------------------------------------------
@@ -95,16 +86,17 @@ ALTER TABLE `pfl_category`
 ALTER TABLE `pfl_file`
   ADD PRIMARY KEY (`hash`),
   ADD KEY `name` (`name`),
-  ADD KEY `path` (`path`),
-  ADD KEY `lastmodified` (`lastmodified`);
+  ADD KEY `lastmodified` (`lastmodified`),
+  ADD KEY `package_id` (`package_id`);
 
 --
 -- Indexes for table `pfl_package`
 --
 ALTER TABLE `pfl_package`
   ADD PRIMARY KEY (`hash`),
+  ADD KEY `lastmodified` (`lastmodified`),
   ADD KEY `name` (`name`),
-  ADD KEY `lastmodified` (`lastmodified`);
+  ADD KEY `category_id` (`category_id`);
 
 --
 -- Indexes for table `pfl_package_use`

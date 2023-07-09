@@ -1,0 +1,13 @@
+{
+   "subject": "acct:mail@bananas-playground.net",
+   "aliases": [
+      "https://www.bananas-playground.net/page/portfolio/"
+   ],
+   "links": [
+      {
+         "rel": "http://webfinger.net/rel/profile-page",
+         "type": "text/html",
+         "href": "https://www.bananas-playground.net/page/portfolio/"
+      }
+   ]
+}

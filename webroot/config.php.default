@@ -7,9 +7,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -30,6 +30,7 @@ const TIMEZONE = 'Europe/Berlin';
 const PATH_ABSOLUTE = '/www/htdocs/';
 const PATH_SYSTEMOUT = PATH_ABSOLUTE.'/log';
 const PATH_INBOX = PATH_ABSOLUTE.'/inbox';
+const PATH_CACHE = PATH_ABSOLUTE.'/cache';
 
 # db settings
 const DB_HOST = '127.0.0.1';
@@ -41,3 +42,5 @@ const DB_PREFIX = 'pfl'; # a _ is added automatically as separation
 const IMPORTER_SECRET = "<random string>";
 
 const RESULTS_PER_PAGE = 20;
+
+const CACHE_LIVETIME_SEC = 60*60*3; // three hours
