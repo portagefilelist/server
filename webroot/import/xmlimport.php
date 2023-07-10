@@ -78,7 +78,7 @@ foreach ($inboxFiles as $fileToImport) {
 	$mime = finfo_file($finfo, $fileToImport);
 	finfo_close($finfo);
 	if($mime != "application/x-bzip2") {
-		error_log("[ERROR] Import '$fileToImport' invalid mime type: ".var_export($mime,true));
+		error_log("[ERROR] Import invalid mime type: ".var_export($mime,true));
 		exit();
 	}
 
@@ -92,10 +92,10 @@ foreach ($inboxFiles as $fileToImport) {
 	}
 	bzclose($fh);
 
+	$fileToWorkWith = $fileToImport.'.xml';
 
-	if (!$xmlReader->open($fileToImport.'.xml')) {
-	//if (!$xmlReader->open($fileToImport)) {
-		error_log('[ERROR] Can not read xml file: '.var_export($fileToImport.'.xml',true));
+	if (!$xmlReader->open($fileToWorkWith)) {
+		error_log('[ERROR] Can not read xml file: '.var_export($fileToWorkWith,true));
 		continue;
 	}
 
@@ -226,6 +226,8 @@ foreach ($inboxFiles as $fileToImport) {
 										// nothing yet
 								}
 								if(!empty($queryFile)) {
+									# if this is triggered often, make sure the DB col length is also increased.
+									if(strlen($path) > 200) error_log('[WARNING] File path longer than 200 : '.var_export($queryFile,true));
 									if(QUERY_DEBUG) error_log('[QUERY] File insert: '.var_export($queryFile,true));
 									try {
 										$DB->query($queryFile);
@@ -258,8 +260,7 @@ foreach ($inboxFiles as $fileToImport) {
 			}
 		}
 	}
-
 	$xmlReader->close();
 
-	// @TODO: remove file
+	unlink($fileToWorkWith);
 }

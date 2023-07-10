@@ -22,7 +22,7 @@ SET time_zone = "+00:00";
 DROP TABLE IF EXISTS `pfl_category`;
 CREATE TABLE `pfl_category` (
   `hash` char(32) NOT NULL,
-  `name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `lastmodified` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
@@ -36,7 +36,7 @@ DROP TABLE IF EXISTS `pfl_file`;
 CREATE TABLE `pfl_file` (
   `hash` char(32) NOT NULL,
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `path` varchar(4096) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `path` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `package_id` char(32) NOT NULL,
   `lastmodified` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
@@ -50,9 +50,9 @@ CREATE TABLE `pfl_file` (
 DROP TABLE IF EXISTS `pfl_package`;
 CREATE TABLE `pfl_package` (
   `hash` char(32) NOT NULL,
-  `name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `version` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `arch` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `version` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `arch` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `category_id` char(32) NOT NULL,
   `lastmodified` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
@@ -65,7 +65,7 @@ CREATE TABLE `pfl_package` (
 
 DROP TABLE IF EXISTS `pfl_package_use`;
 CREATE TABLE `pfl_package_use` (
-  `useword` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `useword` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `package_id` char(32) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
@@ -86,6 +86,7 @@ ALTER TABLE `pfl_category`
 ALTER TABLE `pfl_file`
   ADD PRIMARY KEY (`hash`),
   ADD KEY `name` (`name`),
+  ADD KEY `path` (`path`),
   ADD KEY `lastmodified` (`lastmodified`),
   ADD KEY `package_id` (`package_id`);
 
