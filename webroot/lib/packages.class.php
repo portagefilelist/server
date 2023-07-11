@@ -189,7 +189,7 @@ class Packages {
 						c.name AS categoryName
 					FROM `".DB_PREFIX."_package` AS p
 					LEFT JOIN `".DB_PREFIX."_category` AS c ON p.category_id = c.hash
-					ORDER BY p.lastmodified
+					ORDER BY p.lastmodified DESC
 					LIMIT 10";
 		if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".var_export($queryStr,true));
 
