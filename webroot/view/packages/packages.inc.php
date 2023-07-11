@@ -53,7 +53,7 @@ $queryOptions = array(
 $TemplateData['pageTitle'] = 'Packages';
 $TemplateData['searchresults'] = array();
 $TemplateData['searchInput'] = '';
-$TemplateData['searchUniq'] = '';
+$TemplateData['searchUniq'] = 'checked';
 $_uniquePackages = false;
 
 ## search

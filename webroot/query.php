@@ -63,13 +63,17 @@ if(isset($_GET['file']) && !empty($_GET['file'])) {
 if(empty($_search)) {
 	$returnData['error']['code'] = 'NO_SEARCH_CRITERIA';
 	$returnData['error']['message'] = 'No search criteria given or invalid input';
-	
+
 	header('Access-Control-Allow-Origin: *');
 	header('Content-Type: application/json');
 	http_response_code(400);
 	echo json_encode($returnData);
 	exit();
 }
+
+$queryOptions = array(
+	'limit' => RESULTS_PER_PAGE
+);
 
 ## DB connection
 $DB = new mysqli(DB_HOST, DB_USERNAME,DB_PASSWORD, DB_NAME);
@@ -84,13 +88,14 @@ $Files = new Files($DB);
 
 // do the search for the given request
 $_search = strtolower($_search);
+$Files->setQueryOptions($queryOptions);
 $result = $Files->getFiles($_search,false);
 
 // search had an error
 if(empty($result)) {
 	$returnData['error']['code'] = 'SEARCH_FAILED';
 	$returnData['error']['message'] = 'Search resulted in an unknow error.';
-	
+
 	header('Access-Control-Allow-Origin: *');
 	header('Content-Type: application/json');
 	http_response_code(400);

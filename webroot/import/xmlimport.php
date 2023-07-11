@@ -7,9 +7,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -130,7 +130,7 @@ foreach ($inboxFiles as $fileToImport) {
 					$_pack = $xmlReader->readOuterXml();;
 				break;
 			}
-			
+
 			// take only action if there is a category and a package
 			// make sure to jump to the next category at the end
 			if(!empty($_cat) && !empty($_pack)) {
@@ -146,7 +146,7 @@ foreach ($inboxFiles as $fileToImport) {
 				# the package insert query
 				$_packXML = new SimpleXMLElement($_pack);
 				$_packID = md5((string)$_packXML['name'].(string)$_packXML['version'].(string)$_packXML['arch']);
-				$queryPackage = "INSERT INTO `".DB_PREFIX."_package` SET 
+				$queryPackage = "INSERT INTO `".DB_PREFIX."_package` SET
 								`hash` = '".$DB->real_escape_string($_packID)."',
 								`name` = '".$DB->real_escape_string((string)$_packXML['name'])."',
 								`version` = '".$DB->real_escape_string((string)$_packXML['version'])."',
@@ -178,9 +178,17 @@ foreach ($inboxFiles as $fileToImport) {
 					switch ($child->getName()) {
 						case 'uses':
 							foreach($child->children() as $use) {
-								if(!empty((string)$use) && !empty($_packID)) {
+								$_useWord = (string)$use;
+
+								# ignores
+								# use expands
+								if(strstr($_useWord,'_')) {
+									continue;
+								}
+
+								if(!empty($_useWord) && !empty($_packID)) {
 									$queryUses = "INSERT IGNORE INTO `".DB_PREFIX."_package_use` SET
-												`useword` = '".$DB->real_escape_string((string)$use)."',
+												`useword` = '".$DB->real_escape_string($_useWord)."',
 												`package_id` = '".$DB->real_escape_string($_packID)."'";
 									if(QUERY_DEBUG) error_log('[QUERY] Use insert: '.var_export($queryUses,true));
 									try {
@@ -199,14 +207,18 @@ foreach ($inboxFiles as $fileToImport) {
 								$queryFile = "";
 								$fileinfo = pathinfo((string)$file);
 								$filename = $fileinfo['basename'];
-								$path = $fileinfo['dirname'];
+								$path = (string)$file;
 
 								# ignores
-								if(strstr($filename, '.keep_')) {
+								# kernel sources
+								# maybe hidden files like .ignores?
+								if(strstr($path, '/usr/src/linux')) {
 									continue;
 								}
 
-								$hash = md5($_packID.$_catID.$filename.$path);
+								# change results in a needed rehash which takes a long time
+								# this is why $file is not used here.
+								$hash = md5($_packID.$_catID.$filename.$fileinfo['dirname']);
 
 								switch((string) $file['type']) {
 									case 'sym':

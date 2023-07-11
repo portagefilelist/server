@@ -7,9 +7,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -27,14 +27,14 @@
 	<div class="tile-content">
 		<h2 class="tile-title">What is Portage File List?</h2>
 		<p>
-			Portage File List collects which files are installed by which ebuild on 
+			Portage File List collects which files are installed by which ebuild on
 			users machines. It shares this data publicly for searching/browsing.
-			It allows user to search for files that are not installed on their 
+			It allows user to search for files that are not installed on their
 			system and figure out which ebuild they need to install in order to obtain it.
 		</p>
 		<p>
-			Let's make a short example: You want to use the command brctl, but it's not installed on your system. 
-			Portage offers no way for you to figure out the name of the ebuild. You have to guess. 
+			Let's make a short example: You want to use the command brctl, but it's not installed on your system.
+			Portage offers no way for you to figure out the name of the ebuild. You have to guess.
 			Or you can search PFL and hope that someone else has installed brctl and thus PFL knows which ebuild does that.<br />
 			<br />
 			Try it: <a href="index.php?fs=brctl&unique=1">query Portagefilelist for brctl</a><br />
@@ -49,7 +49,7 @@
 
 <h2>You can help</h2>
 <p>
-	PFL needs Portage data from your system. The more ebuilds you have installed the better. 
+	PFL needs Portage data from your system. The more ebuilds you have installed the better.
 	The more exotic ebuilds you have installed the better. Every Gentoo user can help!
 </p>
 
@@ -57,9 +57,16 @@
 <br /> <br />
 
 <p>
-	This will install a cron job that submits new data to the PFL servers every week. 
-	Don't worry, your privacy mains protected as we are not collecting anything else 
+	This will install a cron job that submits new data to the PFL servers every week.
+	Don't worry, your privacy mains protected as we are not collecting anything else
 	than portage data, and we don't store who sends what.
+</p>
+
+<h2>Limitations</h2>
+<ul>
+	<li><a href="https://packages.gentoo.org/useflags/expand" target="_blank">USE Expand</a> useflags will be ignored.</li>
+	<li>Files in <i>/usr/src/linux</i> will be ignored. The package itself will still be added.</li>
+	<li>Only files or symlinks are indexed.</li>
 </p>
 
 <h2>Feedback</h2>

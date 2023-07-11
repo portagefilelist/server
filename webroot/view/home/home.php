@@ -23,19 +23,19 @@
 		Hello and welcome to <a href="index.php">portagefilelist.de</a> with a fresh coat of paint and some rewrites.<br />
 		A more detailed description what this site is about, can be <a href="index.php?p=about">read here</a>.<br />
 		<br />
-		As of <b>2023/07/07</b> a transfer to a new home is underway. There can be downtimes and some hickups. Particular with the SSL cert.<br />
-		Report any persisten problems, either to bugs - at- portagefilelist.de or as a 
-		<a href="https://github.com/portagefilelist/client/issues" target="_blank">Github issue</a><br />
-		<br />
-		The usage of either pfl or e-file should work as before. The uploads are currently processed manually with a delay.
+		Report any persisten problems, either to <i>bugs - at- portagefilelist.de</i> or as a
+		<a href="https://github.com/portagefilelist/client/issues" target="_blank">Github issue</a>
 	</p>
 	<cite>- Banana</cite>
 </blockquote>
 
 <form method="get" action="">
 	<div class="form-group">
-		<label class="form-label" for="filename">Search for a package by a filename or path.</label>
-		<input class="form-input" type="text" placeholder="Filename" id="filename" name="fs" value="<?php echo $TemplateData['searchInput']; ?>">
+		<label class="form-label" for="filename">
+			Search for a package by a filename (<samp>slice.hpp</samp>) or path (<samp>/usr/include/exiv2/slice.hpp</samp>).<br />
+			Using * as a wildcard (<samp>slice.*</samp>) (<samp>/usr/include/exiv2/*</samp>) will <i>slow</i> down the query!
+		</label>
+		<input class="form-input" type="text" placeholder="Use * as a wildcard" id="filename" name="fs" value="<?php echo $TemplateData['searchInput']; ?>">
 	</div>
 	<div class="form-group">
 		<label class="form-switch">

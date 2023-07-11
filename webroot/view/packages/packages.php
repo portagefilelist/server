@@ -21,8 +21,11 @@
 <form method="get" action="">
 	<input type="hidden" name="p" value="packages" />
 	<div class="form-group">
-		<label class="form-label" for="package">Search for a package.</label>
-		<input class="form-input" type="text" placeholder="Package name" id="package" name="ps" value="<?php echo $TemplateData['searchInput']; ?>">
+		<label class="form-label" for="package">
+			Search for a package (<samp>exiv2</samp>).<br />
+			Using * as a wildcard (<samp>exi.*</samp>) will <i>slow</i> down the query!
+		</label>
+		<input class="form-input" type="text" placeholder="Use * as a wildcard" id="package" name="ps" value="<?php echo $TemplateData['searchInput']; ?>">
 	</div>
 	<div class="form-group">
 		<label class="form-switch">

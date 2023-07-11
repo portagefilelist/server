@@ -7,9 +7,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -79,21 +79,29 @@ class Files {
 	public function getFiles(string $searchValue, bool $_uniquePackages) : array {
 		$ret = array();
 
+		error_log("[INFO] ".__METHOD__." searchvalue: ".var_export($searchValue,true));
+
+		$_wildCardSearch = false;
+		if(strstr($searchValue,'*')) {
+			$searchValue = preg_replace('/\*{1,}/', '%', $searchValue);
+			$_wildCardSearch = true;
+		}
+
 		// split since part of it is used later
 		$querySelect = "f.hash AS hash,
 						f.name AS name,
 						f.path AS path,
 						f.package_id AS package_id,
-						c.name AS categoryName, 
+						c.name AS categoryName,
 						p.name AS packageName,
 						p.arch AS packageArch,
 						p.version AS packageVersion,
 						p.category_id AS category_id";
 		if ($_uniquePackages) {
-			$querySelect = "DISTINCT p.name AS packageName, 
+			$querySelect = "DISTINCT p.name AS packageName,
 							f.package_id AS package_id,
-							p.hash, 
-							c.hash AS category_id, 
+							p.hash,
+							c.hash AS category_id,
 							c.name AS categoryName";
 		}
 
@@ -102,8 +110,17 @@ class Files {
 		$queryJoin = " LEFT JOIN `".DB_PREFIX."_package` AS p ON f.package_id = p.hash";
 		$queryJoin .= " LEFT JOIN `".DB_PREFIX."_category` AS c ON p.category_id = c.hash";
 
-		$queryWhere = " WHERE f.name LIKE '%".$this->_DB->real_escape_string($searchValue)."%'
-							OR f.path LIKE '%".$this->_DB->real_escape_string($searchValue)."%'";
+		if(strstr($searchValue,'/')) {
+			$queryWhere = " WHERE f.path";
+		} else {
+			$queryWhere = " WHERE f.name";
+		}
+
+		if($_wildCardSearch) {
+			$queryWhere .= " LIKE '".$this->_DB->real_escape_string($searchValue)."'";
+		} else {
+			$queryWhere .= " = '".$this->_DB->real_escape_string($searchValue)."'";
+		}
 
 		$queryOrder = " ORDER BY";
 		if (!empty($this->_queryOptions['sort'])) {
@@ -160,7 +177,7 @@ class Files {
 
 	/**
 	 * Return some general stats about files table
-	 * 
+	 *
 	 * @return array('latest' => array(), 'amount' => '')
 	 */
 	public function stats():array {
@@ -172,9 +189,9 @@ class Files {
 		// latest updated
 		$queryStr = "SELECT f.name,
 							f.package_id AS package_id,
-							p.name AS packageName, 
-							p.hash, 
-							c.hash AS category_id, 
+							p.name AS packageName,
+							p.hash,
+							c.hash AS category_id,
 							c.name AS categoryName
 					FROM `".DB_PREFIX."_file` AS f
 					LEFT JOIN `".DB_PREFIX."_package` AS p ON f.package_id = p.hash
@@ -213,7 +230,7 @@ class Files {
 		catch (Exception $e) {
 			error_log("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
 		}
-		
+
 
 		return $ret;
 	}

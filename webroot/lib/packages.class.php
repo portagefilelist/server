@@ -7,9 +7,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -80,6 +80,14 @@ class Packages {
 	public function getPackages(string $searchValue, bool $_uniquePackages) : array {
 		$ret = array();
 
+		error_log("[INFO] ".__METHOD__." searchvalue: ".var_export($searchValue,true));
+
+		$_wildCardSearch = false;
+		if(strstr($searchValue,'*')) {
+			$searchValue = preg_replace('/\*{1,}/', '%', $searchValue);
+			$_wildCardSearch = true;
+		}
+
 		// split since part of it is used later
 		$querySelect = "p.hash,
 						p.name,
@@ -99,8 +107,13 @@ class Packages {
 
 		$queryJoin = " LEFT JOIN `".DB_PREFIX."_category` AS c ON p.category_id = c.hash";
 
-		$queryWhere = " WHERE p.name LIKE '%".$this->_DB->real_escape_string($searchValue)."%'";
+		$queryWhere = " WHERE p.name";
 
+		if($_wildCardSearch) {
+			$queryWhere .= " LIKE '".$this->_DB->real_escape_string($searchValue)."'";
+		} else {
+			$queryWhere .= " = '".$this->_DB->real_escape_string($searchValue)."'";
+		}
 
 		$queryOrder = " ORDER BY";
 		if (!empty($this->_queryOptions['sort'])) {

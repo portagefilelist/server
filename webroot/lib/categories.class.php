@@ -78,11 +78,25 @@ class Categories {
 	public function getCategories(string $searchValue) : array {
 		$ret = array();
 
+		error_log("[INFO] ".__METHOD__." searchvalue: ".var_export($searchValue,true));
+
+		$_wildCardSearch = false;
+		if(strstr($searchValue,'*')) {
+			$searchValue = preg_replace('/\*{1,}/', '%', $searchValue);
+			$_wildCardSearch = true;
+		}
+
 		// split since part of it is used later
 		$querySelect = "c.hash, c.name";
 		$queryFrom = " FROM `".DB_PREFIX."_category` AS c";
 
-		$queryWhere = " WHERE c.name LIKE '%".$this->_DB->real_escape_string($searchValue)."%'";
+		$queryWhere = " WHERE c.name";
+
+		if($_wildCardSearch) {
+			$queryWhere .= " LIKE '".$this->_DB->real_escape_string($searchValue)."'";
+		} else {
+			$queryWhere .= " = '".$this->_DB->real_escape_string($searchValue)."'";
+		}
 
 		$queryOrder = " ORDER BY";
 		if (!empty($this->_queryOptions['sort'])) {
