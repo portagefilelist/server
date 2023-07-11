@@ -299,4 +299,5 @@ foreach ($inboxFiles as $fileToImport) {
 // file amount is already checked above. Avoids cleaning the cache if nothing is updated
 Helper::recursive_remove_directory(PATH_CACHE, true);
 
+error_log('[INFO] Importer imported '.count($inboxFiles).' files'.);
 error_log('[INFO] Importer ended.');
