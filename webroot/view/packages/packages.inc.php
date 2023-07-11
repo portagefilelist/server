@@ -73,6 +73,11 @@ if(isset($_GET['ps'])) {
 		$Packages->setQueryOptions($queryOptions);
 		$TemplateData['searchresults'] = $Packages->getPackages($searchValue, $_uniquePackages);
 
+		if(empty($TemplateData['searchresults'])) {
+			$messageData['status'] = "warning";
+			$messageData['message'] = "Nothing found for this search term or the data is not known yet.";
+		}
+
 		$TemplateData['searchInput'] = htmlspecialchars($searchValue);
 		$TemplateData['pagination']['currentGetParameters']['ps'] = urlencode($searchValue);
 	} else {

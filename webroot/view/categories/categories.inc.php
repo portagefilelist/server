@@ -64,6 +64,11 @@ if(isset($_GET['cs'])) {
 		$Categories->setQueryOptions($queryOptions);
 		$TemplateData['searchresults'] = $Categories->getCategories($searchValue);
 
+		if(empty($TemplateData['searchresults'])) {
+			$messageData['status'] = "warning";
+			$messageData['message'] = "Nothing found for this search term or the data is not known yet.";
+		}
+
 		$TemplateData['searchInput'] = htmlspecialchars($searchValue);
 		$TemplateData['pagination']['currentGetParameters']['cs'] = urlencode($searchValue);
 	} else {
