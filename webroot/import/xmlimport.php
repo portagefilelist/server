@@ -45,9 +45,15 @@ else {
 date_default_timezone_set(TIMEZONE);
 
 # import start secret is needed
+$_check = '';
 $argOptions = getopt('s:');
+if(isset($argOptions['s']) && !empty($argOptions['s'])) {
+	$_check = $argOptions['s'];
+} elseif(isset($_GET['s']) && !empty($_GET['s'])) {
+	$_check = $_GET['s'];
+}
 
-if(!isset($argOptions['s']) || empty($argOptions['s']) || $argOptions['s'] !== IMPORTER_SECRET) {
+if($_check !== IMPORTER_SECRET) {
 	exit();
 }
 
@@ -60,6 +66,11 @@ if(empty($inboxFiles)) {
 	exit();
 }
 
+error_log('[INFO] Importer starting.');
+
+# static helper class
+require_once 'lib/helper.class.php';
+
 ## DB connection
 $DB = new mysqli(DB_HOST, DB_USERNAME,DB_PASSWORD, DB_NAME);
 if ($DB->connect_errno) exit('Can not connect to MySQL Server');
@@ -70,7 +81,15 @@ $driver->report_mode = MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT;
 
 libxml_use_internal_errors(true);
 
+# set time limit since it is long running
+set_time_limit(300);
+
+$_fileCounter = 0;
+
 foreach ($inboxFiles as $fileToImport) {
+	#+$_fileCounter++;
+	#if($_fileCounter > 5) break;
+
 	$xmlReader = new XMLReader;
 
 	// check mimetype
@@ -276,3 +295,8 @@ foreach ($inboxFiles as $fileToImport) {
 
 	unlink($fileToWorkWith);
 }
+
+// file amount is already checked above. Avoids cleaning the cache if nothing is updated
+Helper::recursive_remove_directory(PATH_CACHE, true);
+
+error_log('[INFO] Importer ended.');

@@ -73,6 +73,11 @@ if(isset($_GET['fs'])) {
 		$Files->setQueryOptions($queryOptions);
 		$TemplateData['searchresults'] = $Files->getFiles($searchValue,$_uniquePackages);
 
+		if(empty($TemplateData['searchresults'])) {
+			$messageData['status'] = "warning";
+			$messageData['message'] = "Nothing found for this search term or the data is not known yet.";
+		}
+
 		$TemplateData['searchInput'] = htmlspecialchars($searchValue);
 		$TemplateData['pagination']['currentGetParameters']['fs'] = urlencode($searchValue);
 	} else {

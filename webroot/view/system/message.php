@@ -20,8 +20,8 @@
 
 if(!empty($messageData)) {
 	$cssClass="toast-primary";
-	if(isset($messageData['status']) && $messageData['status'] == "error") {
-		$cssClass="toast-error";
+	if(isset($messageData['status'])) {
+		$cssClass="toast-".$messageData['status'];
 	}
 	$message = $messageData['message'];
 	if(is_array($message)) {
