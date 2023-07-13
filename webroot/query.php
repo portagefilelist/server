@@ -94,7 +94,7 @@ $result = $Files->getFiles($_search,false);
 // search had an error
 if(empty($result)) {
 	$returnData['error']['code'] = 'SEARCH_FAILED';
-	$returnData['error']['message'] = 'Search resulted in an unknow error.';
+	$returnData['error']['message'] = 'Invalid search criteria or nothing found. Either use a filename or complete path. Use * as a wildcard';
 
 	header('Access-Control-Allow-Origin: *');
 	header('Content-Type: application/json');
