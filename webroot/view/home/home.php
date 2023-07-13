@@ -21,13 +21,17 @@
 <blockquote>
 	<p>
 		Hello and welcome to <a href="index.php">portagefilelist.de</a> with a fresh coat of paint and some rewrites.<br />
-		A more detailed description what this site is about, can be <a href="index.php?p=about">read here</a>.<br />
-		<br />
 		Report any persisten problems, either to <i>bugs - at- portagefilelist.de</i> or as a
 		<a href="https://github.com/portagefilelist/client/issues" target="_blank">Github issue</a>
 	</p>
 	<cite>- Banana</cite>
 </blockquote>
+<p>
+	Portage File List collects which files are installed by which ebuild on users machines.<br />
+	It shares this data publicly for searching/browsing. It allows user to search for files that are not 
+	installed on their system and figure out which ebuild they need to install in order to obtain it.<br />
+	A more detailed description what this site is about, can be <a href="index.php?p=about">read here</a>.<br />
+</p>
 
 <form method="get" action="">
 	<div class="form-group">

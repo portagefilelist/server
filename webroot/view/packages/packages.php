@@ -18,20 +18,17 @@
  * under the License.
  */
 ?>
+<p>
+	Use only the <mark>package</mark> name and NOT the combination of <em>category</em>/<mark>package</mark>
+</p>
 <form method="get" action="">
 	<input type="hidden" name="p" value="packages" />
 	<div class="form-group">
 		<label class="form-label" for="package">
 			Search for a package (<samp>exiv2</samp>).<br />
-			Using * as a wildcard (<samp>exi.*</samp>) will <i>slow</i> down the query!
+			Using * as a wildcard (<samp>exi*</samp>) will <i>slow</i> down the query!
 		</label>
 		<input class="form-input" type="text" placeholder="Use * as a wildcard" id="package" name="ps" value="<?php echo $TemplateData['searchInput']; ?>">
-	</div>
-	<div class="form-group">
-		<label class="form-switch">
-			<input type="checkbox" name="unique" value="1" <?php echo $TemplateData['searchUniq']; ?>>
-			<i class="form-icon"></i> Unique packages
-		</label>
 	</div>
 	<div class="form-group">
 		<input class="btn" type="submit" value="Search">

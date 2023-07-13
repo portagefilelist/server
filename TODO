@@ -1,4 +1,3 @@
-Show other versions of package in package detail view.
 Use prepare und bind param. Wildcard search should also work
 DB storage and query optimization as data grows
 Usersorting the tables in view

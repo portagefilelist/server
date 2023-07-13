@@ -39,6 +39,7 @@
 	<tr>
 		<th>Name</th>
 		<th>Version</th>
+		<th>Arch</th>
 	</tr>
 	</thead>
 	<tbody>
@@ -51,6 +52,7 @@
 			<tr>
 				<td><a href="index.php?p=package&id=<?php echo $entry['hash']; ?>"><?php echo $entry['name']; ?></a></td>
 				<td><?php echo $entry['version']; ?></td>
+				<td><?php echo $entry['arch']; ?></td>
 			</tr>
 
 			<?php

@@ -71,13 +71,11 @@ class Packages {
 
 	/**
 	 * search packages by given searchValue
-	 * DISTINCT packages with $_uniquePackages
 	 *
 	 * @param string $searchValue
-	 * @param bool $_uniquePackages
 	 * @return array
 	 */
-	public function getPackages(string $searchValue, bool $_uniquePackages) : array {
+	public function getPackages(string $searchValue) : array {
 		$ret = array();
 
 		error_log("[INFO] ".__METHOD__." searchvalue: ".var_export($searchValue,true));
@@ -95,13 +93,6 @@ class Packages {
 						p.arch,
 						p.category_id AS category_id,
 						c.name AS categoryName";
-		if ($_uniquePackages) {
-			$querySelect = "DISTINCT p.hash,
-						p.name,
-						p.version,
-						p.category_id AS category_id,
-						c.name AS categoryName";
-		}
 
 		$queryFrom = " FROM `".DB_PREFIX."_package` AS p";
 
@@ -151,9 +142,6 @@ class Packages {
 				}
 
 				$queryStrCount = "SELECT COUNT(*) AS amount ".$queryFrom.$queryJoin.$queryWhere;
-				if ($_uniquePackages) {
-					$queryStrCount = "SELECT COUNT(DISTINCT p.name, p.version) AS amount ".$queryFrom.$queryJoin.$queryWhere;
-				}
 
 				if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".var_export($queryStrCount,true));
 				$query = $this->_DB->query($queryStrCount);

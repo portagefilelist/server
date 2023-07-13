@@ -24,7 +24,7 @@
 	<div class="form-group">
 		<label class="form-label" for="category">
 			Search for a category (<samp>media-libs</samp>).<br />
-			Using * as a wildcard (<samp>media-li*.*</samp>) will <i>slow</i> down the query!
+			Using * as a wildcard (<samp>media-li*</samp>) will <i>slow</i> down the query!
 		</label>
 		<input class="form-input" type="text" placeholder="Use * as a wildcard" id="category" name="cs" value="<?php echo $TemplateData['searchInput']; ?>">
 	</div>

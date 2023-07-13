@@ -21,23 +21,23 @@
 <h1>Package: <?php echo $TemplateData['package']['categoryName'] ?? ''; ?>/<?php echo $TemplateData['package']['name'] ?? ''; ?></h1>
 <table class="table table-striped table-hover">
 	<tr>
-		<td>Name:</td>
+		<td>Name</td>
 		<td><?php echo $TemplateData['package']['categoryName'] ?? ''; ?>/<?php echo $TemplateData['package']['name'] ?? ''; ?></td>
 	</tr>
 	<tr>
-		<td>Category:</td>
+		<td>Category</td>
 		<td><a href="index.php?p=category&id=<?php echo $TemplateData['package']['category_id'] ?? '' ?>"><?php echo $TemplateData['package']['categoryName'] ?? ''; ?></a></td>
 	</tr>
 	<tr>
-		<td>Version:</td>
+		<td>Version</td>
 		<td><?php echo $TemplateData['package']['version'] ?? ''; ?></td>
 	</tr>
 	<tr>
-		<td>Seen Arch:</td>
+		<td>Seen Arch</td>
 		<td><?php echo $TemplateData['package']['arch'] ?? ''; ?></td>
 	</tr>
 	<tr>
-		<td>Seen Use:</td>
+		<td>Seen Use</td>
 		<td>
 			<?php
 			if(!empty($TemplateData['package']['usewords'])) {
@@ -51,7 +51,27 @@
 		</td>
 	</tr>
 	<tr>
-		<td>Gentoo package website:</td>
+		<td>Other Version/arch</td>
+		<td>
+			<?php
+			if(!empty($TemplateData['package']['otherVersions'])) {
+			?>
+			<ul class="ulInTable">
+			<?php
+				foreach($TemplateData['package']['otherVersions'] as $key=>$entry) {
+			?>
+				<li><a href="index.php?p=package&id=<?php echo ($key); ?>"><?php echo $entry['categoryName'].'/'.$entry['name']; ?></a> <?php echo $entry['version'] ?> <?php echo $entry['arch'] ?></li>
+			<?php
+				}
+			?>
+			</ul>
+			<?php
+			 }
+			?>
+		</td>
+	</tr>
+	<tr>
+		<td>Gentoo package website</td>
 		<td><a href="https://packages.gentoo.org/packages/<?php echo $TemplateData['package']['categoryName'] ?? ''; ?>/<?php echo $TemplateData['package']['name'] ?? ''; ?>" target="_blank">external <i class="icon icon-link"></i></a></td>
 </table>
 

@@ -91,7 +91,8 @@ class Package {
 
 				if($query !== false && $query->num_rows > 0) {
 					$ret = $query->fetch_assoc();
-					$ret['usewords'] = $this->useflags($hash);
+					$ret['usewords'] = $this->_useflags($hash);
+					$ret['otherVersions'] = $this->_otherVersionsForPackage($ret['name'], $hash);
 				}
 			}
 			catch (Exception $e) {
@@ -173,7 +174,7 @@ class Package {
 	 * @param string $pid Package id
 	 * @return array()
 	 */
-	private function useflags(string $pid):array {
+	private function _useflags(string $pid):array {
 		$ret = array();
 
 		if(!empty($pid)) {
@@ -186,6 +187,33 @@ class Package {
 				if($query !== false && $query->num_rows > 0) {
 					while(($result = $query->fetch_assoc()) != false) {
 						$ret[] = $result['useword'];
+					}
+				}
+			}
+			catch (Exception $e) {
+				error_log("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
+			}
+		}
+
+		return $ret;
+	}
+
+	private function _otherVersionsForPackage(string $name, string $hash): array {
+		$ret = array();
+
+		if(!empty($name)) {
+			$queryStr = "SELECT p.hash, p.name, p.version, p.arch, p.category_id,
+								c.name AS categoryName
+							FROM `".DB_PREFIX."_package` AS p
+							LEFT JOIN `".DB_PREFIX."_category` AS c ON p.category_id = c.hash
+							WHERE p.name = '".$this->_DB->real_escape_string($name)."'
+								AND p.hash <> '".$this->_DB->real_escape_string($hash)."'";
+			if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".var_export($queryStr,true));
+			try {
+				$query = $this->_DB->query($queryStr);
+				if($query !== false && $query->num_rows > 0) {
+					while(($result = $query->fetch_assoc()) != false) {
+						$ret[$result['hash']] = $result;
 					}
 				}
 			}

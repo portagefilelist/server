@@ -67,7 +67,7 @@ if(!empty($_id)) {
 		$TemplateData['package'] = $package;
 		$TemplateData['files'] = $Package->getPackageFiles($_id);
 
-		$TemplateData['pageTitle'] = $package['name'].'/'.$package['categoryName'];
+		$TemplateData['pageTitle'] = $package['name'].'/'.$package['categoryName'].' '.$package['version'].' '.$package['arch'];
 		$TemplateData['pagination']['currentGetParameters']['id'] = $_id;
 	} else {
 		$messageData['status'] = "error";

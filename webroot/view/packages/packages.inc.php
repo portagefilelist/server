@@ -53,8 +53,6 @@ $queryOptions = array(
 $TemplateData['pageTitle'] = 'Packages';
 $TemplateData['searchresults'] = array();
 $TemplateData['searchInput'] = '';
-$TemplateData['searchUniq'] = 'checked';
-$_uniquePackages = false;
 
 ## search
 if(isset($_GET['ps'])) {
@@ -62,16 +60,9 @@ if(isset($_GET['ps'])) {
 	$searchValue = strtolower($searchValue);
 	$searchValue = urldecode($searchValue);
 
-	if(isset($_GET['unique'])) {
-		$_uniquePackages = true;
-		$TemplateData['pagination']['currentGetParameters']['unique'] = '1';
-	} else {
-		$TemplateData['searchUniq'] = '';
-	}
-
 	if(Helper::validate($searchValue,'text')) {
 		$Packages->setQueryOptions($queryOptions);
-		$TemplateData['searchresults'] = $Packages->getPackages($searchValue, $_uniquePackages);
+		$TemplateData['searchresults'] = $Packages->getPackages($searchValue);
 
 		if(empty($TemplateData['searchresults'])) {
 			$messageData['status'] = "warning";
