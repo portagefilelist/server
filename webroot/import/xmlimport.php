@@ -84,11 +84,13 @@ libxml_use_internal_errors(true);
 # set time limit since it is long running
 set_time_limit(300);
 
-$_fileCounter = 0;
+$_fileCounter = count($inboxFiles);
+if($_fileCounter < 5) {
+	error_log('[INFO] Less then 5 files to import. Skipping for now.');
+	exit();
+}
 
 foreach ($inboxFiles as $fileToImport) {
-	#$_fileCounter++;
-	#if($_fileCounter > 5) break;
 
 	$xmlReader = new XMLReader;
 
@@ -299,5 +301,5 @@ foreach ($inboxFiles as $fileToImport) {
 // file amount is already checked above. Avoids cleaning the cache if nothing is updated
 Helper::recursive_remove_directory(PATH_CACHE, true);
 
-error_log('[INFO] Importer imported '.count($inboxFiles).' files');
+error_log('[INFO] Importer imported '.$_fileCounter.' files');
 error_log('[INFO] Importer ended.');
