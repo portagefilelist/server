@@ -101,6 +101,8 @@ class Files {
 			$querySelect = "DISTINCT p.name AS packageName,
 							f.package_id AS package_id,
 							p.hash,
+							p.arch AS packageArch,
+							p.version AS packageVersion,
 							c.hash AS category_id,
 							c.name AS categoryName";
 		}
