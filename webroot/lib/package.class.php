@@ -92,7 +92,7 @@ class Package {
 				if($query !== false && $query->num_rows > 0) {
 					$ret = $query->fetch_assoc();
 					$ret['usewords'] = $this->_useflags($hash);
-					$ret['otherVersions'] = $this->_otherVersionsForPackage($ret['name'], $hash);
+					$ret['otherVersions'] = $this->_otherVersionsForPackage($ret['name'], $hash, $ret['category_id']);
 				}
 			}
 			catch (Exception $e) {
@@ -198,16 +198,27 @@ class Package {
 		return $ret;
 	}
 
-	private function _otherVersionsForPackage(string $name, string $hash): array {
+	/**
+	 * Search for packages other versions
+	 * Ignores self
+	 *
+	 * @param string $name Package name
+	 * @param string $hash Package id
+	 * @param string $catId Category id
+	 *
+	 * @return array $ret
+	 */
+	private function _otherVersionsForPackage(string $name, string $hash, string $catId): array {
 		$ret = array();
 
-		if(!empty($name)) {
+		if(!empty($name) && !empty($hash) && !empty($catId)) {
 			$queryStr = "SELECT p.hash, p.name, p.version, p.arch, p.category_id,
 								c.name AS categoryName
 							FROM `".DB_PREFIX."_package` AS p
 							LEFT JOIN `".DB_PREFIX."_category` AS c ON p.category_id = c.hash
 							WHERE p.name = '".$this->_DB->real_escape_string($name)."'
-								AND p.hash <> '".$this->_DB->real_escape_string($hash)."'";
+								AND p.hash <> '".$this->_DB->real_escape_string($hash)."'
+								AND p.category_id = '".$this->_DB->real_escape_string($catId)."'";
 			if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".var_export($queryStr,true));
 			try {
 				$query = $this->_DB->query($queryStr);
