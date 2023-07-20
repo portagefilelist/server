@@ -69,6 +69,19 @@ CREATE TABLE `pfl_package_use` (
   `package_id` char(32) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `pfl_statslog`
+--
+
+DROP TABLE IF EXISTS `pfl_statslog`;
+CREATE TABLE `pfl_statslog` (
+  `type` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `value` varchar(254) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `timestmp` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+
 --
 -- Indexes for dumped tables
 --
@@ -86,9 +99,9 @@ ALTER TABLE `pfl_category`
 ALTER TABLE `pfl_file`
   ADD PRIMARY KEY (`hash`),
   ADD KEY `name` (`name`),
-  ADD KEY `path` (`path`),
   ADD KEY `lastmodified` (`lastmodified`),
-  ADD KEY `package_id` (`package_id`);
+  ADD KEY `package_id` (`package_id`),
+  ADD KEY `path` (`path`);
 
 --
 -- Indexes for table `pfl_package`
@@ -104,6 +117,12 @@ ALTER TABLE `pfl_package`
 --
 ALTER TABLE `pfl_package_use`
   ADD UNIQUE KEY `package_id` (`package_id`,`useword`);
+
+--
+-- Indexes for table `pfl_statslog`
+--
+ALTER TABLE `pfl_statslog`
+  ADD KEY `type` (`type`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
