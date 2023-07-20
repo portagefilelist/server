@@ -59,7 +59,7 @@ if($_check !== IMPORTER_SECRET) {
 
 # get available files from inbox
 $inboxFiles = glob(PATH_INBOX.'/*');
-if(DEBUG) error_log('[DEBUG] Found files: '.var_export($inboxFiles,true));
+if(DEBUG) error_log('[DEBUG] Found files: '.Helper::cleanForLog($inboxFiles));
 
 if(empty($inboxFiles)) {
 	error_log('[INFO] Nothing in inbox.');
@@ -99,7 +99,7 @@ foreach ($inboxFiles as $fileToImport) {
 	$mime = finfo_file($finfo, $fileToImport);
 	finfo_close($finfo);
 	if($mime != "application/x-bzip2") {
-		error_log("[ERROR] Import invalid mime type: ".var_export($mime,true));
+		error_log("[ERROR] Import invalid mime type: ".Helper::cleanForLog($mime));
 		exit();
 	}
 
@@ -116,7 +116,7 @@ foreach ($inboxFiles as $fileToImport) {
 	$fileToWorkWith = $fileToImport.'.xml';
 
 	if (!$xmlReader->open($fileToWorkWith)) {
-		error_log('[ERROR] Can not read xml file: '.var_export($fileToWorkWith,true));
+		error_log('[ERROR] Can not read xml file: '.Helper::cleanForLog($fileToWorkWith));
 		continue;
 	}
 
@@ -162,7 +162,7 @@ foreach ($inboxFiles as $fileToImport) {
 								`name` = '".$DB->real_escape_string($_cat)."',
 								`hash` = '".$DB->real_escape_string($_catID)."'
 								ON DUPLICATE KEY UPDATE `lastmodified` = NOW()";
-				if(QUERY_DEBUG) error_log('[QUERY] Category insert: '.var_export($queryCat,true));
+				if(QUERY_DEBUG) error_log('[QUERY] Category insert: '.Helper::cleanForLog($queryCat));
 
 				# the package insert query
 				$_packXML = new SimpleXMLElement($_pack);
@@ -174,7 +174,7 @@ foreach ($inboxFiles as $fileToImport) {
 								`arch` = '".$DB->real_escape_string((string)$_packXML['arch'])."',
 								`category_id` = '".$DB->real_escape_string($_catID)."'
 								ON DUPLICATE KEY UPDATE `lastmodified` = NOW()";
-				if(QUERY_DEBUG) error_log('[QUERY] Package insert: '.var_export($queryPackage,true));
+				if(QUERY_DEBUG) error_log('[QUERY] Package insert: '.Helper::cleanForLog($queryPackage));
 
 				if(empty($_catID) || empty($_packID)) {
 					error_log("[ERROR] Missing category '$_catID' or package '$_packID' id");
@@ -211,7 +211,7 @@ foreach ($inboxFiles as $fileToImport) {
 									$queryUses = "INSERT IGNORE INTO `".DB_PREFIX."_package_use` SET
 												`useword` = '".$DB->real_escape_string($_useWord)."',
 												`package_id` = '".$DB->real_escape_string($_packID)."'";
-									if(QUERY_DEBUG) error_log('[QUERY] Use insert: '.var_export($queryUses,true));
+									if(QUERY_DEBUG) error_log('[QUERY] Use insert: '.Helper::cleanForLog($queryUses));
 									try {
 										$DB->query($queryUses);
 									} catch (Exception $e) {
@@ -260,8 +260,8 @@ foreach ($inboxFiles as $fileToImport) {
 								}
 								if(!empty($queryFile)) {
 									# if this is triggered often, make sure the DB col length is also increased.
-									if(strlen($path) > 200) error_log('[WARNING] File path longer than 200 : '.var_export($queryFile,true));
-									if(QUERY_DEBUG) error_log('[QUERY] File insert: '.var_export($queryFile,true));
+									if(strlen($path) > 200) error_log('[WARNING] File path longer than 200 : '.Helper::cleanForLog($queryFile));
+									if(QUERY_DEBUG) error_log('[QUERY] File insert: '.Helper::cleanForLog($queryFile));
 									try {
 										$DB->query($queryFile);
 									} catch (Exception $e) {

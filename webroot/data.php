@@ -50,7 +50,7 @@ if(Helper::folderSize(PATH_INBOX) > 1000000000) {
 if(isset($_FILES['foo'])) {
 	$_uploadFile = $_FILES['foo'];
 
-	error_log("[INFO] Upload starting upload with FILES: ".var_export($_FILES,true));
+	error_log("[INFO] Upload starting upload with FILES: ".Helper::cleanForLog($_FILES));
 
 	if(isset($_uploadFile['name'])
 		&& isset($_uploadFile['type'])
@@ -62,20 +62,20 @@ if(isset($_FILES['foo'])) {
 		$mime = finfo_file($finfo, $_uploadFile['tmp_name']);
 		finfo_close($finfo);
 		if($mime != "application/x-bzip2") {
-			error_log("[ERROR] Upload invalid mime type: ".var_export($mime,true));
+			error_log("[ERROR] Upload invalid mime type: ".Helper::cleanForLog($mime));
 			exit();
 		}
 
 		$_uploadTarget = tempnam(PATH_INBOX.'/','pfl');
 		if(move_uploaded_file($_uploadFile['tmp_name'], $_uploadTarget)) {
-			error_log("[INFO] Upload success. Target : ".var_export($_uploadTarget,true));
+			error_log("[INFO] Upload success. Target : ".Helper::cleanForLog($_uploadTarget));
 		}
 		else {
-			error_log("[ERRoR] Upload error while upload move: ".var_export($_FILES,true));
+			error_log("[ERRoR] Upload error while upload move: ".Helper::cleanForLog($_FILES));
 			exit();
 		}
 
 	} else {
-		error_log("[ERROR] Upload incomplete FILES: ".var_export($_FILES,true));
+		error_log("[ERROR] Upload incomplete FILES: ".Helper::cleanForLog($_FILES));
 	}
 }

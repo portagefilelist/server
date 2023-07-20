@@ -143,7 +143,7 @@ class Package {
 		}
 
 		$queryStr = "SELECT ".$querySelect.$queryFrom.$queryWhere.$queryOrder.$queryLimit;
-		if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".var_export($queryStr,true));
+		if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
 
 		try {
 			$query = $this->_DB->query($queryStr);
@@ -154,7 +154,7 @@ class Package {
 				}
 
 				$queryStrCount = "SELECT COUNT(f.hash) AS amount ".$queryFrom.$queryWhere.$queryOrder;
-				if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".var_export($queryStrCount,true));
+				if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStrCount));
 
 				$query = $this->_DB->query($queryStrCount);
 				$result = $query->fetch_assoc();
@@ -219,7 +219,7 @@ class Package {
 							WHERE p.name = '".$this->_DB->real_escape_string($name)."'
 								AND p.hash <> '".$this->_DB->real_escape_string($hash)."'
 								AND p.category_id = '".$this->_DB->real_escape_string($catId)."'";
-			if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".var_export($queryStr,true));
+			if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
 			try {
 				$query = $this->_DB->query($queryStr);
 				if($query !== false && $query->num_rows > 0) {

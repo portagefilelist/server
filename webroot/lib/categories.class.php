@@ -78,7 +78,7 @@ class Categories {
 	public function getCategories(string $searchValue) : array {
 		$ret = array();
 
-		error_log("[INFO] ".__METHOD__." searchvalue: ".var_export($searchValue,true));
+		error_log("[INFO] ".__METHOD__." wanted searchvalue: ".Helper::cleanForLog($searchValue));
 
 		$_wildCardSearch = false;
 		if(strstr($searchValue,'*')) {
@@ -123,7 +123,7 @@ class Categories {
 		}
 
 		$queryStr = "SELECT ".$querySelect.$queryFrom.$queryWhere.$queryOrder.$queryLimit;
-		if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".var_export($queryStr,true));
+		if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
 
 		try {
 			$query = $this->_DB->query($queryStr);
@@ -135,7 +135,7 @@ class Categories {
 
 				$queryStrCount = "SELECT COUNT(c.hash) AS amount ".$queryFrom.$queryWhere.$queryOrder;
 
-				if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".var_export($queryStrCount,true));
+				if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStrCount));
 				$query = $this->_DB->query($queryStrCount);
 				$result = $query->fetch_assoc();
 				$ret['amount'] = $result['amount'];

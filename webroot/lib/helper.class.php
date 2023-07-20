@@ -144,171 +144,6 @@ class Helper {
 	}
 
 	/**
-	 * check if the given string is a rights string.
-	 *
-	 * @param string $string
-	 * @return boolean
-	 */
-	static function isRightsString(string $string): bool {
-		$ret = false;
-
-		$string = trim($string);
-		if(empty($string)) return false;
-		if(isset($string[9])) return false;
-
-		$check = str_replace("r", "", $string);
-		$check = str_replace("w", "", $check);
-		$check = str_replace("x", "", $check);
-		$check = str_replace("-", "", $check);
-
-		if(empty($check)) {
-			$ret = true;
-		}
-
-		return $ret;
-	}
-
-	/**
-	 * creates the rights string from the given rights array
-	 * check what options are set and set the missing ones to -
-	 *
-	 * then create the rights string
-	 * IMPORTANT: keep the order otherwise the rights will be messed up
-	 *
-	 * @param array $rightsArr
-	 * @return string
-	 */
-	static function prepareRightsString(array $rightsArr): string {
-		$rsArr = array();
-		$ret = '';
-
-		if(!empty($rightsArr)) {
-			// we need a complete type list
-			// since we can get an "incomplete" array
-			// if the user hasnt the rights for a specific type
-			if(!isset($rightsArr['user'])) {
-				$rightsArr['user'] = "";
-			}
-			if(!isset($rightsArr['group'])) {
-				$rightsArr['group'] = "";
-			}
-			if(!isset($rightsArr['other'])) {
-				$rightsArr['other'] = "";
-			}
-
-			// create the rights information
-			foreach ($rightsArr as $type=>$data) {
-				if(!empty($data['read']) && $data['read'] == "1") {
-					$rsArr[$type]['read'] = "r";
-				}
-				else {
-					$rsArr[$type]['read'] = "-";
-				}
-
-				if(!empty($data['write']) && $data['write'] == "1") {
-					$rsArr[$type]['write'] = "w";
-				}
-				else {
-					$rsArr[$type]['write'] = "-";
-				}
-
-				if(!empty($data['delete']) && $data['delete'] == "1") {
-					$rsArr[$type]['delete'] = "x";
-				}
-				else {
-					$rsArr[$type]['delete'] = "-";
-				}
-			}
-
-			$rString = $rsArr['user']['read'].$rsArr['user']['write'].$rsArr['user']['delete'];
-			$rString .= $rsArr['group']['read'].$rsArr['group']['write'].$rsArr['group']['delete'];
-			$rString .= $rsArr['other']['read'].$rsArr['other']['write'].$rsArr['other']['delete'];
-
-			if(strlen($rString) != 9) {
-				$ret = '';
-				// invalid rights string !!
-			}
-			else {
-				$ret = $rString;
-			}
-		}
-
-		return $ret;
-	}
-
-	/**
-	 * Creates from given rights string the rights array
-	 *
-	 * @param string $rightsString
-	 * @return array
-	 */
-	static function prepareRightsArray(string $rightsString): array {
-		$ret = array();
-
-		if(self::isRightsString($rightsString) === true) {
-			$ret['user']['read'] = '-';
-			$ret['user']['write'] = '-';
-			$ret['user']['delete'] = '-';
-			if($rightsString[0] === 'r') $ret['user']['read'] = 'r';
-			if($rightsString[1] === 'w') $ret['user']['write'] = 'w';
-			if($rightsString[2] === 'x') $ret['user']['delete'] = 'x';
-
-			$ret['group']['read'] = '-';
-			$ret['group']['write'] = '-';
-			$ret['group']['delete'] = '-';
-			if($rightsString[3] === 'r') $ret['group']['read'] = 'r';
-			if($rightsString[4] === 'w') $ret['group']['write'] = 'w';
-			if($rightsString[5] === 'x') $ret['group']['delete'] = 'x';
-
-			$ret['other']['read'] = '-';
-			$ret['other']['write'] = '-';
-			$ret['other']['delete'] = '-';
-			if($rightsString[6] === 'r') $ret['other']['read'] = 'r';
-			if($rightsString[7] === 'w') $ret['other']['write'] = 'w';
-			if($rightsString[8] === 'x') $ret['other']['delete'] = 'x';
-		}
-
-		return $ret;
-	}
-
-	/**
-	 * read a dir and return the entries as an array
-	 * with full path to the files
-	 *
-	 * @param string $directory The absolute path to the directory
-	 * @param array $ignore An Array with strings to ignored
-	 * @param bool $recursive If we run a recursive scan or not
-	 * @return array
-	 */
-	static function readDir(string $directory, array $ignore = array(), bool $recursive = false): array {
-		$files = array();
-
-		$dh = opendir($directory);
-		while(false !== ($file = readdir($dh))) {
-			if($file[0] ==".") continue;
-			if(!empty($ignore)) {
-				foreach ($ignore as $ig)  {
-					if(strstr($file,$ig)) continue 2;
-				}
-			}
-
-			if(is_file($directory."/".$file)) {
-				array_push($files, $directory."/".$file);
-			}
-			elseif($recursive === true) {
-				array_push($files, $directory."/".$file);
-				$files = array_merge($files, self::readDir($directory."/".$file,$ignore, $recursive));
-			}
-			elseif(is_dir($directory."/".$file)) {
-				array_push($files, $directory."/".$file);
-			}
-		}
-		closedir($dh);
-
-		return $files;
-	}
-
-	/**
 	 * delete and/or empty a directory
 	 *
 	 * $empty = true => empty the directory but do not delete it
@@ -417,90 +252,6 @@ class Helper {
 	}
 
 	/**
-	 * fix the filesystem filenames. Remove whitespace and ...
-	 *
-	 * @param array $filenames File or folder list
-	 * @return array
-	 */
-	static function fixAssetFilenames(array $filenames): array {
-		$ret = $filenames;
-
-		foreach($filenames as $k=>$file) {
-			if(file_exists($file)) {
-				if(strstr($file, " ")) {
-					# we do not allow any whitespace in a filename
-					$newFilename = str_replace(" ", "-", $file);
-					rename($file, $newFilename);
-					$filenames[$k] = $newFilename;
-				}
-			}
-		}
-
-		return $filenames;
-	}
-
-	/**
-	 * simulate the Null coalescing operator in php5
-	 *
-	 * this only works with arrays and checking if the key is there and echo/return it.
-	 *
-	 * http://php.net/manual/en/migration70.new-features.php#migration70.new-features.null-coalesce-op
-	 *
-	 * @param array $array
-	 * @param array|string $key
-	 * @return bool|mixed
-	 */
-	static function ifset(array $array, array|string $key): mixed {
-		if(is_array($key)) {
-			$_t = $array;
-			$_c = 0;
-			foreach ($key as $k) {
-				if(isset($_t[$k])) {
-					$_t = $_t[$k];
-					$_c++;
-				}
-			}
-
-			return sizeof($key)==$_c ? $_t : false;
-
-		} else {
-			return isset($array[$key]) ? $array[$key] : false;
-		}
-	}
-
-	/**
-	 * based on self::ifset check also the value
-	 *
-	 * @param array $array The array to use
-	 * @param string $key The key to check
-	 * @param string $value The value to compare
-	 * @return bool
-	 */
-	static function ifsetValue(array $array, string $key, string $value): bool {
-		if(self::ifset($array,$key) !== false) {
-			return $array[$key] == $value;
-		}
-		return false;
-	}
-
-	/**
-	 * Replace in $haystack the $needle with $replace only once
-	 *
-	 * @param string $haystack
-	 * @param string $needle
-	 * @param string $replace
-	 * @return string
-	 */
-	static function replaceOnce(string $haystack, string $needle, string $replace): string {
-		$newstring = $haystack;
-		$pos = strpos($haystack, $needle);
-		if ($pos !== false) {
-			$newstring = substr_replace($haystack, $replace, $pos, strlen($needle));
-		}
-		return $newstring;
-	}
-
-	/**
 	 * http_build_query with modify array
 	 * modify will add: key AND value not empty
 	 * modify will remove: only key with no value
@@ -577,5 +328,15 @@ class Helper {
 			$bytes /= 1024;
 		}
 		return round($bytes, 2) . ' ' . $units[$i];
+	}
+
+	/**
+	 * Make the input more safe for logging
+	 *
+	 * @param string $string The string to be made more safe
+	 * @return string
+	 */
+	static function cleanForLog($input): string {
+		return var_export(addcslashes($input, "\000..\037\177..\377\\"),true);
 	}
 }

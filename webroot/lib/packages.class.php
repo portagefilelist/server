@@ -78,7 +78,7 @@ class Packages {
 	public function getPackages(string $searchValue) : array {
 		$ret = array();
 
-		error_log("[INFO] ".__METHOD__." searchvalue: ".var_export($searchValue,true));
+		error_log("[INFO] ".__METHOD__." searchvalue: ".Helper::cleanForLog($searchValue));
 
 		$_wildCardSearch = false;
 		if(strstr($searchValue,'*')) {
@@ -131,7 +131,7 @@ class Packages {
 		}
 
 		$queryStr = "SELECT ".$querySelect.$queryFrom.$queryJoin.$queryWhere.$queryOrder.$queryLimit;
-		if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".var_export($queryStr,true));
+		if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
 
 		try {
 			$query = $this->_DB->query($queryStr);
@@ -143,7 +143,7 @@ class Packages {
 
 				$queryStrCount = "SELECT COUNT(*) AS amount ".$queryFrom.$queryJoin.$queryWhere;
 
-				if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".var_export($queryStrCount,true));
+				if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStrCount));
 				$query = $this->_DB->query($queryStrCount);
 				$result = $query->fetch_assoc();
 				$ret['amount'] = $result['amount'];
@@ -179,7 +179,7 @@ class Packages {
 					LEFT JOIN `".DB_PREFIX."_category` AS c ON p.category_id = c.hash
 					ORDER BY p.lastmodified DESC
 					LIMIT 10";
-		if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".var_export($queryStr,true));
+		if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
 
 		try {
 			$query = $this->_DB->query($queryStr);
@@ -197,7 +197,7 @@ class Packages {
 		// Amount of packages
 		$queryStr = "SELECT COUNT(p.hash) AS amount
 					FROM `".DB_PREFIX."_package` AS p WHERE p.hash IS NOT NULL";
-		if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".var_export($queryStr,true));
+		if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
 
 		try {
 			$query = $this->_DB->query($queryStr);
@@ -214,7 +214,7 @@ class Packages {
 		// arch
 		$queryStr = "SELECT DISTINCT p.arch
 					FROM `".DB_PREFIX."_package` AS p";
-		if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".var_export($queryStr,true));
+		if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
 
 		try {
 			$query = $this->_DB->query($queryStr);
@@ -236,7 +236,7 @@ class Packages {
 					GROUP BY p.useword 
 					ORDER BY `amount` DESC 
 					LIMIT 10";
-		if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".var_export($queryStr,true));
+		if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
 
 		try {
 			$query = $this->_DB->query($queryStr);

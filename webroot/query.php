@@ -49,13 +49,13 @@ $returnData = array();
 
 $_search = '';
 if(isset($_GET['file']) && !empty($_GET['file'])) {
-	if(DEBUG) error_log("[DEBUG] query with : ".var_export($_GET, true));
+	if(DEBUG) error_log("[DEBUG] query with : ".Helper::cleanForLog($_GET));
 	$_search = trim($_GET['file']);
 	$_search = Helper::validate($_search,'nospaceP') ? $_search : '';
 
 	if(DEBUG) {
 		if(empty($_search)) {
-			error_log("[DEBUG] Invalid query GET : ".var_export($_GET, true));
+			error_log("[DEBUG] Invalid query GET : ".Helper::cleanForLog($_GET));
 		}
 	}
 }
