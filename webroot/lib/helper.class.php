@@ -337,6 +337,7 @@ class Helper {
 	 * @return string
 	 */
 	static function cleanForLog($input): string {
+		$input = preg_replace( "/[\t\n\r]/", "", $input);
 		return var_export(addcslashes($input, "\000..\037\177..\377\\"),true);
 	}
 }
