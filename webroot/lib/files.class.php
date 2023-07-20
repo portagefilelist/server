@@ -168,6 +168,12 @@ class Files {
 				$query = $this->_DB->query($queryStrCount);
 				$result = $query->fetch_assoc();
 				$ret['amount'] = $result['amount'];
+
+				$statsQuery = "INSERT INTO `".DB_PREFIX."_statslog` SET
+								`type` = 'filesearch',
+								`value` = '".$this->_DB->real_escape_string($searchValue)."'";
+				if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($statsQuery));
+				$this->_DB->query($statsQuery);
 			}
 		}
 		catch (Exception $e) {
