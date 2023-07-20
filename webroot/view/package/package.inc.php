@@ -56,7 +56,7 @@ if(isset($_GET['id']) && !empty($_GET['id'])) {
 	$_id = Helper::validate($_id,'nospace') ? $_id : '';
 }
 
-$TemplateData['pageTitle'] = 'Package';
+$TemplateData['pageTitle'] = 'Package details';
 $TemplateData['package'] = array();
 $TemplateData['files'] = array();
 

@@ -63,7 +63,7 @@ $driver->report_mode = MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT;
 # template vars
 $TemplateData = array();
 $TemplateData['pagination'] = array();
-$TemplateData['pageTitle'] = 'Home';
+$TemplateData['pageTitle'] = 'Find where does a file come from';
 $messageData = array();
 
 # the view

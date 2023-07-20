@@ -50,7 +50,7 @@ $queryOptions = array(
 );
 ## pagination end
 
-$TemplateData['pageTitle'] = 'Categories';
+$TemplateData['pageTitle'] = 'Search for categories';
 $TemplateData['searchresults'] = array();
 $TemplateData['searchInput'] = '';
 

@@ -26,7 +26,7 @@ $Packages = new Packages($DB);
 require_once 'lib/files.class.php';
 $Files = new Files($DB);
 
-$TemplateData['pageTitle'] = 'Stats';
+$TemplateData['pageTitle'] = 'Statistics';
 
 $TemplateData['p'] = $Packages->stats();
 $TemplateData['f'] = $Files->stats();

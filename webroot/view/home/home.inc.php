@@ -50,7 +50,7 @@ $queryOptions = array(
 );
 ## pagination end
 
-$TemplateData['pageTitle'] = 'Home';
+$TemplateData['pageTitle'] = 'Find where does a file come from';
 $TemplateData['searchresults'] = array();
 $TemplateData['searchInput'] = '';
 $TemplateData['searchUniq'] = 'checked';
