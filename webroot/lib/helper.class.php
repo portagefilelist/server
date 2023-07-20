@@ -24,27 +24,6 @@
 class Helper {
 
 	/**
-	 * Return path to given theme file with fallback to default theme
-	 *
-	 * @param string $file relative path from THEME/
-	 * @param string $theme Theme name
-	 * @param string $defaultTheme Default theme name can be overwritten
-	 * @return string False of nothing is found
-	 */
-	static function themefile(string $file, string $theme, string $defaultTheme = 'default'): string {
-		$ret = '';
-
-		if(file_exists('view/'.$theme.'/'.$file)) {
-			$ret = 'view/'.$theme.'/'.$file;
-		}
-		elseif (file_exists('view/'.$defaultTheme.'/'.$file)) {
-			$ret = 'view/'.$defaultTheme.'/'.$file;
-		}
-
-		return $ret;
-	}
-
-	/**
 	 * validate the given string with the given type. Optional check the string
 	 * length
 	 *
