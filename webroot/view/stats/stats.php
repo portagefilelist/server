@@ -28,7 +28,7 @@
 <div class="container">
 	<div class="columns">
 		<div class="column col-4 col-xl-12">
-			<h3>Latest packages</h3>
+			<h3>Latest updated packages</h3>
 			<table class="table table-striped table-hover">
 				<thead>
 					<tr>
@@ -53,7 +53,7 @@
 			</table>
 		</div>
 		<div class="column col-4 col-xl-12">
-			<h3>Latest files</h3>
+			<h3>Latest updated files</h3>
 			<table class="table table-striped table-hover">
 				<thead>
 					<tr>
