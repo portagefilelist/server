@@ -78,7 +78,7 @@ class Packages {
 	public function getPackages(string $searchValue) : array {
 		$ret = array();
 
-		error_log("[INFO] ".__METHOD__." searchvalue: ".Helper::cleanForLog($searchValue));
+		error_log("[INFO] ".__METHOD__." wanted searchvalue: ".Helper::cleanForLog($searchValue));
 
 		$_wildCardSearch = false;
 		if(strstr($searchValue,'*')) {
@@ -164,7 +164,7 @@ class Packages {
 
 	/**
 	 * Return some general stats about packages table
-	 * 
+	 *
 	 * @return array('latest' => array(), 'amount' => '', 'arch' => array(), 'use' => array())
 	 */
 	public function stats():array {
