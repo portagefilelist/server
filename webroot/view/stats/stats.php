@@ -33,7 +33,7 @@
 				<thead>
 					<tr>
 						<th>Name</th>
-						<th>Uniq name</th>
+						<th>Unique name</th>
 					</tr>
 				</thead>
 				<tbody>
