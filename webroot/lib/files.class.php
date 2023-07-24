@@ -244,6 +244,41 @@ class Files {
 	}
 
 	/**
+	 * statslog entries for filesearch type and more then 2 entries
+	 * Sorted and reduced to the first entry for each amount
+	 *
+	 * @return array
+	 */
+	public function topSearch(): array {
+		$ret = array();
+
+		$queryStr = "SELECT COUNT(sl.value) AS amount, sl.value
+					FROM `".DB_PREFIX."_statslog` AS sl
+					WHERE sl.type = 'filesearch'
+					GROUP BY sl.value
+					HAVING amount > 2
+					ORDER BY amount DESC";
+		if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
+
+		try {
+			$query = $this->_DB->query($queryStr);
+
+			if($query !== false && $query->num_rows > 0) {
+				while(($row = $query->fetch_assoc()) != false) {
+					if(!isset($ret[$row['amount']])) {
+						$ret[$row['amount']] = $row['value'];
+					}
+				}
+			}
+		}
+		catch (Exception $e) {
+			error_log("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
+		}
+
+		return $ret;
+	}
+
+	/**
 	 * set some defaults by init of the class
 	 *
 	 * @return void

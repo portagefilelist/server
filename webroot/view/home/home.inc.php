@@ -54,6 +54,8 @@ $TemplateData['pageTitle'] = 'Find where does a file come from';
 $TemplateData['searchresults'] = array();
 $TemplateData['searchInput'] = '';
 $TemplateData['searchUniq'] = 'checked';
+$TemplateData['topSearch'] = $Files->topSearch();
+
 $_uniquePackages = false;
 
 ## search
