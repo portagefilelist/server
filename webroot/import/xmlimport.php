@@ -21,7 +21,7 @@
 /**
  * Why not use autoincrement in the mysql tables?
  * Using autoincrement and unique indexes mix not very well if ON DUPLICATE KEY is used
- * to avoid any duplicates and to retrive the id with insert_id.
+ * to avoid any duplicates and to retrieve the id with insert_id.
  */
 
 mb_http_output('UTF-8');
@@ -233,7 +233,8 @@ foreach ($inboxFiles as $fileToImport) {
 								# ignores
 								# kernel sources
 								# maybe hidden files like .ignores?
-								if(strstr($path, '/usr/src/linux')) {
+								if(strstr($path, '/usr/src/linux')
+									|| strstr($path, '-gentoo-dist/')) {
 									continue;
 								}
 
