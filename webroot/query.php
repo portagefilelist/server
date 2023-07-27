@@ -49,14 +49,12 @@ $returnData = array();
 
 $_search = '';
 if(isset($_GET['file']) && !empty($_GET['file'])) {
-	if(DEBUG) error_log("[DEBUG] query with : ".Helper::cleanForLog($_GET));
+	error_log("[INFO] query with : ".Helper::cleanForLog($_GET));
 	$_search = trim($_GET['file']);
 	$_search = Helper::validate($_search,'nospaceP') ? $_search : '';
 
-	if(DEBUG) {
-		if(empty($_search)) {
-			error_log("[DEBUG] Invalid query GET : ".Helper::cleanForLog($_GET));
-		}
+	if(empty($_search)) {
+		error_log("[WARN] Invalid query GET : ".Helper::cleanForLog($_GET['file']));
 	}
 }
 // still empty
@@ -103,7 +101,6 @@ if(empty($result)) {
 
 $returnData['result'] = array();
 
-
 if(isset($result['results'])) {
 	foreach($result['results'] as $key=>$entry) {
 		$_t = array( 'category' => '',
@@ -124,7 +121,6 @@ if(isset($result['results'])) {
 		$returnData['result'][] = $_t;
 	}
 }
-
 
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');

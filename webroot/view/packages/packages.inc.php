@@ -60,7 +60,7 @@ if(isset($_GET['ps'])) {
 	$searchValue = strtolower($searchValue);
 	$searchValue = urldecode($searchValue);
 
-	if(Helper::validate($searchValue,'text')) {
+	if(Helper::validate($searchValue,'nospaceP')) {
 		$Packages->setQueryOptions($queryOptions);
 		$TemplateData['searchresults'] = $Packages->getPackages($searchValue);
 
