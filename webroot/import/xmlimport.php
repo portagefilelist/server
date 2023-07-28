@@ -173,7 +173,7 @@ foreach ($inboxFiles as $fileToImport) {
 								`version` = '".$DB->real_escape_string((string)$_packXML['version'])."',
 								`arch` = '".$DB->real_escape_string((string)$_packXML['arch'])."',
 								`category_id` = '".$DB->real_escape_string($_catID)."'
-								ON DUPLICATE KEY UPDATE `lastmodified` = NOW()";
+								ON DUPLICATE KEY UPDATE `lastmodified` = NOW(), `importcount` = `importcount` + 1";
 				if(QUERY_DEBUG) error_log('[QUERY] Package insert: '.Helper::cleanForLog($queryPackage));
 
 				if(empty($_catID) || empty($_packID)) {
@@ -231,10 +231,11 @@ foreach ($inboxFiles as $fileToImport) {
 								$path = (string)$file;
 
 								# ignores
-								# kernel sources
-								# maybe hidden files like .ignores?
+								# kernel sources, dist kernel
+								# __ which are often __pycache and other testfiles
 								if(strstr($path, '/usr/src/linux')
-									|| strstr($path, '-gentoo-dist/')) {
+									|| strstr($path, '-gentoo-dist/')
+									|| strstr($path, '__')) {
 									continue;
 								}
 

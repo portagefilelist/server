@@ -10,3 +10,7 @@ main {
 .ulInTable {
 	margin: 0 0 0 0;
 }
+
+.col-bottom-gap .column {
+	padding-bottom: 0.4rem;
+}
