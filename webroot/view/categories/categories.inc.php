@@ -60,7 +60,7 @@ if(isset($_GET['cs'])) {
 	$searchValue = strtolower($searchValue);
 	$searchValue = urldecode($searchValue);
 
-	if(Helper::validate($searchValue,'text')) {
+	if(Helper::validate($searchValue,'nospaceP')) {
 		$Categories->setQueryOptions($queryOptions);
 		$TemplateData['searchresults'] = $Categories->getCategories($searchValue);
 

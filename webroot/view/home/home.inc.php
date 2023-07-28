@@ -53,7 +53,7 @@ $queryOptions = array(
 $TemplateData['pageTitle'] = 'Find where does a file come from';
 $TemplateData['searchresults'] = array();
 $TemplateData['searchInput'] = '';
-$TemplateData['searchUniq'] = 'checked';
+$TemplateData['searchUnique'] = '';
 $TemplateData['topSearch'] = $Files->topSearch();
 
 $_uniquePackages = false;
@@ -67,11 +67,10 @@ if(isset($_GET['fs'])) {
 	if(isset($_GET['unique'])) {
 		$_uniquePackages = true;
 		$TemplateData['pagination']['currentGetParameters']['unique'] = '1';
-	} else {
-		$TemplateData['searchUniq'] = '';
+		$TemplateData['searchUnique'] = 'checked';
 	}
 
-	if(Helper::validate($searchValue,'text')) {
+	if(Helper::validate($searchValue,'nospaceP')) {
 		$Files->setQueryOptions($queryOptions);
 		$TemplateData['searchresults'] = $Files->getFiles($searchValue,$_uniquePackages);
 

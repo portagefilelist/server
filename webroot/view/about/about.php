@@ -65,7 +65,7 @@
 <h2>Limitations</h2>
 <ul>
 	<li><a href="https://packages.gentoo.org/useflags/expand" target="_blank">USE Expand</a> useflags will be ignored.</li>
-	<li>Files in <i>/usr/src/linux</i>, <i>-gentoo-dist/</i> will be ignored. The package itself will still be added.</li>
+	<li>Files with <i>/usr/src/linux</i>, <i>-gentoo-dist/</i>, <i>*__*</i> will be ignored. The package itself will still be added.</li>
 	<li>Only files or symlinks are indexed.</li>
 </ul>
 

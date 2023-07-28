@@ -45,7 +45,7 @@
 	</div>
 	<div class="form-group">
 		<label class="form-switch">
-			<input type="checkbox" name="unique" value="1" <?php echo $TemplateData['searchUniq']; ?>>
+			<input type="checkbox" name="unique" value="1" <?php echo $TemplateData['searchUnique']; ?>>
 			<i class="form-icon"></i> Unique packages
 		</label>
 	</div>
