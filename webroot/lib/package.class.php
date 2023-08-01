@@ -7,9 +7,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -80,6 +80,7 @@ class Package {
 
 		if(!empty($hash)) {
 			$queryStr = "SELECT p.hash, p.name, p.version, p.arch, p.category_id,
+								p.importcount,
 								pu.useword AS packageUse,
 								c.name AS categoryName
 							FROM `".DB_PREFIX."_package` AS p
@@ -170,7 +171,7 @@ class Package {
 
 	/**
 	 * Get the usewords for given package hash
-	 * 
+	 *
 	 * @param string $pid Package id
 	 * @return array()
 	 */

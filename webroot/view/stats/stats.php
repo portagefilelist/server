@@ -7,9 +7,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -26,7 +26,32 @@
 </p>
 
 <div class="container">
-	<div class="columns">
+	<div class="columns col-bottom-gap">
+		<div class="column col-4 col-xl-12">
+			<h3>Top successful file searches</h3>
+			<table class="table table-striped table-hover">
+				<thead>
+				<tr>
+					<th>Name</th>
+					<th>#</th>
+				</tr>
+				</thead>
+				<tbody>
+				<?php
+				if(!empty($TemplateData['topFSearch'])) {
+					foreach($TemplateData['topFSearch'] as $amount=>$value) {
+						?>
+						<tr>
+							<td><?php echo $value; ?></a></td>
+							<td><?php echo $amount; ?></td>
+						</tr>
+						<?php
+					}
+				}
+				?>
+				</tbody>
+			</table>
+		</div>
 		<div class="column col-4 col-xl-12">
 			<h3>Latest updated packages</h3>
 			<table class="table table-striped table-hover">
@@ -78,7 +103,7 @@
 			</table>
 		</div>
 		<div class="column col-4 col-xl-12">
-			<h3>Use top 10</h3>
+			<h3>USE flag top 10</h3>
 			<table class="table table-striped table-hover">
 				<thead>
 					<tr>
