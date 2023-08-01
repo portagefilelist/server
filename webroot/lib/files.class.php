@@ -266,7 +266,7 @@ class Files {
 			if($query !== false && $query->num_rows > 0) {
 				while(($row = $query->fetch_assoc()) != false) {
 					if(!isset($ret[$row['amount']])) {
-						$ret[$row['amount']] = $row['value'];
+						$ret[$row['amount']] = str_replace("%", "*", $row['value']);
 					}
 				}
 			}
