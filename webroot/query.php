@@ -86,7 +86,16 @@ $Files = new Files($DB);
 // do the search for the given request
 $_search = strtolower($_search);
 $Files->setQueryOptions($queryOptions);
-$result = $Files->getFiles($_search,false);
+if(!$Files->prepareSearchValue($_search)) {
+	$returnData['error']['code'] = 'SEARCH_FAILED';
+	$returnData['error']['message'] = 'Invalid search criteria. At least two (without wildcard) chars.';
+
+	header('Access-Control-Allow-Origin: *');
+	header('Content-Type: application/json');
+	echo json_encode($returnData);
+	exit();
+}
+$result = $Files->getFiles(false);
 
 // search had an error
 if(empty($result)) {

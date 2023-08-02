@@ -7,9 +7,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -24,7 +24,7 @@ class Categories {
 	 *
 	 * @var mysqli
 	 */
-	private $_DB;
+	private mysqli $_DB;
 
 	/**
 	 * Options for db queries
@@ -36,6 +36,16 @@ class Categories {
 	 * @var array
 	 */
 	private array $_queryOptions;
+
+	/**
+	 * @var string $_searchValue
+	 */
+	private string $_searchValue;
+
+	/**
+	 * @var bool $_wildcardsearch
+	 */
+	private bool $_wildcardsearch = false;
 
 	/**
 	 * Files constructor.
@@ -70,21 +80,44 @@ class Categories {
 	}
 
 	/**
-	 * search categories by given searchValue
+	 * Prepare and set the searchvalue.
+	 * Check for wildcardsearch and make it safe
 	 *
 	 * @param string $searchValue
-	 * @return array
+	 * @return bool
 	 */
-	public function getCategories(string $searchValue) : array {
-		$ret = array();
-
+	public function prepareSearchValue(string $searchValue): bool {
 		error_log("[INFO] ".__METHOD__." wanted searchvalue: ".Helper::cleanForLog($searchValue));
 
-		$_wildCardSearch = false;
-		if(strstr($searchValue,'*')) {
+		if(str_contains($searchValue,'*')) {
+			$this->_wildcardsearch = true;
 			$searchValue = preg_replace('/\*{1,}/', '%', $searchValue);
-			$_wildCardSearch = true;
+
+			if(strlen($searchValue) < 3) {
+				return false;
+			}
+
+			if(strlen($searchValue) === 3) {
+				if(substr_count($searchValue, '%') > 1) return false;
+			}
 		}
+
+		if(strlen($searchValue) < 2) {
+			return false;
+		}
+
+		$this->_searchValue = $searchValue;
+
+		return true;
+	}
+
+	/**
+	 * search categories by given searchValue
+	 *
+	 * @return array
+	 */
+	public function getCategories() : array {
+		$ret = array();
 
 		// split since part of it is used later
 		$querySelect = "c.hash, c.name";
@@ -92,10 +125,10 @@ class Categories {
 
 		$queryWhere = " WHERE c.name";
 
-		if($_wildCardSearch) {
-			$queryWhere .= " LIKE '".$this->_DB->real_escape_string($searchValue)."'";
+		if($this->_wildcardsearch) {
+			$queryWhere .= " LIKE '".$this->_DB->real_escape_string($this->_searchValue)."'";
 		} else {
-			$queryWhere .= " = '".$this->_DB->real_escape_string($searchValue)."'";
+			$queryWhere .= " = '".$this->_DB->real_escape_string($this->_searchValue)."'";
 		}
 
 		$queryOrder = " ORDER BY";
@@ -142,7 +175,7 @@ class Categories {
 
 				$statsQuery = "INSERT INTO `".DB_PREFIX."_statslog` SET
 								`type` = 'catesearch',
-								`value` = '".$this->_DB->real_escape_string($searchValue)."'";
+								`value` = '".$this->_DB->real_escape_string($this->_searchValue)."'";
 				if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($statsQuery));
 				$this->_DB->query($statsQuery);
 			}
