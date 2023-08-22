@@ -290,7 +290,8 @@ class Files {
 					WHERE sl.type = 'filesearch'
 					GROUP BY sl.value
 					HAVING amount > 2
-					ORDER BY amount DESC";
+					ORDER BY amount DESC
+					LIMIT 10";
 		if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
 
 		try {
