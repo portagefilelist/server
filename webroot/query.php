@@ -100,7 +100,7 @@ $result = $Files->getFiles(false);
 // search had an error
 if(empty($result)) {
 	$returnData['error']['code'] = 'SEARCH_FAILED';
-	$returnData['error']['message'] = 'Invalid search criteria or nothing found. Either use a filename or complete path. Use * as a wildcard';
+	$returnData['error']['message'] = 'Invalid search criteria or nothing found. Either use a filename or complete path. Use * as a wildcard. Also check the path of the file. If the packagename is present the file is not recorded.';
 
 	header('Access-Control-Allow-Origin: *');
 	header('Content-Type: application/json');
