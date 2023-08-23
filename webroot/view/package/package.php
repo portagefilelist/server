@@ -81,6 +81,8 @@
 
 <div class="divider"></div>
 <h2>Package files</h2>
+<mark>Notice</mark>
+<p>Not all files are recorded. Most importantly any path in which the package name itself is present, will be ignored. If you have such path the answer to which package it belongs is already there.</p>
 
 <?php include_once 'view/system/pagination_fe.inc.php'; ?>
 

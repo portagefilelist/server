@@ -54,7 +54,8 @@ CREATE TABLE `pfl_package` (
   `version` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `arch` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `category_id` char(32) NOT NULL,
-  `lastmodified` datetime NOT NULL DEFAULT current_timestamp()
+  `lastmodified` datetime NOT NULL DEFAULT current_timestamp(),
+  `importcount` int(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 -- --------------------------------------------------------

@@ -1,10 +1,12 @@
 <ifmodule mod_rewrite.c>
 	RewriteEngine On
 
+	RewriteRule ^index(|/.*)$ - [L,R=404]
+
 	RewriteRule ^site/query/robotFile https://www.portagefilelist.de/query.php [R=301,L,QSA]
 
 	# can be used after the upload. subdomain is removed from pfl
-	#RewriteCond %{HTTP_HOST} !^www\. [NC,OR]
+	#RewriteCond %{HTTP_HOST} !^www. [NC,OR]
 	#RewriteCond %{HTTPS} off
 	#RewriteRule (.*) https://www.portagefilelist.de%{REQUEST_URI} [R=301,L]
 </ifmodule>

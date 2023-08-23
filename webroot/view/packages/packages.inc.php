@@ -7,9 +7,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -62,18 +62,23 @@ if(isset($_GET['ps'])) {
 
 	if(Helper::validate($searchValue,'nospaceP')) {
 		$Packages->setQueryOptions($queryOptions);
-		$TemplateData['searchresults'] = $Packages->getPackages($searchValue);
+		if($Packages->prepareSearchValue($searchValue)) {
+			$TemplateData['searchresults'] = $Packages->getPackages();
 
-		if(empty($TemplateData['searchresults'])) {
-			$messageData['status'] = "warning";
-			$messageData['message'] = "Nothing found for this search term or the data is not known yet.";
+			if(empty($TemplateData['searchresults'])) {
+				$messageData['status'] = "warning";
+				$messageData['message'] = "Nothing found for this search criteria or the data is not known yet.";
+			}
+
+			$TemplateData['searchInput'] = htmlspecialchars($searchValue);
+			$TemplateData['pagination']['currentGetParameters']['ps'] = urlencode($searchValue);
+		} else {
+			$messageData['status'] = "error";
+			$messageData['message'] = "Invalid search criteria. At least two (without wildcard) chars.";
 		}
-
-		$TemplateData['searchInput'] = htmlspecialchars($searchValue);
-		$TemplateData['pagination']['currentGetParameters']['ps'] = urlencode($searchValue);
 	} else {
 		$messageData['status'] = "error";
-		$messageData['message'] = "Invalid search parameter";
+		$messageData['message'] = "Invalid search criteria.";
 	}
 }
 ## search end

@@ -24,7 +24,7 @@ class Files {
 	 *
 	 * @var mysqli
 	 */
-	private $_DB;
+	private mysqli $_DB;
 
 	/**
 	 * Options for db queries
@@ -36,6 +36,16 @@ class Files {
 	 * @var array
 	 */
 	private array $_queryOptions;
+
+	/**
+	 * @var string $_searchValue
+	 */
+	private string $_searchValue;
+
+	/**
+	 * @var bool $_wildcardsearch
+	 */
+	private bool $_wildcardsearch = false;
 
 	/**
 	 * Files constructor.
@@ -69,23 +79,46 @@ class Files {
 	}
 
 	/**
-	 * search within files for given $searchValue
-	 * Make the result DISTINCT by packageName with $_uniquePackages
+	 * Prepare and set the searchvalue.
+	 * Check for wildcardsearch and make it safe
 	 *
 	 * @param string $searchValue
+	 * @return bool
+	 */
+	public function prepareSearchValue(string $searchValue): bool {
+		error_log("[INFO] ".__METHOD__." wanted searchvalue: ".Helper::cleanForLog($searchValue));
+
+		if(str_contains($searchValue,'*')) {
+			$this->_wildcardsearch = true;
+			$searchValue = preg_replace('/\*{1,}/', '%', $searchValue);
+
+			if(strlen($searchValue) < 3) {
+				return false;
+			}
+
+			if(strlen($searchValue) === 3) {
+				if(substr_count($searchValue, '%') > 1) return false;
+			}
+		}
+
+		if(strlen($searchValue) < 2) {
+			return false;
+		}
+
+		$this->_searchValue = $searchValue;
+
+		return true;
+	}
+
+	/**
+	 * search within files from prepareSearchValue()
+	 * Make the result DISTINCT by packageName with $_uniquePackages
+	 *
 	 * @param bool $_uniquePackages
 	 * @return array
 	 */
-	public function getFiles(string $searchValue, bool $_uniquePackages) : array {
+	public function getFiles(bool $_uniquePackages) : array {
 		$ret = array();
-
-		error_log("[INFO] ".__METHOD__." wanted searchvalue: ".Helper::cleanForLog($searchValue));
-
-		$_wildCardSearch = false;
-		if(strstr($searchValue,'*')) {
-			$searchValue = preg_replace('/\*{1,}/', '%', $searchValue);
-			$_wildCardSearch = true;
-		}
 
 		// split since part of it is used later
 		$querySelect = "f.hash AS hash,
@@ -112,16 +145,16 @@ class Files {
 		$queryJoin = " LEFT JOIN `".DB_PREFIX."_package` AS p ON f.package_id = p.hash";
 		$queryJoin .= " LEFT JOIN `".DB_PREFIX."_category` AS c ON p.category_id = c.hash";
 
-		if(strstr($searchValue,'/')) {
+		if(str_contains($this->_searchValue, '/')) {
 			$queryWhere = " WHERE f.path";
 		} else {
 			$queryWhere = " WHERE f.name";
 		}
 
-		if($_wildCardSearch) {
-			$queryWhere .= " LIKE '".$this->_DB->real_escape_string($searchValue)."'";
+		if($this->_wildcardsearch) {
+			$queryWhere .= " LIKE '".$this->_DB->real_escape_string($this->_searchValue)."'";
 		} else {
-			$queryWhere .= " = '".$this->_DB->real_escape_string($searchValue)."'";
+			$queryWhere .= " = '".$this->_DB->real_escape_string($this->_searchValue)."'";
 		}
 
 		$queryOrder = " ORDER BY";
@@ -171,7 +204,7 @@ class Files {
 
 				$statsQuery = "INSERT INTO `".DB_PREFIX."_statslog` SET
 								`type` = 'filesearch',
-								`value` = '".$this->_DB->real_escape_string($searchValue)."'";
+								`value` = '".$this->_DB->real_escape_string($this->_searchValue)."'";
 				if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($statsQuery));
 				$this->_DB->query($statsQuery);
 			}
@@ -257,7 +290,8 @@ class Files {
 					WHERE sl.type = 'filesearch'
 					GROUP BY sl.value
 					HAVING amount > 2
-					ORDER BY amount DESC";
+					ORDER BY amount DESC
+					LIMIT 10";
 		if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
 
 		try {
@@ -266,7 +300,7 @@ class Files {
 			if($query !== false && $query->num_rows > 0) {
 				while(($row = $query->fetch_assoc()) != false) {
 					if(!isset($ret[$row['amount']])) {
-						$ret[$row['amount']] = $row['value'];
+						$ret[$row['amount']] = str_replace("%", "*", $row['value']);
 					}
 				}
 			}

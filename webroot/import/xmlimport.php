@@ -65,6 +65,11 @@ if(empty($inboxFiles)) {
 	error_log('[INFO] Nothing in inbox.');
 	exit();
 }
+$_fileCounter = count($inboxFiles);
+if($_fileCounter < 5) {
+	error_log('[INFO] Less then 5 files to import. Skipping for now.');
+	exit();
+}
 
 error_log('[INFO] Importer starting.');
 
@@ -83,12 +88,6 @@ libxml_use_internal_errors(true);
 
 # set time limit since it is long running
 set_time_limit(300);
-
-$_fileCounter = count($inboxFiles);
-if($_fileCounter < 5) {
-	error_log('[INFO] Less then 5 files to import. Skipping for now.');
-	exit();
-}
 
 foreach ($inboxFiles as $fileToImport) {
 
@@ -167,9 +166,10 @@ foreach ($inboxFiles as $fileToImport) {
 				# the package insert query
 				$_packXML = new SimpleXMLElement($_pack);
 				$_packID = md5((string)$_packXML['name'].(string)$_packXML['version'].(string)$_packXML['arch']);
+				$_packageName = (string)$_packXML['name'];
 				$queryPackage = "INSERT INTO `".DB_PREFIX."_package` SET
 								`hash` = '".$DB->real_escape_string($_packID)."',
-								`name` = '".$DB->real_escape_string((string)$_packXML['name'])."',
+								`name` = '".$DB->real_escape_string($_packageName)."',
 								`version` = '".$DB->real_escape_string((string)$_packXML['version'])."',
 								`arch` = '".$DB->real_escape_string((string)$_packXML['arch'])."',
 								`category_id` = '".$DB->real_escape_string($_catID)."'
@@ -233,9 +233,12 @@ foreach ($inboxFiles as $fileToImport) {
 								# ignores
 								# kernel sources, dist kernel
 								# __ which are often __pycache and other testfiles
+								# also any paths which do have the package name in it.
 								if(strstr($path, '/usr/src/linux')
 									|| strstr($path, '-gentoo-dist/')
-									|| strstr($path, '__')) {
+									|| strstr($path, '__')
+									|| (str_contains($path, '/'.$_packageName) && !str_ends_with($path, '/'.$_packageName))
+									) {
 									continue;
 								}
 
@@ -290,6 +293,7 @@ foreach ($inboxFiles as $fileToImport) {
 				unset($_catID);
 				unset($_packID);
 				unset($_packXML);
+				unset($_packageName);
 
 				$xmlReader->next("category");
 			}

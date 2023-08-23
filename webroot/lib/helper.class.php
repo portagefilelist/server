@@ -7,9 +7,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -29,7 +29,7 @@ class Helper {
 	 *
 	 * @param string $input The string to check
 	 * @param string $mode How the string should be checked
-	 * @param integer $limit If int given the string is checked for length
+	 * @param integer $max If int given the string is checked for length
 	 *
 	 * @return bool
 	 * @see http://de.php.net/manual/en/regexp.reference.unicode.php
@@ -40,7 +40,7 @@ class Helper {
 	 * allowed
 	 *
 	 */
-	static function validate(string $input, string $mode = 'text', int $limit = 0): bool {
+	static function validate(string $input, string $mode = 'text', int $max = 0): bool {
 		// check if we have input
 		$input = trim($input);
 
@@ -56,10 +56,6 @@ class Helper {
 				else {
 					return false;
 				}
-			break;
-
-			case 'rights':
-				return self::isRightsString($input);
 			break;
 
 			case 'url':
@@ -111,9 +107,9 @@ class Helper {
 			$ret = true;
 		}
 
-		if(!empty($limit)) {
+		if(!empty($max)) {
 			# isset starts with 0
-			if(isset($input[$limit])) {
+			if(isset($input[$max])) {
 				# too long
 				$ret = false;
 			}

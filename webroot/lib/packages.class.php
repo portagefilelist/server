@@ -38,6 +38,16 @@ class Packages {
 	private array $_queryOptions;
 
 	/**
+	 * @var string $_searchValue
+	 */
+	private string $_searchValue;
+
+	/**
+	 * @var bool $_wildcardsearch
+	 */
+	private bool $_wildcardsearch = false;
+
+	/**
 	 * Files constructor.
 	 *
 	 * @param mysqli $databaseConnectionObject
@@ -70,21 +80,44 @@ class Packages {
 	}
 
 	/**
-	 * search packages by given searchValue
+	 * Prepare and set the searchvalue.
+	 * Check for wildcardsearch and make it safe
 	 *
 	 * @param string $searchValue
-	 * @return array
+	 * @return bool
 	 */
-	public function getPackages(string $searchValue) : array {
-		$ret = array();
-
+	public function prepareSearchValue(string $searchValue): bool {
 		error_log("[INFO] ".__METHOD__." wanted searchvalue: ".Helper::cleanForLog($searchValue));
 
-		$_wildCardSearch = false;
-		if(strstr($searchValue,'*')) {
+		if(str_contains($searchValue,'*')) {
+			$this->_wildcardsearch = true;
 			$searchValue = preg_replace('/\*{1,}/', '%', $searchValue);
-			$_wildCardSearch = true;
+
+			if(strlen($searchValue) < 3) {
+				return false;
+			}
+
+			if(strlen($searchValue) === 3) {
+				if(substr_count($searchValue, '%') > 1) return false;
+			}
 		}
+
+		if(strlen($searchValue) < 2) {
+			return false;
+		}
+
+		$this->_searchValue = $searchValue;
+
+		return true;
+	}
+
+	/**
+	 * search packages by given searchValue
+	 *
+	 * @return array
+	 */
+	public function getPackages() : array {
+		$ret = array();
 
 		// split since part of it is used later
 		$querySelect = "p.hash,
@@ -100,10 +133,10 @@ class Packages {
 
 		$queryWhere = " WHERE p.name";
 
-		if($_wildCardSearch) {
-			$queryWhere .= " LIKE '".$this->_DB->real_escape_string($searchValue)."'";
+		if($this->_wildcardsearch) {
+			$queryWhere .= " LIKE '".$this->_DB->real_escape_string($this->_searchValue)."'";
 		} else {
-			$queryWhere .= " = '".$this->_DB->real_escape_string($searchValue)."'";
+			$queryWhere .= " = '".$this->_DB->real_escape_string($this->_searchValue)."'";
 		}
 
 		$queryOrder = " ORDER BY";
@@ -150,7 +183,7 @@ class Packages {
 
 				$statsQuery = "INSERT INTO `".DB_PREFIX."_statslog` SET
 								`type` = 'pkgsearch',
-								`value` = '".$this->_DB->real_escape_string($searchValue)."'";
+								`value` = '".$this->_DB->real_escape_string($this->_searchValue)."'";
 				if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($statsQuery));
 				$this->_DB->query($statsQuery);
 			}
