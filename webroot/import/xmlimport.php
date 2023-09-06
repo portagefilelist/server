@@ -33,7 +33,6 @@ require_once('../config.php');
 
 ## set the error reporting
 ini_set('log_errors',true);
-ini_set('error_log',PATH_SYSTEMOUT.'/output.log');
 if(DEBUG === true) {
 	ini_set('display_errors',true);
 }
@@ -59,19 +58,19 @@ if($_check !== IMPORTER_SECRET) {
 
 # get available files from inbox
 $inboxFiles = glob(PATH_INBOX.'/*');
-if(DEBUG) error_log('[DEBUG] Found files: '.Helper::cleanForLog($inboxFiles));
+if(DEBUG) Helper::sysLog('[DEBUG] Found files: '.Helper::cleanForLog($inboxFiles));
 
 if(empty($inboxFiles)) {
-	error_log('[INFO] Nothing in inbox.');
+	Helper::sysLog('[INFO] Nothing in inbox.');
 	exit();
 }
 $_fileCounter = count($inboxFiles);
 if($_fileCounter < 5) {
-	error_log('[INFO] Less then 5 files to import. Skipping for now.');
+	Helper::sysLog('[INFO] Less then 5 files to import. Skipping for now.');
 	exit();
 }
 
-error_log('[INFO] Importer starting.');
+Helper::sysLog('[INFO] Importer starting.');
 
 # static helper class
 require_once 'lib/helper.class.php';
@@ -80,7 +79,7 @@ require_once 'lib/helper.class.php';
 $DB = new mysqli(DB_HOST, DB_USERNAME,DB_PASSWORD, DB_NAME);
 if ($DB->connect_errno) exit('Can not connect to MySQL Server');
 $DB->set_charset("utf8mb4");
-$DB->query("SET collation_connection = 'utf8mb4_bin'");
+$DB->query("SET collation_connection = 'utf8mb4_unicode_520_ci'");
 $driver = new mysqli_driver();
 $driver->report_mode = MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT;
 
@@ -98,7 +97,7 @@ foreach ($inboxFiles as $fileToImport) {
 	$mime = finfo_file($finfo, $fileToImport);
 	finfo_close($finfo);
 	if($mime != "application/x-bzip2") {
-		error_log("[ERROR] Import invalid mime type: ".Helper::cleanForLog($mime));
+		Helper::sysLog("[ERROR] Import invalid mime type: ".Helper::cleanForLog($mime));
 		exit();
 	}
 
@@ -106,8 +105,8 @@ foreach ($inboxFiles as $fileToImport) {
 	$fh = bzopen($fileToImport,'r');
 	while(!feof($fh)) {
 		$buffer = bzread($fh);
-		if($buffer === FALSE) { error_log('[ERROR] Decompress read problem'); exit(); }
-		if(bzerrno($fh) !== 0) { error_log('[ERROR] Decompress problem'); exit(); }
+		if($buffer === FALSE) { Helper::sysLog('[ERROR] Decompress read problem'); exit(); }
+		if(bzerrno($fh) !== 0) { Helper::sysLog('[ERROR] Decompress problem'); exit(); }
 		file_put_contents($fileToImport.'.xml', $buffer, FILE_APPEND | LOCK_EX);
 	}
 	bzclose($fh);
@@ -115,7 +114,7 @@ foreach ($inboxFiles as $fileToImport) {
 	$fileToWorkWith = $fileToImport.'.xml';
 
 	if (!$xmlReader->open($fileToWorkWith)) {
-		error_log('[ERROR] Can not read xml file: '.Helper::cleanForLog($fileToWorkWith));
+		Helper::sysLog('[ERROR] Can not read xml file: '.Helper::cleanForLog($fileToWorkWith));
 		continue;
 	}
 
@@ -133,7 +132,7 @@ foreach ($inboxFiles as $fileToImport) {
 		if (!$xmlReader->isValid()) {
 			$_xmlErrors = libxml_get_last_error();
 			if ($_xmlErrors && $_xmlErrors instanceof libXMLError) {
-				error_log('[ERROR] Invalid xml file: '.$_xmlErrors->message);
+				Helper::sysLog('[ERROR] Invalid xml file: '.$_xmlErrors->message);
 				libxml_clear_errors();
 				continue;
 			}
@@ -161,7 +160,7 @@ foreach ($inboxFiles as $fileToImport) {
 								`name` = '".$DB->real_escape_string($_cat)."',
 								`hash` = '".$DB->real_escape_string($_catID)."'
 								ON DUPLICATE KEY UPDATE `lastmodified` = NOW()";
-				if(QUERY_DEBUG) error_log('[QUERY] Category insert: '.Helper::cleanForLog($queryCat));
+				if(QUERY_DEBUG) Helper::sysLog('[QUERY] Category insert: '.Helper::cleanForLog($queryCat));
 
 				# the package insert query
 				$_packXML = new SimpleXMLElement($_pack);
@@ -174,10 +173,10 @@ foreach ($inboxFiles as $fileToImport) {
 								`arch` = '".$DB->real_escape_string((string)$_packXML['arch'])."',
 								`category_id` = '".$DB->real_escape_string($_catID)."'
 								ON DUPLICATE KEY UPDATE `lastmodified` = NOW(), `importcount` = `importcount` + 1";
-				if(QUERY_DEBUG) error_log('[QUERY] Package insert: '.Helper::cleanForLog($queryPackage));
+				if(QUERY_DEBUG) Helper::sysLog('[QUERY] Package insert: '.Helper::cleanForLog($queryPackage));
 
 				if(empty($_catID) || empty($_packID)) {
-					error_log("[ERROR] Missing category '$_catID' or package '$_packID' id");
+					Helper::sysLog("[ERROR] Missing category '$_catID' or package '$_packID' id");
 					exit();
 				}
 
@@ -190,7 +189,7 @@ foreach ($inboxFiles as $fileToImport) {
 
 				} catch (Exception $e) {
 					$DB->rollback();
-					error_log("[ERROR] Category or Package insert mysql catch: ".$e->getMessage());
+					Helper::sysLog("[ERROR] Category or Package insert mysql catch: ".$e->getMessage());
 					exit();
 				}
 
@@ -211,12 +210,12 @@ foreach ($inboxFiles as $fileToImport) {
 									$queryUses = "INSERT IGNORE INTO `".DB_PREFIX."_package_use` SET
 												`useword` = '".$DB->real_escape_string($_useWord)."',
 												`package_id` = '".$DB->real_escape_string($_packID)."'";
-									if(QUERY_DEBUG) error_log('[QUERY] Use insert: '.Helper::cleanForLog($queryUses));
+									if(QUERY_DEBUG) Helper::sysLog('[QUERY] Use insert: '.Helper::cleanForLog($queryUses));
 									try {
 										$DB->query($queryUses);
 									} catch (Exception $e) {
 										$DB->rollback();
-										error_log("[ERROR] Use insert mysql catch: ".$e->getMessage());
+										Helper::sysLog("[ERROR] Use insert mysql catch: ".$e->getMessage());
 										exit();
 									}
 								}
@@ -265,13 +264,13 @@ foreach ($inboxFiles as $fileToImport) {
 								}
 								if(!empty($queryFile)) {
 									# if this is triggered often, make sure the DB col length is also increased.
-									if(strlen($path) > 200) error_log('[WARNING] File path longer than 200 : '.Helper::cleanForLog($queryFile));
-									if(QUERY_DEBUG) error_log('[QUERY] File insert: '.Helper::cleanForLog($queryFile));
+									if(strlen($path) > 200) Helper::sysLog('[WARNING] File path longer than 200 : '.Helper::cleanForLog($queryFile));
+									if(QUERY_DEBUG) Helper::sysLog('[QUERY] File insert: '.Helper::cleanForLog($queryFile));
 									try {
 										$DB->query($queryFile);
 									} catch (Exception $e) {
 										$DB->rollback();
-										error_log("[ERROR] File insert mysql catch: ".$e->getMessage());
+										Helper::sysLog("[ERROR] File insert mysql catch: ".$e->getMessage());
 										exit();
 									}
 								}
@@ -284,7 +283,7 @@ foreach ($inboxFiles as $fileToImport) {
 					$DB->commit();
 				} catch (Exception $e) {
 					$DB->rollback();
-					error_log("[ERROR] Package commit mysql catch: ".$e->getMessage());
+					Helper::sysLog("[ERROR] Package commit mysql catch: ".$e->getMessage());
 					exit();
 				}
 
@@ -307,5 +306,5 @@ foreach ($inboxFiles as $fileToImport) {
 // file amount is already checked above. Avoids cleaning the cache if nothing is updated
 Helper::recursive_remove_directory(PATH_CACHE, true);
 
-error_log('[INFO] Importer imported '.$_fileCounter.' files');
-error_log('[INFO] Importer ended.');
+Helper::sysLog('[INFO] Importer imported '.$_fileCounter.' files');
+Helper::sysLog('[INFO] Importer ended.');

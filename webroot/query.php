@@ -31,7 +31,6 @@ require_once 'config.php';
 
 ## set the error reporting
 ini_set('log_errors',true);
-ini_set('error_log',PATH_SYSTEMOUT.'/output.log');
 if(DEBUG === true) {
 	ini_set('display_errors',true);
 }
@@ -49,12 +48,12 @@ $returnData = array();
 
 $_search = '';
 if(isset($_GET['file']) && !empty($_GET['file'])) {
-	error_log("[INFO] query with : ".Helper::cleanForLog($_GET));
+	Helper::sysLog("[INFO] query with : ".Helper::cleanForLog($_GET));
 	$_search = trim($_GET['file']);
 	$_search = Helper::validate($_search,'nospaceP') ? $_search : '';
 
 	if(empty($_search)) {
-		error_log("[WARN] Invalid query GET : ".Helper::cleanForLog($_GET['file']));
+		Helper::sysLog("[WARN] Invalid query GET : ".Helper::cleanForLog($_GET['file']));
 	}
 }
 // still empty
@@ -76,7 +75,7 @@ $queryOptions = array(
 $DB = new mysqli(DB_HOST, DB_USERNAME,DB_PASSWORD, DB_NAME);
 if ($DB->connect_errno) exit('Can not connect to MySQL Server');
 $DB->set_charset("utf8mb4");
-$DB->query("SET collation_connection = 'utf8mb4_bin'");
+$DB->query("SET collation_connection = 'utf8mb4_unicode_520_ci'");
 $driver = new mysqli_driver();
 $driver->report_mode = MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT;
 

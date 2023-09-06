@@ -313,7 +313,11 @@ class Helper {
 	 */
 	static function cleanForLog($input): string {
 		$input = var_export($input, true);
-		$input = preg_replace( "/[\t\n\r]/", "", $input);
+		$input = preg_replace( "/[\t\n\r]/", " ", $input);
 		return addcslashes($input, "\000..\037\177..\377\\");
+	}
+
+	static function sysLog(string $msg): void {
+		error_log($msg."\n", 3, LOGFILE);
 	}
 }

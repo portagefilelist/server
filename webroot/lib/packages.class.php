@@ -87,7 +87,7 @@ class Packages {
 	 * @return bool
 	 */
 	public function prepareSearchValue(string $searchValue): bool {
-		error_log("[INFO] ".__METHOD__." wanted searchvalue: ".Helper::cleanForLog($searchValue));
+		Helper::sysLog("[INFO] ".__METHOD__." wanted searchvalue: ".Helper::cleanForLog($searchValue));
 
 		if(str_contains($searchValue,'*')) {
 			$this->_wildcardsearch = true;
@@ -164,7 +164,7 @@ class Packages {
 		}
 
 		$queryStr = "SELECT ".$querySelect.$queryFrom.$queryJoin.$queryWhere.$queryOrder.$queryLimit;
-		if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
+		if(QUERY_DEBUG) Helper::sysLog("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
 
 		try {
 			$query = $this->_DB->query($queryStr);
@@ -176,7 +176,7 @@ class Packages {
 
 				$queryStrCount = "SELECT COUNT(*) AS amount ".$queryFrom.$queryJoin.$queryWhere;
 
-				if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStrCount));
+				if(QUERY_DEBUG) Helper::sysLog("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStrCount));
 				$query = $this->_DB->query($queryStrCount);
 				$result = $query->fetch_assoc();
 				$ret['amount'] = $result['amount'];
@@ -184,12 +184,12 @@ class Packages {
 				$statsQuery = "INSERT INTO `".DB_PREFIX."_statslog` SET
 								`type` = 'pkgsearch',
 								`value` = '".$this->_DB->real_escape_string($this->_searchValue)."'";
-				if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($statsQuery));
+				if(QUERY_DEBUG) Helper::sysLog("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($statsQuery));
 				$this->_DB->query($statsQuery);
 			}
 		}
 		catch (Exception $e) {
-			error_log("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
+			Helper::sysLog("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
 		}
 
 		return $ret;
@@ -218,7 +218,7 @@ class Packages {
 					LEFT JOIN `".DB_PREFIX."_category` AS c ON p.category_id = c.hash
 					ORDER BY p.lastmodified DESC
 					LIMIT 10";
-		if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
+		if(QUERY_DEBUG) Helper::sysLog("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
 
 		try {
 			$query = $this->_DB->query($queryStr);
@@ -230,13 +230,13 @@ class Packages {
 			}
 		}
 		catch (Exception $e) {
-			error_log("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
+			Helper::sysLog("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
 		}
 
 		// Amount of packages
 		$queryStr = "SELECT COUNT(p.hash) AS amount
 					FROM `".DB_PREFIX."_package` AS p WHERE p.hash IS NOT NULL";
-		if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
+		if(QUERY_DEBUG) Helper::sysLog("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
 
 		try {
 			$query = $this->_DB->query($queryStr);
@@ -247,35 +247,37 @@ class Packages {
 			}
 		}
 		catch (Exception $e) {
-			error_log("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
+			Helper::sysLog("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
 		}
 
 		// arch
 		$queryStr = "SELECT DISTINCT p.arch
 					FROM `".DB_PREFIX."_package` AS p";
-		if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
+		if(QUERY_DEBUG) Helper::sysLog("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
 
 		try {
 			$query = $this->_DB->query($queryStr);
 
 			if($query !== false && $query->num_rows > 0) {
 				while(($result = $query->fetch_assoc()) != false) {
-					$ret['arch'][] = $result['arch'];
+					if(!empty($result['arch'])) {
+						$ret['arch'][] = $result['arch'];
+					}
 				}
 			}
 		}
 		catch (Exception $e) {
-			error_log("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
+			Helper::sysLog("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
 		}
 
 
 		// use
-		$queryStr = "SELECT COUNT(1) AS amount, p.useword 
+		$queryStr = "SELECT COUNT(*) AS amount, p.useword 
 					FROM `".DB_PREFIX."_package_use` AS p
 					GROUP BY p.useword 
 					ORDER BY `amount` DESC 
 					LIMIT 10";
-		if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
+		if(QUERY_DEBUG) Helper::sysLog("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
 
 		try {
 			$query = $this->_DB->query($queryStr);
@@ -287,7 +289,7 @@ class Packages {
 			}
 		}
 		catch (Exception $e) {
-			error_log("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
+			Helper::sysLog("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
 		}
 
 		return $ret;
