@@ -239,7 +239,7 @@ foreach ($inboxFiles as $fileToImport) {
 								if(strstr($path, '/usr/src/linux')
 									|| strstr($path, '-gentoo-dist/')
 									|| strstr($path, '__')
-									|| (str_contains($path, '/'.$_packageName) && !str_ends_with($path, '/'.$_packageName))
+									#|| (str_contains($path, '/'.$_packageName) && !str_ends_with($path, '/'.$_packageName)) 
 									) {
 									continue;
 								}
