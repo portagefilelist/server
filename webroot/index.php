@@ -20,13 +20,12 @@
 
 mb_http_output('UTF-8');
 mb_internal_encoding('UTF-8');
-ini_set('error_reporting',-1); // E_ALL & E_STRICT
+error_reporting(-1); // E_ALL & E_STRICT
 
 require_once 'config.php';
 
 ## set the error reporting
 ini_set('log_errors',true);
-ini_set('error_log',PATH_SYSTEMOUT.'/output.log');
 if(DEBUG === true) {
 	ini_set('display_errors',true);
 }
@@ -51,14 +50,6 @@ if(file_exists($cacheFile) && !DEBUG) {
 	echo file_get_contents($cacheFile);
 	exit();
 }
-
-## DB connection
-$DB = new mysqli(DB_HOST, DB_USERNAME,DB_PASSWORD, DB_NAME);
-if ($DB->connect_errno) exit('Can not connect to MySQL Server');
-$DB->set_charset("utf8mb4");
-$DB->query("SET collation_connection = 'utf8mb4_bin'");
-$driver = new mysqli_driver();
-$driver->report_mode = MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT;
 
 # template vars
 $TemplateData = array();
@@ -95,6 +86,14 @@ if(isset($_GET['p']) && !empty($_GET['p'])) {
 	$View = 'view/'.$_requestMode.'/'.$_requestMode.'.php';
 }
 
+## DB connection
+$DB = new mysqli(DB_HOST, DB_USERNAME,DB_PASSWORD, DB_NAME);
+if ($DB->connect_errno) exit('Can not connect to MySQL Server');
+$DB->set_charset("utf8mb4");
+$DB->query("SET collation_connection = 'utf8mb4_unicode_520_ci'");
+$driver = new mysqli_driver();
+$driver->report_mode = MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT;
+
 # "cache" the content
 ob_start();
 
@@ -104,14 +103,15 @@ if(!empty($ViewScript) && file_exists($ViewScript)) {
 	require_once $ViewScript;
 }
 
-
 ## now inlcude the main view
 require_once 'view/main.php';
 
 # output the content
 $content = ob_get_contents();
 ob_end_clean();
-file_put_contents($cacheFile,$content);
+if(!DEBUG) {
+	file_put_contents($cacheFile,$content);
+}
 
 if(!DEBUG) {
 	header("Pragma: public");

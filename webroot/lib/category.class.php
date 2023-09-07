@@ -89,7 +89,7 @@ class Category {
 				}
 			}
 			catch (Exception $e) {
-				error_log("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
+				Helper::sysLog("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
 			}
 		}
 
@@ -136,7 +136,7 @@ class Category {
 		}
 
 		$queryStr = "SELECT ".$querySelect.$queryFrom.$queryWhere.$queryOrder.$queryLimit;
-		if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
+		if(QUERY_DEBUG) Helper::sysLog("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
 
 		try {
 			$query = $this->_DB->query($queryStr);
@@ -147,7 +147,7 @@ class Category {
 				}
 
 				$queryStrCount = "SELECT COUNT(p.hash) AS amount ".$queryFrom.$queryWhere.$queryOrder;
-				if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStrCount));
+				if(QUERY_DEBUG) Helper::sysLog("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStrCount));
 
 				$query = $this->_DB->query($queryStrCount);
 				$result = $query->fetch_assoc();
@@ -155,7 +155,7 @@ class Category {
 			}
 		}
 		catch (Exception $e) {
-			error_log("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
+			Helper::sysLog("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
 		}
 
 		return $ret;

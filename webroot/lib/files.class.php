@@ -86,7 +86,7 @@ class Files {
 	 * @return bool
 	 */
 	public function prepareSearchValue(string $searchValue): bool {
-		error_log("[INFO] ".__METHOD__." wanted searchvalue: ".Helper::cleanForLog($searchValue));
+		Helper::sysLog("[INFO] ".__METHOD__." wanted searchvalue: ".Helper::cleanForLog($searchValue));
 
 		if(str_contains($searchValue,'*')) {
 			$this->_wildcardsearch = true;
@@ -182,7 +182,7 @@ class Files {
 		}
 
 		$queryStr = "SELECT ".$querySelect.$queryFrom.$queryJoin.$queryWhere.$queryOrder.$queryLimit;
-		if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
+		if(QUERY_DEBUG) Helper::sysLog("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
 
 		try {
 			$query = $this->_DB->query($queryStr);
@@ -197,7 +197,7 @@ class Files {
 					$queryStrCount = "SELECT COUNT(DISTINCT p.name) AS amount ".$queryFrom.$queryJoin.$queryWhere;
 				}
 
-				if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStrCount));
+				if(QUERY_DEBUG) Helper::sysLog("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStrCount));
 				$query = $this->_DB->query($queryStrCount);
 				$result = $query->fetch_assoc();
 				$ret['amount'] = $result['amount'];
@@ -205,12 +205,12 @@ class Files {
 				$statsQuery = "INSERT INTO `".DB_PREFIX."_statslog` SET
 								`type` = 'filesearch',
 								`value` = '".$this->_DB->real_escape_string($this->_searchValue)."'";
-				if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($statsQuery));
+				if(QUERY_DEBUG) Helper::sysLog("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($statsQuery));
 				$this->_DB->query($statsQuery);
 			}
 		}
 		catch (Exception $e) {
-			error_log("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
+			Helper::sysLog("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
 		}
 
 		return $ret;
@@ -239,7 +239,7 @@ class Files {
 					LEFT JOIN `".DB_PREFIX."_category` AS c ON p.category_id = c.hash
 					ORDER BY f.lastmodified DESC
 					LIMIT 10";
-		if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
+		if(QUERY_DEBUG) Helper::sysLog("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
 
 		try {
 			$query = $this->_DB->query($queryStr);
@@ -251,14 +251,14 @@ class Files {
 			}
 		}
 		catch (Exception $e) {
-			error_log("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
+			Helper::sysLog("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
 		}
 
 		// Amount of files
 		$queryStr = "SELECT COUNT(f.hash) AS amount
 					FROM `".DB_PREFIX."_file` AS f
 					WHERE f.hash IS NOT NULL";
-		if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
+		if(QUERY_DEBUG) Helper::sysLog("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
 
 		try {
 			$query = $this->_DB->query($queryStr);
@@ -269,7 +269,7 @@ class Files {
 			}
 		}
 		catch (Exception $e) {
-			error_log("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
+			Helper::sysLog("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
 		}
 
 
@@ -292,7 +292,7 @@ class Files {
 					HAVING amount > 2
 					ORDER BY amount DESC
 					LIMIT 10";
-		if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
+		if(QUERY_DEBUG) Helper::sysLog("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
 
 		try {
 			$query = $this->_DB->query($queryStr);
@@ -306,7 +306,7 @@ class Files {
 			}
 		}
 		catch (Exception $e) {
-			error_log("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
+			Helper::sysLog("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
 		}
 
 		return $ret;

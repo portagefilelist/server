@@ -20,8 +20,8 @@
 ?>
 <h1>Statistics</h1>
 <p>
-	Amount of indexed files: <b><?php echo $TemplateData['f']['amount'] ?? ''; ?></b><br />
 	Amount of indexed packages: <b><?php echo $TemplateData['p']['amount'] ?? ''; ?></b><br />
+	Amount of indexed files: <b><?php echo $TemplateData['f']['amount'] ?? ''; ?></b><br />
 	Indexed architectures: <b><?php echo implode(", ", $TemplateData['p']['arch']); ?></b>
 </p>
 

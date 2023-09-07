@@ -75,8 +75,8 @@ class Helper {
 			case 'nospaceP':
 				// text without any whitespace and special chars
 				// but with Punctuation other
-				# http://www.sql-und-xml.de/unicode-database/po.html
-				$pattern = '/[\p{L}\p{N}\p{Po}\-]/u';
+				// http://www.sql-und-xml.de/unicode-database/po.html
+				$pattern = '/[\p{L}\p{N}\p{Po}\-_]/u';
 			break;
 
 			case 'digit':
@@ -88,7 +88,7 @@ class Helper {
 			case 'pageTitle':
 				// text with whitespace and without special chars
 				// but with Punctuation
-				$pattern = '/[\p{L}\p{N}\p{Po}\p{Z}\s-]/u';
+				$pattern = '/[\p{L}\p{N}\p{Po}\p{Z}\s\-_]/u';
 			break;
 
 			# strange. the \p{M} is needed.. don't know why..
@@ -313,7 +313,17 @@ class Helper {
 	 */
 	static function cleanForLog($input): string {
 		$input = var_export($input, true);
-		$input = preg_replace( "/[\t\n\r]/", "", $input);
+		$input = preg_replace( "/[\t\n\r]/", " ", $input);
 		return addcslashes($input, "\000..\037\177..\377\\");
+	}
+
+	/**
+	 * error_log with a dedicated destination
+	 * Uses LOGFILE const
+	 *
+	 * @param string $msg The string to be written to the log
+	 */
+	static function sysLog(string $msg): void {
+		error_log(date("c")." ".$msg."\n", 3, LOGFILE);
 	}
 }

@@ -97,7 +97,7 @@ class Package {
 				}
 			}
 			catch (Exception $e) {
-				error_log("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
+				Helper::sysLog("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
 			}
 		}
 
@@ -144,7 +144,7 @@ class Package {
 		}
 
 		$queryStr = "SELECT ".$querySelect.$queryFrom.$queryWhere.$queryOrder.$queryLimit;
-		if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
+		if(QUERY_DEBUG) Helper::sysLog("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
 
 		try {
 			$query = $this->_DB->query($queryStr);
@@ -155,7 +155,7 @@ class Package {
 				}
 
 				$queryStrCount = "SELECT COUNT(f.hash) AS amount ".$queryFrom.$queryWhere.$queryOrder;
-				if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStrCount));
+				if(QUERY_DEBUG) Helper::sysLog("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStrCount));
 
 				$query = $this->_DB->query($queryStrCount);
 				$result = $query->fetch_assoc();
@@ -163,7 +163,7 @@ class Package {
 			}
 		}
 		catch (Exception $e) {
-			error_log("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
+			Helper::sysLog("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
 		}
 
 		return $ret;
@@ -192,7 +192,7 @@ class Package {
 				}
 			}
 			catch (Exception $e) {
-				error_log("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
+				Helper::sysLog("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
 			}
 		}
 
@@ -220,7 +220,7 @@ class Package {
 							WHERE p.name = '".$this->_DB->real_escape_string($name)."'
 								AND p.hash <> '".$this->_DB->real_escape_string($hash)."'
 								AND p.category_id = '".$this->_DB->real_escape_string($catId)."'";
-			if(QUERY_DEBUG) error_log("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
+			if(QUERY_DEBUG) Helper::sysLog("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
 			try {
 				$query = $this->_DB->query($queryStr);
 				if($query !== false && $query->num_rows > 0) {
@@ -230,7 +230,7 @@ class Package {
 				}
 			}
 			catch (Exception $e) {
-				error_log("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
+				Helper::sysLog("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
 			}
 		}
 
