@@ -43,6 +43,9 @@ else {
 # time settings
 date_default_timezone_set(TIMEZONE);
 
+# static helper class
+require_once '../lib/helper.class.php';
+
 # import start secret is needed
 $_check = '';
 $argOptions = getopt('s:');

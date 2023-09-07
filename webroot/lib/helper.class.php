@@ -317,7 +317,13 @@ class Helper {
 		return addcslashes($input, "\000..\037\177..\377\\");
 	}
 
+	/**
+	 * error_log with a dedicated destination
+	 * Uses LOGFILE const
+	 *
+	 * @param string $msg The string to be written to the log
+	 */
 	static function sysLog(string $msg): void {
-		error_log($msg."\n", 3, LOGFILE);
+		error_log(date("c")." ".$msg."\n", 3, LOGFILE);
 	}
 }
