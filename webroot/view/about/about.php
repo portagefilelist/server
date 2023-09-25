@@ -66,7 +66,6 @@
 <ul>
 	<li><a href="https://packages.gentoo.org/useflags/expand" target="_blank">USE Expand</a> useflags will be ignored.</li>
 	<li>Files with <i>/usr/src/linux</i>, <i>-gentoo-dist/</i>, <i>*__*</i> will be ignored. The package itself will still be added.</li>
-	<li>Paths which contain the package name will be ignored</li>
 	<li>Only files or symlinks are indexed.</li>
 </ul>
 
