@@ -18,13 +18,19 @@
  * under the License.
  */
 ?>
+<div class="container">
+    <div class="columns">
+        <div class="column col-lg-12 hide-sm">
 <p>
 	Portage File List collects which files are installed by which ebuild on users machines.<br />
 	It shares this data publicly for searching/browsing. It allows user to search for files that are not 
 	installed on their system and figure out which ebuild they need to install in order to obtain it.<br />
 	A more detailed description what this site is about, can be <a href="index.php?p=about">read here</a>.<br />
 </p>
-
+        
+        </div>
+        <div class="column col-lg-12 hide-sm">
+        
 <?php if(!empty($TemplateData['topSearch'])) { ?>
 <p>
 	Latest top searches:
@@ -34,6 +40,23 @@
 	?>
 </p>
 <?php } ?>
+
+<?php if(!empty($TemplateData['latestPackages'])) { ?>
+<p>
+	Latest packages:
+	<?php foreach($TemplateData['latestPackages'] as $key=>$entry) {
+		echo '<span class="chip"><a href="index.php?p=package&id='.$entry['hash'].'">'.$entry['name'].'</a></span>';
+	}
+	?>
+</p>
+<?php } ?>
+
+
+
+        </div>
+    </div>
+</div>
+
 
 <form method="get" action="">
 	<div class="form-group">

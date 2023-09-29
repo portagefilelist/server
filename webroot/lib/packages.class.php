@@ -209,29 +209,7 @@ class Packages {
 		);
 
 		// latest updated
-		$queryStr = "SELECT p.hash,
-						p.name,
-						p.lastmodified,
-						p.category_id AS category_id,
-						c.name AS categoryName
-					FROM `".DB_PREFIX."_package` AS p
-					LEFT JOIN `".DB_PREFIX."_category` AS c ON p.category_id = c.hash
-					ORDER BY p.lastmodified DESC
-					LIMIT 10";
-		if(QUERY_DEBUG) Helper::sysLog("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
-
-		try {
-			$query = $this->_DB->query($queryStr);
-
-			if($query !== false && $query->num_rows > 0) {
-				while(($result = $query->fetch_assoc()) != false) {
-					$ret['latest'][] = $result;
-				}
-			}
-		}
-		catch (Exception $e) {
-			Helper::sysLog("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
-		}
+		$ret['latest'] = $this->latestUpdated();
 
 		// Amount of packages
 		$queryStr = "SELECT COUNT(p.hash) AS amount
@@ -285,6 +263,42 @@ class Packages {
 			if($query !== false && $query->num_rows > 0) {
 				while(($result = $query->fetch_assoc()) != false) {
 					$ret['use'][] = $result;
+				}
+			}
+		}
+		catch (Exception $e) {
+			Helper::sysLog("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
+		}
+
+		return $ret;
+	}
+
+	/**
+	 * latest 10 updated or imported packages
+	 * 
+	 * @return array
+	 */
+	public function latestUpdated(): array {
+		$ret = array();
+
+		// latest updated
+		$queryStr = "SELECT p.hash,
+						p.name,
+						p.lastmodified,
+						p.category_id AS category_id,
+						c.name AS categoryName
+					FROM `".DB_PREFIX."_package` AS p
+					LEFT JOIN `".DB_PREFIX."_category` AS c ON p.category_id = c.hash
+					ORDER BY p.lastmodified DESC
+					LIMIT 10";
+		if(QUERY_DEBUG) Helper::sysLog("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
+
+		try {
+			$query = $this->_DB->query($queryStr);
+
+			if($query !== false && $query->num_rows > 0) {
+				while(($result = $query->fetch_assoc()) != false) {
+					$ret[] = $result;
 				}
 			}
 		}

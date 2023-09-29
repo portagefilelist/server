@@ -21,6 +21,9 @@
 require_once 'lib/files.class.php';
 $Files = new Files($DB);
 
+require_once 'lib/packages.class.php';
+$Packages = new Packages($DB);
+
 # pagination
 $TemplateData['pagination'] = array('pages' => 0, 'currentGetParameters' => array('p' => 'home'));
 
@@ -55,6 +58,7 @@ $TemplateData['searchresults'] = array();
 $TemplateData['searchInput'] = '';
 $TemplateData['searchUnique'] = '';
 $TemplateData['topSearch'] = $Files->topSearch();
+$TemplateData['latestPackages'] = $Packages->latestUpdated();
 
 $_uniquePackages = false;
 
