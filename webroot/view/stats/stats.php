@@ -67,7 +67,7 @@
 						foreach($TemplateData['p']['latest'] as $key=>$entry) {
 							?>
 							<tr>
-								<td><?php echo $entry['name']; ?></a></td>
+								<td><?php echo $entry['name']; ?></td>
 								<td><a href="index.php?p=package&id=<?php echo $entry['hash']; ?>"><?php echo $entry['categoryName']; ?>/<?php echo $entry['name']; ?></a></td>
 							</tr>
 							<?php
