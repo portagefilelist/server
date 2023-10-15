@@ -26,7 +26,6 @@ require_once 'config.php';
 
 ## set the error reporting
 ini_set('log_errors',true);
-ini_set('error_log',PATH_SYSTEMOUT.'/output.log');
 if(DEBUG === true) {
 	ini_set('display_errors',true);
 }
@@ -43,14 +42,14 @@ require_once 'lib/helper.class.php';
 # check inbox size
 # currently abort if dir is larger then 1Gb
 if(Helper::folderSize(PATH_INBOX) > 1000000000) {
-	error_log("[ERROR] Upload inbox full!");
+	Helper::sysLog("[ERROR] Upload inbox full!");
 	exit();
 }
 
 if(isset($_FILES['foo'])) {
 	$_uploadFile = $_FILES['foo'];
 
-	error_log("[INFO] Upload starting upload with FILES: ".Helper::cleanForLog($_FILES));
+	Helper::sysLog("[INFO] Upload starting upload with FILES: ".Helper::cleanForLog($_FILES));
 
 	if(isset($_uploadFile['name'])
 		&& isset($_uploadFile['type'])
@@ -62,20 +61,20 @@ if(isset($_FILES['foo'])) {
 		$mime = finfo_file($finfo, $_uploadFile['tmp_name']);
 		finfo_close($finfo);
 		if($mime != "application/x-bzip2") {
-			error_log("[ERROR] Upload invalid mime type: ".Helper::cleanForLog($mime));
+			Helper::sysLog("[ERROR] Upload invalid mime type: ".Helper::cleanForLog($mime));
 			exit();
 		}
 
 		$_uploadTarget = tempnam(PATH_INBOX.'/','pfl');
 		if(move_uploaded_file($_uploadFile['tmp_name'], $_uploadTarget)) {
-			error_log("[INFO] Upload success. Target : ".Helper::cleanForLog($_uploadTarget));
+			Helper::sysLog("[INFO] Upload success. Target : ".Helper::cleanForLog($_uploadTarget));
 		}
 		else {
-			error_log("[ERRoR] Upload error while upload move: ".Helper::cleanForLog($_FILES));
+			Helper::sysLog("[ERRoR] Upload error while upload move: ".Helper::cleanForLog($_FILES));
 			exit();
 		}
 
 	} else {
-		error_log("[ERROR] Upload incomplete FILES: ".Helper::cleanForLog($_FILES));
+		Helper::sysLog("[ERROR] Upload incomplete FILES: ".Helper::cleanForLog($_FILES));
 	}
 }
