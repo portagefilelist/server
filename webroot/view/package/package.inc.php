@@ -7,9 +7,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -59,13 +59,44 @@ if(isset($_GET['id']) && !empty($_GET['id'])) {
 $TemplateData['pageTitle'] = 'Package details';
 $TemplateData['package'] = array();
 $TemplateData['files'] = array();
+$TemplateData['searchInput'] = '';
 
 if(!empty($_id)) {
 	$Package->setQueryOptions($queryOptions);
 	$package = $Package->getPackage($_id);
 	if(!empty($package)) {
 		$TemplateData['package'] = $package;
-		$TemplateData['files'] = $Package->getPackageFiles($_id);
+
+        // difference between search and no search
+        // error messages and additional query params
+        if(isset($_GET['ps'])) {
+            $searchValue = trim($_GET['ps']);
+            $searchValue = strtolower($searchValue);
+            $searchValue = urldecode($searchValue);
+
+            if(Helper::validate($searchValue,'nospaceP')) {
+                if($Package->prepareSearchValue($searchValue)) {
+                    $Package->setQueryOptions($queryOptions);
+                    $TemplateData['files'] = $Package->getPackageFiles($_id);
+
+                    if(empty($TemplateData['files'])) {
+                        $messageData['status'] = "warning";
+                        $messageData['message'] = "Nothing found for this criteria term or the data is not known yet.";
+                    }
+
+                    $TemplateData['searchInput'] = htmlspecialchars($searchValue);
+                    $TemplateData['pagination']['currentGetParameters']['ps'] = urlencode($searchValue);
+                } else {
+                    $messageData['status'] = "error";
+                    $messageData['message'] = "Invalid search criteria. At least two (without wildcard) chars.";
+                }
+            } else {
+                $messageData['status'] = "error";
+                $messageData['message'] = "Invalid search criteria.";
+            }
+        } else {
+            $TemplateData['files'] = $Package->getPackageFiles($_id);
+        }
 
 		$TemplateData['pageTitle'] = $package['name'].'/'.$package['categoryName'].' '.$package['version'].' '.$package['arch'];
 		$TemplateData['pagination']['currentGetParameters']['id'] = $_id;

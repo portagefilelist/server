@@ -19,7 +19,7 @@
  */
 ?>
 <h1>Package: <?php echo $TemplateData['package']['categoryName'] ?? ''; ?>/<?php echo $TemplateData['package']['name'] ?? ''; ?></h1>
-<table class="table table-striped table-hover">
+<table class="table table-striped table-hover table-scroll">
 	<tr>
 		<td>Name</td>
 		<td><?php echo $TemplateData['package']['categoryName'] ?? ''; ?>/<?php echo $TemplateData['package']['name'] ?? ''; ?></td>
@@ -82,9 +82,28 @@
 <div class="divider"></div>
 <h2>Package files</h2>
 
+<form method="get">
+	<input type="hidden" name="p" value="package">
+	<input type="hidden" name="id" value="<?php echo $TemplateData['package']['hash']; ?>">
+	<input type="hidden" name="page" value="<?php echo $TemplateData['pagination']['currentGetParameters']['page'] ?? ''; ?>">
+	<input type="hidden" name="s" value="<?php echo $TemplateData['pagination']['currentGetParameters']['s'] ?? ''; ?>">
+	<input type="hidden" name="sd" value="<?php echo $TemplateData['pagination']['currentGetParameters']['sd'] ?? ''; ?>">
+	<div class="form-group">
+		<label class="form-label" for="filename">
+			Search for a file by a filename (<samp>slice.hpp</samp>) or path (<samp>/usr/include/exiv2/slice.hpp</samp>).
+			Using * as a wildcard (<samp>slice.*</samp>) (<samp>/usr/include/exiv2/*</samp>) will <i>slow</i> down the query!
+		</label>
+	</div>
+	<div class="input-group">
+		<a class="btn btn-primary input-group-btn" href="index.php?p=package&id=<?php echo $TemplateData['package']['hash']; ?>">Reset</a>
+		<input class="form-input" type="text" name="ps" id="filename" placeholder="Search within current package" value="<?php echo $TemplateData['searchInput'] ?? ''; ?>">
+		<button class="btn btn-primary input-group-btn">Search</button>
+	</div>
+</form>
+
 <?php include_once 'view/system/pagination_fe.inc.php'; ?>
 
-<table class="table">
+<table class="table table-scroll">
 	<thead>
 	<tr>
 		<th>Filename</th>

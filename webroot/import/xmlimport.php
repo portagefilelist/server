@@ -235,11 +235,9 @@ foreach ($inboxFiles as $fileToImport) {
 								# ignores
 								# kernel sources, dist kernel
 								# __ which are often __pycache and other testfiles
-								# also any paths which do have the package name in it.
 								if(strstr($path, '/usr/src/linux')
 									|| strstr($path, '-gentoo-dist/')
 									|| strstr($path, '__')
-									#|| (str_contains($path, '/'.$_packageName) && !str_ends_with($path, '/'.$_packageName)) 
 									) {
 									continue;
 								}

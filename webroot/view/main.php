@@ -52,7 +52,7 @@
 			<?php require_once $View; ?>
 		</section>
 	</main>
-
+	<div class="divider"></div>
 	<footer>
 		<div class="text-small">&copy; 2023 - <a href="index.php?p=imprint">Imprint</a></div>
 	</footer>

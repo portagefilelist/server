@@ -7,9 +7,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -23,14 +23,14 @@
         <div class="column col-lg-12 hide-sm">
 <p>
 	Portage File List collects which files are installed by which ebuild on users machines.<br />
-	It shares this data publicly for searching/browsing. It allows user to search for files that are not 
+	It shares this data publicly for searching/browsing. It allows user to search for files that are not
 	installed on their system and figure out which ebuild they need to install in order to obtain it.<br />
 	A more detailed description what this site is about, can be <a href="index.php?p=about">read here</a>.<br />
 </p>
-        
+
         </div>
         <div class="column col-lg-12 hide-sm">
-        
+
 <?php if(!empty($TemplateData['topSearch'])) { ?>
 <p>
 	Latest top searches:
@@ -50,8 +50,6 @@
 	?>
 </p>
 <?php } ?>
-
-
 
         </div>
     </div>
@@ -79,7 +77,7 @@
 
 <?php include_once 'view/system/pagination_fe.inc.php'; ?>
 
-<table class="table">
+<table class="table table-scroll">
 	<thead>
 		<tr>
 			<th>Filename</th>

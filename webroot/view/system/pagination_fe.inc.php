@@ -7,9 +7,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -19,9 +19,9 @@
  */
 
 if(!empty($TemplateData['pagination']) && $TemplateData['pagination']['pages'] > 1) {
-	echo '<ul class="pagination">';
+	echo '<ul class="pagination" id="pagination">';
 	if($TemplateData['pagination']['curPage'] > 1) {
-		echo '<li class="page-item"><a href="index.php?'.Helper::createFromParameterLinkQuery($TemplateData['pagination']['currentGetParameters'],array('page'=>($TemplateData['pagination']['curPage']-1))).'">&lt;</a></li>';
+		echo '<li class="page-item"><a href="index.php?'.Helper::createFromParameterLinkQuery($TemplateData['pagination']['currentGetParameters'],array('page'=>($TemplateData['pagination']['curPage']-1))).'#pagination">&lt;</a></li>';
 	} else {
 		echo '<li class="page-item disabled"><a href="">&lt;</a></li>';
 	}
@@ -32,7 +32,7 @@ if(!empty($TemplateData['pagination']) && $TemplateData['pagination']['pages'] >
 		if($i == $TemplateData['pagination']['curPage']) $active = 'active';
 
 		if(in_array($i,$TemplateData['pagination']['visibleRange'])) {
-			echo '<li class="page-item '.$active.'"><a href="index.php?'.Helper::createFromParameterLinkQuery($TemplateData['pagination']['currentGetParameters'],array('page'=>$i)).'"title="Goto page '.$i.'">'.$i.'</a></li>';
+			echo '<li class="page-item '.$active.'"><a href="index.php?'.Helper::createFromParameterLinkQuery($TemplateData['pagination']['currentGetParameters'],array('page'=>$i)).'#pagination" title="Goto page '.$i.'">'.$i.'</a></li>';
 		}
 		else {
 			if($i < $TemplateData['pagination']['currentRangeStart'] && $ellipsisShown == 0) {
@@ -47,7 +47,7 @@ if(!empty($TemplateData['pagination']) && $TemplateData['pagination']['pages'] >
 	}
 
 	if($TemplateData['pagination']['curPage'] < $TemplateData['pagination']['pages']) {
-		echo '<li class="page-item"><a href="index.php?'.Helper::createFromParameterLinkQuery($TemplateData['pagination']['currentGetParameters'],array('page'=>($TemplateData['pagination']['curPage']+1))).'">&gt;</a></li>';
+		echo '<li class="page-item"><a href="index.php?'.Helper::createFromParameterLinkQuery($TemplateData['pagination']['currentGetParameters'],array('page'=>($TemplateData['pagination']['curPage']+1))).'#pagination">&gt;</a></li>';
 	} else {
 		echo '<li class="page-item disabled"><a href="">&gt;</a></li>';
 	}
