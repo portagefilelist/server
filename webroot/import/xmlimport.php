@@ -123,7 +123,7 @@ foreach ($inboxFiles as $fileToImport) {
     }
 
     // delete compressed file
-    //unlink($fileToImport);
+    unlink($fileToImport);
 
     # validation does not work on the complete document
     # if the document is read in chunks
