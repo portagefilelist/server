@@ -40,7 +40,12 @@ date_default_timezone_set(TIMEZONE);
 require_once 'lib/helper.class.php';
 
 # simple cache based on get
-$_cachekey = md5(var_export($_GET,true));
+$_cid = '';
+if(isset($_GET['id']) && !empty($_GET['id'])) {
+    $_cid = trim($_GET['id']);
+    $_cid = Helper::validate($_cid,'nospace') ? $_cid : '';
+}
+$_cachekey = $_cid.'_'.md5(var_export($_GET,true));
 $cacheFile = PATH_CACHE.'/'.$_cachekey;
 if(file_exists($cacheFile) && !DEBUG) {
 	header("Pragma: public");

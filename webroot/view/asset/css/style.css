@@ -14,3 +14,11 @@ main {
 .col-bottom-gap .column {
 	padding-bottom: 0.4rem;
 }
+
+.useLink {
+	margin-right: .1rem;
+}
+
+.table.table-scroll.table-modified-scroll {
+	white-space: normal;
+}

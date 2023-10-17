@@ -34,7 +34,7 @@
 
 <?php include_once 'view/system/pagination_fe.inc.php'; ?>
 
-<table class="table table-scroll">
+<table class="table table-scroll table-modified-scroll">
 	<thead>
 	<tr>
 		<th>Name</th>

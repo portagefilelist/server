@@ -19,7 +19,7 @@
  */
 ?>
 <h1>Package: <?php echo $TemplateData['package']['categoryName'] ?? ''; ?>/<?php echo $TemplateData['package']['name'] ?? ''; ?></h1>
-<table class="table table-striped table-hover table-scroll">
+<table class="table table-striped table-hover table-scroll table-modified-scroll">
 	<tr>
 		<td>Name</td>
 		<td><?php echo $TemplateData['package']['categoryName'] ?? ''; ?>/<?php echo $TemplateData['package']['name'] ?? ''; ?></td>
@@ -43,7 +43,7 @@
 			if(!empty($TemplateData['package']['usewords'])) {
 				foreach($TemplateData['package']['usewords'] as $key=>$entry) {
 			?>
-				<a target="_blank" href="https://packages.gentoo.org/useflags/<?php echo urlencode($entry); ?>"><?php echo $entry; ?> <i class="icon icon-link"></i></a>&nbsp;
+				<a target="_blank" href="https://packages.gentoo.org/useflags/<?php echo urlencode($entry); ?>" class="useLink"><?php echo $entry; ?> <i class="icon icon-link"></i></a>
 			<?php
 				}
 			 }

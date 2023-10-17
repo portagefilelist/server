@@ -154,7 +154,6 @@ class Helper {
 			while (false !== ($item = readdir($handle))) {
 				// if the filepointer is not the current directory
 				// or the parent directory
-				//if($item != '.' && $item != '..' && $item != '.svn') {
 				if($item[0] != '.') {
 					// we build the new path to delete
 					$path = $directory.'/'.$item;
@@ -163,7 +162,6 @@ class Helper {
 					if(is_dir($path)) {
 					   // we call this function with the new path
 						self::recursive_remove_directory($path);
-
 					// if the new path is a file
 					}
 					else {

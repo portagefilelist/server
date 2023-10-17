@@ -148,7 +148,7 @@ class Package {
 			$queryOrder .= ' '.$this->_queryOptions['sort'].' ';
 		}
 		else {
-			$queryOrder .= " name";
+			$queryOrder .= " f.name";
 		}
 
 		if (!empty($this->_queryOptions['sortDirection'])) {
@@ -178,7 +178,7 @@ class Package {
 					$ret['results'][$result['hash']] = $result;
 				}
 
-				$queryStrCount = "SELECT COUNT(f.hash) AS amount ".$queryFrom.$queryWhere.$queryOrder;
+				$queryStrCount = "SELECT COUNT(f.hash) AS amount ".$queryFrom.$queryWhere;
 				if(QUERY_DEBUG) Helper::sysLog("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStrCount));
 
 				$query = $this->_DB->query($queryStrCount);
