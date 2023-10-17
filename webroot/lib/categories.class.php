@@ -166,7 +166,7 @@ class Categories {
 					$ret['results'][$result['hash']] = $result;
 				}
 
-				$queryStrCount = "SELECT COUNT(c.hash) AS amount ".$queryFrom.$queryWhere.$queryOrder;
+				$queryStrCount = "SELECT COUNT(c.hash) AS amount ".$queryFrom.$queryWhere;
 
 				if(QUERY_DEBUG) Helper::sysLog("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStrCount));
 				$query = $this->_DB->query($queryStrCount);

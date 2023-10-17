@@ -37,6 +37,16 @@ class Package {
 	 */
 	private array $_queryOptions;
 
+    /**
+     * @var string $_searchValue
+     */
+    private string $_searchValue;
+
+    /**
+     * @var bool $_wildcardsearch
+     */
+    private bool $_wildcardsearch = false;
+
 	/**
 	 * Files constructor.
 	 *
@@ -119,12 +129,26 @@ class Package {
 
 		$queryWhere = " WHERE f.package_id = '".$this->_DB->real_escape_string($hash)."'";
 
+        if(!empty($this->_searchValue)) {
+            if(str_contains($this->_searchValue, '/')) {
+                $queryWhere .= " AND f.path";
+            } else {
+                $queryWhere .= " AND f.name";
+            }
+
+            if($this->_wildcardsearch) {
+                $queryWhere .= " LIKE '".$this->_DB->real_escape_string($this->_searchValue)."'";
+            } else {
+                $queryWhere .= " = '".$this->_DB->real_escape_string($this->_searchValue)."'";
+            }
+        }
+
 		$queryOrder = " ORDER BY";
 		if (!empty($this->_queryOptions['sort'])) {
 			$queryOrder .= ' '.$this->_queryOptions['sort'].' ';
 		}
 		else {
-			$queryOrder .= " name";
+			$queryOrder .= " f.name";
 		}
 
 		if (!empty($this->_queryOptions['sortDirection'])) {
@@ -154,7 +178,7 @@ class Package {
 					$ret['results'][$result['hash']] = $result;
 				}
 
-				$queryStrCount = "SELECT COUNT(f.hash) AS amount ".$queryFrom.$queryWhere.$queryOrder;
+				$queryStrCount = "SELECT COUNT(f.hash) AS amount ".$queryFrom.$queryWhere;
 				if(QUERY_DEBUG) Helper::sysLog("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStrCount));
 
 				$query = $this->_DB->query($queryStrCount);
@@ -168,6 +192,38 @@ class Package {
 
 		return $ret;
 	}
+
+    /**
+     * Prepare and set the searchvalue.
+     * Check for wildcardsearch and make it safe
+     *
+     * @param string $searchValue
+     * @return bool
+     */
+    public function prepareSearchValue(string $searchValue): bool {
+        Helper::sysLog("[INFO] ".__METHOD__." wanted searchvalue: ".Helper::cleanForLog($searchValue));
+
+        if(str_contains($searchValue,'*')) {
+            $this->_wildcardsearch = true;
+            $searchValue = preg_replace('/\*{1,}/', '%', $searchValue);
+
+            if(strlen($searchValue) < 3) {
+                return false;
+            }
+
+            if(strlen($searchValue) === 3) {
+                if(substr_count($searchValue, '%') > 1) return false;
+            }
+        }
+
+        if(strlen($searchValue) < 2) {
+            return false;
+        }
+
+        $this->_searchValue = $searchValue;
+
+        return true;
+    }
 
 	/**
 	 * Get the usewords for given package hash
