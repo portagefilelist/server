@@ -21,7 +21,7 @@
 <p>
 	Use only the <mark>package</mark> name and NOT the combination of <em>category</em>/<mark>package</mark>
 </p>
-<form method="get" action="">
+<form method="get" action="#panchor" id="panchor">
 	<input type="hidden" name="p" value="packages" />
 	<div class="form-group">
 		<label class="form-label" for="package">
@@ -37,7 +37,7 @@
 
 <?php include_once 'view/system/pagination_fe.inc.php'; ?>
 
-<table class="table table-scroll table-modified-scroll">
+<table class="table">
 	<thead>
 	<tr>
 		<th>Category</th>

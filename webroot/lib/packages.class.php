@@ -47,8 +47,21 @@ class Packages {
 	 */
 	private bool $_wildcardsearch = false;
 
+    /**
+     * The available sort columns.
+     * Used in query and sort options in FE
+     *
+     * @var array|array[]
+     */
+    private array $_sortOptions = array(
+        'default' => array('col' => 'p.name', 'displayText' => 'Name (default)'),
+        'arch' => array('col' => 'p.arch', 'displayText' => 'Arch'),
+        'category' => array('col' => 'c.name', 'displayText' => 'Category'),
+        'version' => array('col' => 'p.version', 'displayText' => 'Version')
+    );
+
 	/**
-	 * Files constructor.
+	 * Packages constructor.
 	 *
 	 * @param mysqli $databaseConnectionObject
 	 */
@@ -72,12 +85,33 @@ class Packages {
 
 		if(!isset($options['limit'])) $options['limit'] = 20;
 		if(!isset($options['offset'])) $options['offset'] = false;
-		if(!isset($options['sort'])) $options['sort'] = false;
-		if(!isset($options['sortDirection'])) $options['sortDirection'] = false;
-		if(!isset($options['groupby'])) $options['groupby'] = '';
+
+        if(isset($options['sort']) && isset($this->_sortOptions[$options['sort']])) {
+            $options['sort'] = $this->_sortOptions[$options['sort']]['col'];
+        } else {
+            $options['sort'] = '';
+        }
+
+        if(isset($options['sortDirection'])) {
+            $options['sortDirection'] = match ($options['sortDirection']) {
+                'desc' => "DESC",
+                default => "ASC",
+            };
+        } else {
+            $options['sortDirection'] = '';
+        }
 
 		$this->_queryOptions = $options;
 	}
+
+    /**
+     * Return the available sort options and the active used one
+     *
+     * @return array|array[]
+     */
+    public function getSortOptions(): array {
+        return $this->_sortOptions;
+    }
 
 	/**
 	 * Prepare and set the searchvalue.
@@ -144,7 +178,7 @@ class Packages {
 			$queryOrder .= ' '.$this->_queryOptions['sort'].'';
 		}
 		else {
-			$queryOrder .= " name";
+			$queryOrder .= " ".$this->_sortOptions['default']['col'];
 		}
 
 		if (!empty($this->_queryOptions['sortDirection'])) {
@@ -275,7 +309,7 @@ class Packages {
 
 	/**
 	 * latest 10 updated or imported packages
-	 * 
+	 *
 	 * @return array
 	 */
 	public function latestUpdated(): array {
@@ -318,8 +352,8 @@ class Packages {
 		// default query options
 		$options['limit'] = 50;
 		$options['offset'] = false;
-		$options['sort'] = false;
-		$options['sortDirection'] = false;
+		$options['sort'] = 'default';
+		$options['sortDirection'] = '';
 		$this->setQueryOptions($options);
 	}
 }

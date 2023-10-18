@@ -19,7 +19,7 @@
  */
 ?>
 <h1>Category details</h1>
-<table class="table table-striped table-hover table-scroll">
+<table class="table table-striped table-hover">
 	<tr>
 		<td>Name:</td>
 		<td><?php echo $TemplateData['category']['name'] ?? ''; ?></td>
@@ -30,11 +30,12 @@
 </table>
 
 <div class="divider"></div>
-<h2>Category packages</h2>
+
+<h2 id="panchor">Category packages</h2>
 
 <?php include_once 'view/system/pagination_fe.inc.php'; ?>
 
-<table class="table table-scroll table-modified-scroll">
+<table class="table">
 	<thead>
 	<tr>
 		<th>Name</th>

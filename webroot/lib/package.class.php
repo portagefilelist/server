@@ -24,7 +24,7 @@ class Package {
 	 *
 	 * @var mysqli
 	 */
-	private $_DB;
+	private mysqli $_DB;
 
 	/**
 	 * Options for db queries
@@ -47,8 +47,19 @@ class Package {
      */
     private bool $_wildcardsearch = false;
 
+    /**
+     * The available sort columns.
+     * Used in query and sort options in FE
+     *
+     * @var array|array[]
+     */
+    private array $_sortOptions = array(
+        'default' => array('col' => 'f.name', 'displayText' => 'Name (default)'),
+        'path' => array('col' => 'f.path', 'displayText' => 'Path')
+    );
+
 	/**
-	 * Files constructor.
+	 * Package constructor.
 	 *
 	 * @param mysqli $databaseConnectionObject
 	 */
@@ -71,13 +82,33 @@ class Package {
 	public function setQueryOptions(array $options): void {
 		if(!isset($options['limit'])) $options['limit'] = 20;
 		if(!isset($options['offset'])) $options['offset'] = false;
-		if(!isset($options['sort'])) $options['sort'] = false;
-		if(!isset($options['sortDirection'])) $options['sortDirection'] = false;
-		if(!isset($options['groupby'])) $options['groupby'] = '';
+
+        if(isset($options['sort']) && isset($this->_sortOptions[$options['sort']])) {
+            $options['sort'] = $this->_sortOptions[$options['sort']]['col'];
+        } else {
+            $options['sort'] = '';
+        }
+
+		if(isset($options['sortDirection'])) {
+            $options['sortDirection'] = match ($options['sortDirection']) {
+                'desc' => "DESC",
+                default => "ASC",
+            };
+		} else {
+		    $options['sortDirection'] = '';
+        }
 
 		$this->_queryOptions = $options;
 	}
 
+    /**
+     * Return the available sort options and the active used one
+     *
+     * @return array|array[]
+     */
+    public function getSortOptions(): array {
+        return $this->_sortOptions;
+    }
 
 	/**
 	 * Load a package by given hash
@@ -148,7 +179,7 @@ class Package {
 			$queryOrder .= ' '.$this->_queryOptions['sort'].' ';
 		}
 		else {
-			$queryOrder .= " f.name";
+			$queryOrder .= " ".$this->_sortOptions['default']['col'];
 		}
 
 		if (!empty($this->_queryOptions['sortDirection'])) {
@@ -302,8 +333,8 @@ class Package {
 		// default query options
 		$options['limit'] = 50;
 		$options['offset'] = false;
-		$options['sort'] = false;
-		$options['sortDirection'] = false;
+		$options['sort'] = 'default';
+		$options['sortDirection'] = '';
 		$this->setQueryOptions($options);
 	}
 }
