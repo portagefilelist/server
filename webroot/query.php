@@ -94,7 +94,7 @@ if(!$Files->prepareSearchValue($_search)) {
 	echo json_encode($returnData);
 	exit();
 }
-$result = $Files->getFiles(false);
+$result = $Files->getFiles();
 
 // search had an error
 if(empty($result)) {

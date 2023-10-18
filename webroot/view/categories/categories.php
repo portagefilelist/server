@@ -19,7 +19,7 @@
  */
 ?>
 
-<form method="get" action="">
+<form method="get" action="#panchor" id="panchor">
 	<input type="hidden" name="p" value="categories" />
 	<div class="form-group">
 		<label class="form-label" for="category">
@@ -35,7 +35,7 @@
 
 <?php include_once 'view/system/pagination_fe.inc.php'; ?>
 
-<table class="table table-scroll table-modified-scroll">
+<table class="table">
 	<thead>
 	<tr>
 		<th>Name</th>

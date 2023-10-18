@@ -30,10 +30,10 @@ if(isset($_GET['page']) && !empty($_GET['page'])) {
 	$_curPage = Helper::validate($_curPage,'digit') ? $_curPage : 1;
 }
 
-$_sort = '';
+$_sort = 'default';
 if(isset($_GET['s']) && !empty($_GET['s'])) {
 	$_sort = trim($_GET['s']);
-	$_sort = Helper::validate($_sort,'nospace') ? $_sort : '';
+	$_sort = Helper::validate($_sort,'nospace') ? $_sort : 'default';
 }
 
 $_sortDirection = '';
@@ -42,9 +42,15 @@ if(isset($_GET['sd']) && !empty($_GET['sd'])) {
 	$_sortDirection = Helper::validate($_sortDirection,'nospace') ? $_sortDirection : '';
 }
 
+$_rpp = RESULTS_PER_PAGE;
+if(isset($_GET['rpp']) && !empty($_GET['rpp'])) {
+    $_rpp = trim($_GET['rpp']);
+    $_rpp = Helper::validate($_rpp,'digit') ? $_rpp : RESULTS_PER_PAGE;
+}
+
 $queryOptions = array(
-	'limit' => RESULTS_PER_PAGE,
-	'offset' => (RESULTS_PER_PAGE * ($_curPage-1)),
+	'limit' => $_rpp,
+	'offset' => ($_rpp * ($_curPage-1)),
 	'sort' => $_sort,
 	'sortDirection' => $_sortDirection
 );
@@ -69,14 +75,16 @@ if(!empty($_id)) {
 
         // difference between search and no search
         // error messages and additional query params
+        $searchValue = '';
         if(isset($_GET['ps'])) {
             $searchValue = trim($_GET['ps']);
             $searchValue = strtolower($searchValue);
             $searchValue = urldecode($searchValue);
+        }
 
+        if(!empty($searchValue)) {
             if(Helper::validate($searchValue,'nospaceP')) {
                 if($Package->prepareSearchValue($searchValue)) {
-                    $Package->setQueryOptions($queryOptions);
                     $TemplateData['files'] = $Package->getPackageFiles($_id);
 
                     if(empty($TemplateData['files'])) {
@@ -108,12 +116,14 @@ if(!empty($_id)) {
 
 ## pagination
 if(!empty($TemplateData['files']['amount'])) {
-	$TemplateData['pagination']['pages'] = (int)ceil($TemplateData['files']['amount'] / RESULTS_PER_PAGE);
+	$TemplateData['pagination']['pages'] = (int)ceil($TemplateData['files']['amount'] / $_rpp);
 	$TemplateData['pagination']['curPage'] = $_curPage;
 
 	$TemplateData['pagination']['currentGetParameters']['page'] = $_curPage;
-	$TemplateData['pagination']['currentGetParameters']['s'] = $_sort;
+	$TemplateData['pagination']['currentGetParameters']['s'] =  $_sort;
 	$TemplateData['pagination']['currentGetParameters']['sd'] = $_sortDirection;
+    $TemplateData['pagination']['currentGetParameters']['rpp'] = $_rpp;
+    $TemplateData['pagination']['sortOptions'] = $Package->getSortOptions();
 }
 
 if($TemplateData['pagination']['pages'] > 11) {

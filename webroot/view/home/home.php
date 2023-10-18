@@ -21,13 +21,12 @@
 <div class="container">
     <div class="columns">
         <div class="column col-lg-12 hide-sm">
-<p>
-	Portage File List collects which files are installed by which ebuild on users machines.<br />
-	It shares this data publicly for searching/browsing. It allows user to search for files that are not
-	installed on their system and figure out which ebuild they need to install in order to obtain it.<br />
-	A more detailed description what this site is about, can be <a href="index.php?p=about">read here</a>.<br />
-</p>
-
+			<p>
+				Portage File List collects which files are installed by which ebuild on users machines.<br />
+				It shares this data publicly for searching/browsing. It allows user to search for files that are not
+				installed on their system and figure out which ebuild they need to install in order to obtain it.<br />
+				A more detailed description what this site is about, can be <a href="index.php?p=about">read here</a>.<br />
+			</p>
         </div>
         <div class="column col-lg-12 hide-sm">
 
@@ -35,7 +34,7 @@
 <p>
 	Latest top searches:
 	<?php foreach($TemplateData['topSearch'] as $amount=>$value) {
-		echo '<span class="chip"><a href="index.php?fs='.$value.'&unique=1">'.$value.'</a></span>';
+		echo '<span class="chip"><a href="index.php?fs='.$value.'">'.$value.'</a></span>';
 	}
 	?>
 </p>
@@ -55,8 +54,7 @@
     </div>
 </div>
 
-
-<form method="get" action="">
+<form method="get" action="#panchor" id="panchor">
 	<div class="form-group">
 		<label class="form-label" for="filename">
 			Search for a package by a filename (<samp>slice.hpp</samp>) or path (<samp>/usr/include/exiv2/slice.hpp</samp>).<br />
@@ -77,7 +75,7 @@
 
 <?php include_once 'view/system/pagination_fe.inc.php'; ?>
 
-<table class="table table-scroll">
+<table class="table">
 	<thead>
 		<tr>
 			<th>Filename</th>

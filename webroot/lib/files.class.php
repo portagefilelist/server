@@ -47,6 +47,42 @@ class Files {
 	 */
 	private bool $_wildcardsearch = false;
 
+    /**
+     * The available sort columns.
+     * Used in query and sort options in FE
+     *
+     * @var array|array[]
+     */
+	private array $_sortOptions = array(
+        'default' => array('col' => 'p.name', 'displayText' => 'Package (default)'),
+        'arch' => array('col' => 'p.arch', 'displayText' => 'Arch'),
+        'category' => array('col' => 'c.name', 'displayText' => 'Category'),
+        'name' => array('col' => 'f.name', 'displayText' => 'Name'),
+        'path' => array('col' => 'f.path', 'displayText' => 'Path'),
+        'packageVersion' => array('col' => 'p.version', 'displayText' => 'Version')
+	);
+
+    /**
+     * The available sort unique columns.
+     * Used in query and sort options in FE
+     *
+     * @var array|array[]
+     */
+    private array $_sortOptionsUnique = array(
+        'default' => array('col' => 'p.name', 'displayText' => 'Package (default)'),
+        'arch' => array('col' => 'p.arch', 'displayText' => 'Arch'),
+        'category' => array('col' => 'c.name', 'displayText' => 'Category'),
+        'packageVersion' => array('col' => 'p.version', 'displayText' => 'Version')
+    );
+
+    /**
+     * The used sortOptions since the unique option does use
+     * different columns in the query
+     *
+     * @var array
+     */
+    private array $_so2use = array();
+
 	/**
 	 * Files constructor.
 	 *
@@ -63,7 +99,8 @@ class Files {
 	 *  'limit' => RESULTS_PER_PAGE,
 	 *  'offset' => (RESULTS_PER_PAGE * ($_curPage-1)),
 	 *  'orderby' => $_sort,
-	 *  'sortDirection' => $_sortDirection
+	 *  'sortDirection' => $_sortDirection,
+     *  'unique' => true|false
 	 * );
 	 *
 	 * @param array $options
@@ -72,10 +109,36 @@ class Files {
 
 		if(!isset($options['limit'])) $options['limit'] = 20;
 		if(!isset($options['offset'])) $options['offset'] = false;
-		if(!isset($options['sort'])) $options['sort'] = false;
-		if(!isset($options['sortDirection'])) $options['sortDirection'] = false;
+
+        $this->_so2use = $this->_sortOptions;
+        if(isset($options['unique']) && $options['unique'] === true) {
+            $this->_so2use = $this->_sortOptionsUnique;
+        }
+        if(isset($options['sort']) && isset($this->_so2use[$options['sort']])) {
+            $options['sort'] = $this->_so2use[$options['sort']]['col'];
+        } else {
+            $options['sort'] = '';
+        }
+
+        if(isset($options['sortDirection'])) {
+            $options['sortDirection'] = match ($options['sortDirection']) {
+                'desc' => "DESC",
+                default => "ASC",
+            };
+        } else {
+            $options['sortDirection'] = '';
+        }
 
 		$this->_queryOptions = $options;
+	}
+
+    /**
+     * Return the available sort options and the active used one
+     *
+     * @return array|array[]
+     */
+	public function getSortOptions(): array {
+	    return $this->_so2use;
 	}
 
 	/**
@@ -112,12 +175,11 @@ class Files {
 
 	/**
 	 * search within files from prepareSearchValue()
-	 * Make the result DISTINCT by packageName with $_uniquePackages
+	 * Make the result DISTINCT by packageName with unique in queryOptions
 	 *
-	 * @param bool $_uniquePackages
 	 * @return array
 	 */
-	public function getFiles(bool $_uniquePackages) : array {
+	public function getFiles() : array {
 		$ret = array();
 
 		// split since part of it is used later
@@ -130,7 +192,7 @@ class Files {
 						p.arch AS packageArch,
 						p.version AS packageVersion,
 						p.category_id AS category_id";
-		if ($_uniquePackages) {
+		if ($this->_queryOptions['unique']) {
 			$querySelect = "DISTINCT p.name AS packageName,
 							f.package_id AS package_id,
 							p.hash,
@@ -162,7 +224,7 @@ class Files {
 			$queryOrder .= ' '.$this->_queryOptions['sort'];
 		}
 		else {
-			$queryOrder .= " p.name";
+			$queryOrder .= " ".$this->_so2use['default']['col'];
 		}
 
 		if (!empty($this->_queryOptions['sortDirection'])) {
@@ -193,7 +255,7 @@ class Files {
 				}
 
 				$queryStrCount = "SELECT COUNT(*) AS amount ".$queryFrom.$queryJoin.$queryWhere;
-				if ($_uniquePackages) {
+				if ($this->_queryOptions['unique']) {
 					$queryStrCount = "SELECT COUNT(DISTINCT p.name) AS amount ".$queryFrom.$queryJoin.$queryWhere;
 				}
 
@@ -321,8 +383,8 @@ class Files {
 		// default query options
 		$options['limit'] = 50;
 		$options['offset'] = false;
-		$options['sort'] = false;
-		$options['sortDirection'] = false;
+		$options['sort'] = 'default';
+		$options['sortDirection'] = '';
 		$this->setQueryOptions($options);
 	}
 }

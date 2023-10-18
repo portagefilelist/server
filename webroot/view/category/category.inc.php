@@ -7,9 +7,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -30,10 +30,10 @@ if(isset($_GET['page']) && !empty($_GET['page'])) {
 	$_curPage = Helper::validate($_curPage,'digit') ? $_curPage : 1;
 }
 
-$_sort = '';
+$_sort = 'default';
 if(isset($_GET['s']) && !empty($_GET['s'])) {
 	$_sort = trim($_GET['s']);
-	$_sort = Helper::validate($_sort,'nospace') ? $_sort : '';
+	$_sort = Helper::validate($_sort,'nospace') ? $_sort : 'default';
 }
 
 $_sortDirection = '';
@@ -42,9 +42,15 @@ if(isset($_GET['sd']) && !empty($_GET['sd'])) {
 	$_sortDirection = Helper::validate($_sortDirection,'nospace') ? $_sortDirection : '';
 }
 
+$_rpp = RESULTS_PER_PAGE;
+if(isset($_GET['rpp']) && !empty($_GET['rpp'])) {
+    $_rpp = trim($_GET['rpp']);
+    $_rpp = Helper::validate($_rpp,'digit') ? $_rpp : RESULTS_PER_PAGE;
+}
+
 $queryOptions = array(
-	'limit' => RESULTS_PER_PAGE,
-	'offset' => (RESULTS_PER_PAGE * ($_curPage-1)),
+	'limit' => $_rpp,
+	'offset' => ($_rpp * ($_curPage-1)),
 	'sort' => $_sort,
 	'sortDirection' => $_sortDirection
 );
@@ -77,12 +83,14 @@ if(!empty($_id)) {
 
 ## pagination
 if(!empty($TemplateData['packages']['amount'])) {
-	$TemplateData['pagination']['pages'] = (int)ceil($TemplateData['packages']['amount'] / RESULTS_PER_PAGE);
+	$TemplateData['pagination']['pages'] = (int)ceil($TemplateData['packages']['amount'] / $_rpp);
 	$TemplateData['pagination']['curPage'] = $_curPage;
 
 	$TemplateData['pagination']['currentGetParameters']['page'] = $_curPage;
 	$TemplateData['pagination']['currentGetParameters']['s'] = $_sort;
 	$TemplateData['pagination']['currentGetParameters']['sd'] = $_sortDirection;
+    $TemplateData['pagination']['currentGetParameters']['rpp'] = $_rpp;
+    $TemplateData['pagination']['sortOptions'] = $Category->getSortOptions();
 }
 
 if($TemplateData['pagination']['pages'] > 11) {
