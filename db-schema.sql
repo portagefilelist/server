@@ -102,6 +102,8 @@ ALTER TABLE `pfl_file`
   ADD KEY `name` (`name`),
   ADD KEY `lastmodified` (`lastmodified`),
   ADD KEY `package_id` (`package_id`),
+  ADD KEY `packageandname` (`package_id`, `name`),
+  ADD KEY `packageandpath` (`package_id`, `path`),
   ADD KEY `path` (`path`);
 
 --
@@ -123,7 +125,7 @@ ALTER TABLE `pfl_package_use`
 -- Indexes for table `pfl_statslog`
 --
 ALTER TABLE `pfl_statslog`
-  ADD KEY `type` (`type`);
+  ADD KEY `type` (`type`, `value`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -94,10 +94,10 @@
 			<td><?php echo $entry['name'] ?? ''; ?></td>
 			<td><?php echo $entry['path'] ?? ''; ?></td>
 			<td>
-				<a href="index.php?p=category&id=<?php echo $entry['category_id'] ?? ''; ?>"><?php echo $entry['categoryName']; ?></a>
+				<a href="index.php?p=category&id=<?php echo $entry['categoryId'] ?? ''; ?>"><?php echo $entry['categoryName']; ?></a>
 			</td>
 			<td>
-				<a href="index.php?p=package&id=<?php echo $entry['package_id']; ?>"><?php echo $entry['categoryName']; ?>/<?php echo $entry['packageName']; ?></a>
+				<a href="index.php?p=package&id=<?php echo $entry['packageId']; ?>"><?php echo $entry['categoryName']; ?>/<?php echo $entry['packageName']; ?></a>
 			</td>
 			<td><?php echo $entry['packageVersion'] ?? ''; ?></td>
 			<td><?php echo $entry['packageArch'] ?? ''; ?></td>

@@ -173,6 +173,7 @@ class Package {
             }
         }
 
+
 		$queryOrder = " ORDER BY";
 		if (!empty($this->_queryOptions['sort'])) {
 			$queryOrder .= ' '.$this->_queryOptions['sort'].' ';
@@ -187,6 +188,7 @@ class Package {
 		else {
 			$queryOrder .= " ASC";
 		}
+
 
 		$queryLimit = '';
 		if(!empty($this->_queryOptions['limit'])) {
@@ -299,7 +301,7 @@ class Package {
 		$ret = array();
 
 		if(!empty($name) && !empty($hash) && !empty($catId)) {
-			$queryStr = "SELECT p.hash, p.name, p.version, p.arch, p.category_id,
+			$queryStr = "SELECT p.hash, p.name, p.version, p.arch,
 								c.name AS categoryName
 							FROM `".DB_PREFIX."_package` AS p
 							LEFT JOIN `".DB_PREFIX."_category` AS c ON p.category_id = c.hash

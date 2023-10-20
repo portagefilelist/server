@@ -157,7 +157,6 @@ class Packages {
 						p.name,
 						p.version,
 						p.arch,
-						p.category_id AS category_id,
 						c.name AS categoryName";
 
 		$queryFrom = " FROM `".DB_PREFIX."_package` AS p";
@@ -318,7 +317,6 @@ class Packages {
 		$queryStr = "SELECT p.hash,
 						p.name,
 						p.lastmodified,
-						p.category_id AS category_id,
 						c.name AS categoryName
 					FROM `".DB_PREFIX."_package` AS p
 					LEFT JOIN `".DB_PREFIX."_category` AS c ON p.category_id = c.hash
