@@ -185,19 +185,19 @@ class Files {
 		$querySelect = "f.hash AS hash,
 						f.name AS name,
 						f.path AS path,
-						f.package_id AS package_id,
+						f.package_id AS packageId,
 						c.name AS categoryName,
 						p.name AS packageName,
 						p.arch AS packageArch,
 						p.version AS packageVersion,
-						p.category_id AS category_id";
+						p.category_id AS categoryId";
 		if ($this->_queryOptions['unique']) {
 			$querySelect = "DISTINCT p.name AS packageName,
-							f.package_id AS package_id,
+							f.package_id AS packageId,
 							p.hash,
 							p.arch AS packageArch,
 							p.version AS packageVersion,
-							c.hash AS category_id,
+							c.hash AS categoryId,
 							c.name AS categoryName";
 		}
 
@@ -290,10 +290,8 @@ class Files {
 
 		// latest updated
 		$queryStr = "SELECT f.name,
-							f.package_id AS package_id,
 							p.name AS packageName,
 							p.hash,
-							c.hash AS category_id,
 							c.name AS categoryName
 					FROM `".DB_PREFIX."_file` AS f
 					LEFT JOIN `".DB_PREFIX."_package` AS p ON f.package_id = p.hash
