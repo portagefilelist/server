@@ -13,6 +13,6 @@ https://picturepan2.github.io/spectre/
 
 # Requirements
 
-PHP >= 8.1
-Apache (or similar with PHP)
-MySQL >= 8
+* PHP >= 8.1
+* Apache (or similar with PHP)
+* MySQL >= 8
