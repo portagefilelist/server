@@ -308,11 +308,30 @@ foreach ($inboxFiles as $fileToImport) {
     unlink($fileToWorkWith);
 }
 
+$_controlFile = PATH_CACHE.'/purgecontrol';
+$_purge = false;
+if(file_exists($_controlFile)) {
+    $_controlContent = file_get_contents($_controlFile);
+    $_controlContent = trim($_controlContent);
+    $_controlCounter = (int)$_controlContent;
+    if($_controlCounter > 10) {
+        $_purge = true;
+    } else {
+        $_controlCounter++;
+        file_put_contents($_controlFile, $_controlCounter);
+    }
+} else {
+    file_put_contents($_controlFile, 1);
+}
+
 // file amount is already checked above. Avoids cleaning the cache if nothing is updated
 // first clear all non id cache files
 $cacheFiles = glob(PATH_CACHE.'/_*');
-foreach($cacheFiles as $cf) {
-    unlink($cf);
+if(!empty($cacheFiles) && $_purge) {
+    foreach($cacheFiles as $cf) {
+        unlink($cf);
+    }
+    Helper::sysLog('[INFO] Importer purged non id files '.count($cacheFiles).' files');
 }
 // now the id specific files
 $cacheFiles = glob(PATH_CACHE.'/*_*');
@@ -329,6 +348,7 @@ if(!empty($toDelete)) {
     foreach($toDelete as $k=>$v) {
         unlink($k);
     }
+    Helper::sysLog('[INFO] Importer purged id files '.count($toDelete).' files');
 }
 
 Helper::sysLog('[INFO] Importer imported '.$_fileCounter.' files');
