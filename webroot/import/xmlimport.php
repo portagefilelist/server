@@ -332,6 +332,9 @@ if(!empty($cacheFiles) && $_purge) {
         unlink($cf);
     }
     Helper::sysLog('[INFO] Importer purged non id files '.count($cacheFiles).' files');
+
+    // call stats page to create new cache entry
+    Helper::curlCall("https://www.portagefilelist.de/index.php?p=stats");
 }
 // now the id specific files
 $cacheFiles = glob(PATH_CACHE.'/*_*');

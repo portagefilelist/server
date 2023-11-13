@@ -126,5 +126,30 @@
 				</tbody>
 			</table>
 		</div>
+        <div class="column col-4 col-xl-12">
+            <h3>Most installs</h3>
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>#</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php
+                if(!empty($TemplateData['p']['install'])) {
+                    foreach($TemplateData['p']['install'] as $key=>$entry) {
+                        ?>
+                        <tr>
+                            <td><a href="index.php?p=package&id=<?php echo $entry['hash']; ?>"><?php echo $entry['categoryName']; ?>/<?php echo $entry['name']; ?></a></td>
+                            <td><?php echo $entry['importcount']; ?></td>
+                        </tr>
+                        <?php
+                    }
+                }
+                ?>
+                </tbody>
+            </table>
+        </div>
 	</div>
 </div>
