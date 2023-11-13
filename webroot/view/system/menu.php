@@ -18,7 +18,7 @@
  */
 ?>
 <section class="navbar-section">
-	<img src="view/asset/pfl-logo.png" width="50px" /><a href="index.php" class="btn btn-link <?php if($_requestMode == "home") echo 'active'; ?>">Home</a>
+	<img src="view/asset/pfl-logo.png" width="50px" height="50px" alt="PFL Logo" /><a href="index.php" class="btn btn-link <?php if($_requestMode == "home") echo 'active'; ?>">Home</a>
 	<a href="index.php?p=packages" class="btn btn-link <?php if($_requestMode == "packages") echo 'active'; ?>">Packages</a>
 	<a href="index.php?p=categories" class="btn btn-link <?php if($_requestMode == "categories") echo 'active'; ?>">Categories</a>
 	<a href="index.php?p=stats" class="btn btn-link <?php if($_requestMode == "stats") echo 'active'; ?>">Stats</a>

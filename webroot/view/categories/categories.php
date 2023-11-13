@@ -37,7 +37,7 @@
 <table class="table">
 	<thead>
 	<tr>
-		<th>Name</th>
+		<th role="columnheader">Name</th>
 	</tr>
 	</thead>
 	<tbody>

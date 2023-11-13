@@ -77,12 +77,12 @@
 <table class="table">
 	<thead>
 		<tr>
-			<th>Filename</th>
-			<th>Filepath</th>
-			<th>Category</th>
-			<th>Package</th>
-			<th>Version</th>
-			<th>Arch</th>
+			<th role="columnheader">Filename</th>
+			<th role="columnheader">Filepath</th>
+			<th role="columnheader">Category</th>
+			<th role="columnheader">Package</th>
+			<th role="columnheader">Version</th>
+			<th role="columnheader">Arch</th>
 		</tr>
 	</thead>
 	<tbody>
