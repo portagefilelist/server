@@ -103,8 +103,8 @@
 <table class="table">
 	<thead>
 	<tr>
-		<th>Filename</th>
-		<th>Filepath</th>
+		<th role="columnheader">Filename</th>
+		<th role="columnheader">Filepath</th>
 	</tr>
 	</thead>
 	<tbody>
