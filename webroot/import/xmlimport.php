@@ -334,7 +334,12 @@ if(!empty($cacheFiles) && $_purge) {
     Helper::sysLog('[INFO] Importer purged non id files '.count($cacheFiles).' files');
 
     // call stats page to create new cache entry
-    Helper::curlCall("https://www.portagefilelist.de/index.php?p=stats");
+    $call = Helper::curlCall("https://www.portagefilelist.de/index.php?p=stats");
+    if($call['status'] !== false) {
+        Helper::sysLog('[INFO] Importer http call '.Helper::cleanForLog($call['status']));
+    } else {
+        Helper::sysLog('[ERROR] Importer http call failed '.Helper::cleanForLog($call['message']));
+    }
 }
 // now the id specific files
 $cacheFiles = glob(PATH_CACHE.'/*_*');

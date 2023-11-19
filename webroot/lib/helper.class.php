@@ -303,8 +303,8 @@ class Helper {
      * @param int $port
      * @return string
      */
-    static function curlCall(string $url, int $port=0): string {
-        $ret = '';
+    static function curlCall(string $url, int $port=0): array {
+        $ret = array('status' => false, 'message' => 'Unknown');
 
         $ch = curl_init();
 
@@ -326,10 +326,11 @@ class Helper {
         $do = curl_exec($ch);
 
         if(is_string($do) === true) {
-            $ret = $do;
+            $ret['status'] = true;
+            $ret['message'] = $do;
         }
         else {
-            self::sysLog('ERROR '.var_export(curl_error($ch),true));
+            $ret['message'] = curl_error($ch);
         }
 
         curl_close($ch);

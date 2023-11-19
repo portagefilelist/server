@@ -38,6 +38,9 @@
 	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 	<link rel="manifest" href="/site.webmanifest">
+	<link rel="search" type="application/opensearchdescription+xml" title="PFL – Files" href="/opensearch/files.xml">
+	<link rel="search" type="application/opensearchdescription+xml" title="PFL – Packages" href="/opensearch/packages.xml">
+	<link rel="search" type="application/opensearchdescription+xml" title="PFL – Categories" href="/opensearch/categories.xml">
 </head>
 <body>
 
