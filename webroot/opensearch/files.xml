@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/" xmlns:moz="http://www.mozilla.org/2006/browser/search/">
+	<ShortName>PFL – Files</ShortName>
+	<LongName>Portagefilelist.de – Files</LongName>
+	<Description>Find where does a file come from with PFL.</Description>
+	<Language>en-us</Language>
+	<Image width="16" height="16" type="image/png">https://www.portagefilelist.de/favicon-16x16.png</Image>
+	<Image width="32" height="32" type="image/png">https://www.portagefilelist.de/favicon-32x32.png</Image>
+	<Tags>gentoo portage</Tags>
+	<Contact>contact@portagefilelist.de</Contact>
+	<Url type="text/html" template="https://www.portagefilelist.de/index.php?p=home&amp;fs={searchTerms}&amp;page={startPage?}&amp;rpp={count?}" />
+	<Url type="application/opensearchdescription+xml" rel="self" template="https://www.portagefilelist.de/opensearch/files.xml" />
+	<Query role="example" searchTerms="brctl" />
+	<moz:SearchForm>https://www.portagefilelist.de/index.php?p=home</moz:SearchForm>
+</OpenSearchDescription>
