@@ -2,12 +2,12 @@
 <OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/" xmlns:moz="http://www.mozilla.org/2006/browser/search/">
 	<ShortName>PFL – Packages</ShortName>
 	<LongName>Portagefilelist.de – Packages</LongName>
-	<Description>Search for packages with PFL.</Description>
+	<Description>Search within packages at PFL.</Description>
 	<Language>en-us</Language>
 	<Image width="16" height="16" type="image/png">https://www.portagefilelist.de/favicon-16x16.png</Image>
 	<Image width="32" height="32" type="image/png">https://www.portagefilelist.de/favicon-32x32.png</Image>
-	<Tags>gentoo portage</Tags>
-	<Contact>contact@portagefilelist.de</Contact>
+	<Tags>gentoo portage package</Tags>
+	<Contact>bugs@portagefilelist.de</Contact>
 	<Url type="text/html" template="https://www.portagefilelist.de/index.php?p=packages&amp;ps={searchTerms}&amp;page={startPage?}&amp;rpp={count?}" />
 	<Url type="application/opensearchdescription+xml" rel="self" template="https://www.portagefilelist.de/opensearch/packages.xml" />
 	<Query role="example" searchTerms="bridge-utils" />
