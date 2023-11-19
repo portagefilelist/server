@@ -18,10 +18,11 @@
  */
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'">
 
 	<link rel="stylesheet" href="view/asset/css/spectre/spectre.min.css">
 	<link rel="stylesheet" href="view/asset/css/spectre/spectre-exp.min.css">
@@ -31,6 +32,7 @@
 
 	<meta name="author" content="https://www.bananas-playground.net/" />
 	<title>PFL / <?php echo $TemplateData['pageTitle']; ?> / Portagefilelist.de</title>
+    <meta name="description" content="Portage File List collects which files are installed by which ebuild on users machines. It shares this data publicly for searching/browsing. It allows user to search for files that are not installed on their system and figure out which ebuild they need to install in order to obtain it.">
 
 	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">

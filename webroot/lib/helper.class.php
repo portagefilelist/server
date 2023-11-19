@@ -196,34 +196,6 @@ class Helper {
 	}
 
 	/**
-	 * check if a string starts with a given string
-	 *
-	 * @param string $haystack
-	 * @param string $needle
-	 * @return bool
-	 */
-	static function startsWith(string $haystack, string $needle): bool {
-		$length = strlen($needle);
-		return (substr($haystack, 0, $length) === $needle);
-	}
-
-	/**
-	 * check if a string ends with a given string
-	 *
-	 * @param string $haystack
-	 * @param string $needle
-	 * @return bool
-	 */
-	static function endsWith(string $haystack, string $needle): bool {
-		$length = strlen($needle);
-		if ($length == 0) {
-			return true;
-		}
-
-		return (substr($haystack, -$length) === $needle);
-	}
-
-	/**
 	 * http_build_query with modify array
 	 * modify will add: key AND value not empty
 	 * modify will remove: only key with no value
@@ -323,4 +295,46 @@ class Helper {
 	static function sysLog(string $msg): void {
 		error_log(date("c")." ".$msg."\n", 3, LOGFILE);
 	}
+
+    /**
+     * execute a curl call to the given $url
+     *
+     * @param string $url The request url
+     * @param int $port
+     * @return string
+     */
+    static function curlCall(string $url, int $port=0): array {
+        $ret = array('status' => false, 'message' => 'Unknown');
+
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_MAXREDIRS, 2);
+        curl_setopt($ch, CURLOPT_USERAGENT,'Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/119.0');
+
+        // curl_setopt($ch, CURLOPT_VERBOSE, true);
+        // curl_setopt($ch, CURLOPT_HEADER, true);
+
+        if(!empty($port)) {
+            curl_setopt($ch, CURLOPT_PORT, $port);
+        }
+
+        $do = curl_exec($ch);
+
+        if(is_string($do) === true) {
+            $ret['status'] = true;
+            $ret['message'] = $do;
+        }
+        else {
+            $ret['message'] = curl_error($ch);
+        }
+
+        curl_close($ch);
+
+        return $ret;
+    }
 }

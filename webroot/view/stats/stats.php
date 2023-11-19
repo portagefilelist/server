@@ -31,8 +31,8 @@
 			<table class="table table-striped table-hover">
 				<thead>
 				<tr>
-					<th>Name</th>
-					<th>#</th>
+					<th role="columnheader">Name</th>
+					<th role="columnheader">#</th>
 				</tr>
 				</thead>
 				<tbody>
@@ -56,8 +56,8 @@
 			<table class="table table-striped table-hover">
 				<thead>
 					<tr>
-						<th>Name</th>
-						<th>Unique name</th>
+						<th role="columnheader">Name</th>
+						<th role="columnheader">Unique name</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -81,8 +81,8 @@
 			<table class="table table-striped table-hover">
 				<thead>
 					<tr>
-						<th>File</th>
-						<th>Package</th>
+						<th role="columnheader">File</th>
+						<th role="columnheader">Package</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -106,8 +106,8 @@
 			<table class="table table-striped table-hover">
 				<thead>
 					<tr>
-						<th>Use</th>
-						<th>#</th>
+						<th role="columnheader">Use</th>
+						<th role="columnheader">#</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -126,5 +126,30 @@
 				</tbody>
 			</table>
 		</div>
+        <div class="column col-4 col-xl-12">
+            <h3>Most installs</h3>
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th role="columnheader">Name</th>
+                    <th role="columnheader">#</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php
+                if(!empty($TemplateData['p']['install'])) {
+                    foreach($TemplateData['p']['install'] as $key=>$entry) {
+                        ?>
+                        <tr>
+                            <td><a href="index.php?p=package&id=<?php echo $entry['hash']; ?>"><?php echo $entry['categoryName']; ?>/<?php echo $entry['name']; ?></a></td>
+                            <td><?php echo $entry['importcount']; ?></td>
+                        </tr>
+                        <?php
+                    }
+                }
+                ?>
+                </tbody>
+            </table>
+        </div>
 	</div>
 </div>

@@ -313,8 +313,12 @@ $_purge = false;
 if(file_exists($_controlFile)) {
     $_controlContent = file_get_contents($_controlFile);
     $_controlContent = trim($_controlContent);
-    if((int) $_controlContent > 20) {
+    $_controlCounter = (int)$_controlContent;
+    if($_controlCounter > 10) {
         $_purge = true;
+    } else {
+        $_controlCounter++;
+        file_put_contents($_controlFile, $_controlCounter);
     }
 } else {
     file_put_contents($_controlFile, 1);
@@ -328,6 +332,14 @@ if(!empty($cacheFiles) && $_purge) {
         unlink($cf);
     }
     Helper::sysLog('[INFO] Importer purged non id files '.count($cacheFiles).' files');
+
+    // call stats page to create new cache entry
+    $call = Helper::curlCall("https://www.portagefilelist.de/index.php?p=stats");
+    if($call['status'] !== false) {
+        Helper::sysLog('[INFO] Importer http call '.Helper::cleanForLog($call['status']));
+    } else {
+        Helper::sysLog('[ERROR] Importer http call failed '.Helper::cleanForLog($call['message']));
+    }
 }
 // now the id specific files
 $cacheFiles = glob(PATH_CACHE.'/*_*');

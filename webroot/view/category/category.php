@@ -37,9 +37,9 @@
 <table class="table">
 	<thead>
 	<tr>
-		<th>Name</th>
-		<th>Version</th>
-		<th>Arch</th>
+		<th role="columnheader">Name</th>
+		<th role="columnheader">Version</th>
+		<th role="columnheader">Arch</th>
 	</tr>
 	</thead>
 	<tbody>
