@@ -310,6 +310,7 @@ foreach ($inboxFiles as $fileToImport) {
 
 $_controlFile = PATH_CACHE.'/purgecontrol';
 $_purge = false;
+$_toWrite = 1;
 if(file_exists($_controlFile)) {
     $_controlContent = file_get_contents($_controlFile);
     $_controlContent = trim($_controlContent);
@@ -318,11 +319,10 @@ if(file_exists($_controlFile)) {
         $_purge = true;
     } else {
         $_controlCounter++;
-        file_put_contents($_controlFile, $_controlCounter);
+        $_toWrite = $_controlCounter;
     }
-} else {
-    file_put_contents($_controlFile, 1);
 }
+file_put_contents($_controlFile, $_toWrite);
 
 // file amount is already checked above. Avoids cleaning the cache if nothing is updated
 // first clear all non id cache files
