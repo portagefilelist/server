@@ -38,17 +38,21 @@ date_default_timezone_set(TIMEZONE);
 # static helper class
 require_once 'lib/helper.class.php';
 
+header('Content-Type: text/plain');
+
 # check inbox size
 # currently abort if dir is larger then 1Gb
 if(Helper::folderSize(PATH_INBOX) > 1000000000) {
-	Helper::sysLog("[ERROR] Upload inbox full!");
+	Helper::sysLog("ERROR Upload inbox full!");
+    http_response_code(507);
+    echo "Not accepting any new files.";
 	exit();
 }
 
 if(isset($_FILES['foo'])) {
 	$_uploadFile = $_FILES['foo'];
 
-	Helper::sysLog("[INFO] Upload starting upload with FILES: ".Helper::cleanForLog($_FILES));
+	Helper::sysLog("INFO Upload starting upload with FILES: ".Helper::cleanForLog($_FILES));
 
 	if(isset($_uploadFile['name'])
 		&& isset($_uploadFile['type'])
@@ -60,20 +64,28 @@ if(isset($_FILES['foo'])) {
 		$mime = finfo_file($finfo, $_uploadFile['tmp_name']);
 		finfo_close($finfo);
 		if($mime != "application/x-bzip2") {
-			Helper::sysLog("[ERROR] Upload invalid mime type: ".Helper::cleanForLog($mime));
+			Helper::sysLog("ERROR Upload invalid mime type: ".Helper::cleanForLog($mime));
+            http_response_code(400);
+            echo "Invalid mime type.";
 			exit();
 		}
 
 		$_uploadTarget = tempnam(PATH_INBOX.'/','pfl');
 		if(move_uploaded_file($_uploadFile['tmp_name'], $_uploadTarget)) {
-			Helper::sysLog("[INFO] Upload success. Target : ".Helper::cleanForLog($_uploadTarget));
+			Helper::sysLog("INFO Upload success. Target : ".Helper::cleanForLog($_uploadTarget));
 		}
 		else {
-			Helper::sysLog("[ERRoR] Upload error while upload move: ".Helper::cleanForLog($_FILES));
+			Helper::sysLog("ERROR Upload error while upload move: ".Helper::cleanForLog($_FILES));
+            http_response_code(500);
+            echo "Something went wrong.";
 			exit();
 		}
 
 	} else {
-		Helper::sysLog("[ERROR] Upload incomplete FILES: ".Helper::cleanForLog($_FILES));
+		Helper::sysLog("ERROR Upload incomplete FILES: ".Helper::cleanForLog($_FILES));
+        http_response_code(500);
+        echo "Upload incomplete.";
 	}
 }
+http_response_code(200);
+echo "Thank you.";
