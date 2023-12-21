@@ -84,7 +84,7 @@
 
 <form method="get" action="#panchor">
 	<input type="hidden" name="p" value="package">
-	<input type="hidden" name="id" value="<?php echo $TemplateData['package']['hash']; ?>">
+	<input type="hidden" name="id" value="<?php echo $TemplateData['package']['hash'] ?? ''; ?>">
 	<div class="form-group">
 		<label class="form-label" for="filename">
 			Search for a file by a filename (<samp>slice.hpp</samp>) or path (<samp>/usr/include/exiv2/slice.hpp</samp>).
@@ -92,7 +92,7 @@
 		</label>
 	</div>
 	<div class="input-group">
-		<a class="btn btn-primary input-group-btn" href="index.php?p=package&id=<?php echo $TemplateData['package']['hash']; ?>#panchor">Reset</a>
+		<a class="btn btn-primary input-group-btn" href="index.php?p=package&id=<?php echo $TemplateData['package']['hash'] ?? ''; ?>#panchor">Reset</a>
 		<input class="form-input" type="text" name="ps" id="filename" placeholder="Search within current package" value="<?php echo $TemplateData['searchInput'] ?? ''; ?>">
 		<button class="btn btn-primary input-group-btn">Search</button>
 	</div>
