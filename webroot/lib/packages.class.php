@@ -157,11 +157,13 @@ class Packages {
 						p.name,
 						p.version,
 						p.arch,
-						c.name AS categoryName";
+						c.name AS categoryName,
+						c.hash AS categoryId";
 
 		$queryFrom = " FROM `".DB_PREFIX."_package` AS p";
 
-		$queryJoin = " LEFT JOIN `".DB_PREFIX."_category` AS c ON p.category_id = c.hash";
+		$queryJoin = " LEFT JOIN `".DB_PREFIX."_cat2pkg` AS c2p ON p.hash = c2p.packageId
+		                LEFT JOIN `".DB_PREFIX."_category` AS c ON c.hash = c2p.categoryId";
 
 		$queryWhere = " WHERE p.name";
 
@@ -282,7 +284,7 @@ class Packages {
 
 
 		// use
-		$queryStr = "SELECT COUNT(*) AS amount, p.useword 
+		$queryStr = "SELECT COUNT(*) AS amount, p.useword
 					FROM `".DB_PREFIX."_package_use` AS p
 					GROUP BY p.useword 
 					ORDER BY `amount` DESC 
@@ -309,7 +311,8 @@ class Packages {
 						p.importcount,
 						c.name AS categoryName
 					FROM `".DB_PREFIX."_package` AS p
-					LEFT JOIN `".DB_PREFIX."_category` AS c ON p.category_id = c.hash
+					LEFT JOIN `".DB_PREFIX."_cat2pkg` AS c2p ON p.hash = c2p.packageId
+					LEFT JOIN `".DB_PREFIX."_category` AS c ON c.hash = c2p.categoryId
 					ORDER BY p.importcount DESC
 					LIMIT 10";
         if(QUERY_DEBUG) Helper::sysLog("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
@@ -344,7 +347,8 @@ class Packages {
 						p.lastmodified,
 						c.name AS categoryName
 					FROM `".DB_PREFIX."_package` AS p
-					LEFT JOIN `".DB_PREFIX."_category` AS c ON p.category_id = c.hash
+					LEFT JOIN `".DB_PREFIX."_cat2pkg` AS c2p ON p.hash = c2p.packageId
+					LEFT JOIN `".DB_PREFIX."_category` AS c ON c.hash = c2p.categoryId
 					ORDER BY p.lastmodified DESC
 					LIMIT 10";
 		if(QUERY_DEBUG) Helper::sysLog("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));

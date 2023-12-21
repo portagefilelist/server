@@ -25,7 +25,7 @@
 	</tr>
 	<tr>
 		<td>Category</td>
-		<td><a href="index.php?p=category&id=<?php echo $TemplateData['package']['category_id'] ?? '' ?>"><?php echo $TemplateData['package']['categoryName'] ?? ''; ?></a></td>
+		<td><a href="index.php?p=category&id=<?php echo $TemplateData['package']['categoryId'] ?? '' ?>"><?php echo $TemplateData['package']['categoryName'] ?? ''; ?></a></td>
 	</tr>
 	<tr>
 		<td>Version</td>
