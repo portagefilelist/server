@@ -115,7 +115,7 @@ foreach ($inboxFiles as $fileToImport) {
         if(bzerrno($fh) !== 0) { Helper::sysLog('[ERROR] Decompress problem'); exit(); }
         file_put_contents($fileToImport.'.xml', $buffer, FILE_APPEND | LOCK_EX);
         $_unpackCounter += 1024;
-        if($_unpackCounter > 60000000) { // 60MB max unpack size
+        if($_unpackCounter > 100000000) { // 100MB max unpack size
             $_unpackSizeMark = true;
             break;
         }
@@ -125,6 +125,7 @@ foreach ($inboxFiles as $fileToImport) {
     if($_unpackSizeMark) {
         Helper::sysLog('[WARNING] Max unpack filsize reached: '.Helper::cleanForLog($fileToImport));
         rename($fileToImport, PATH_INBOX.'/invalidSize-'.time());
+        unlink($fileToImport.'.xml');
         continue;
     }
 

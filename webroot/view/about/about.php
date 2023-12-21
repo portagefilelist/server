@@ -46,6 +46,18 @@
 	</div>
 </div>
 
+<h2>Usage</h2>
+<p>
+	Install <a href="https://packages.gentoo.org/packages/app-portage/pfl" target="_blank">app-portage/pfl</a>
+	with <code>emerge app-portage/pfl</code> and let the cron to its job.
+</p>
+<p>
+	To search for files use either the webseach (this website) or use the <code>e-file</code> command.
+</p>
+<p>
+	For more options for both of the commands, visit the <a href="https://wiki.gentoo.org/wiki/Pfl" target="_blank">official Gentoo PFL Wiki.</a>
+</p>
+
 <h2>You can help</h2>
 <p>
 	PFL needs Portage data from your system. The more ebuilds you have installed the better.
