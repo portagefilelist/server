@@ -59,7 +59,7 @@ if($_check !== IMPORTER_SECRET) {
 }
 
 # get available files from inbox
-$inboxFiles = glob(PATH_INBOX.'/*');
+$inboxFiles = glob(PATH_INBOX.'/pfl*');
 if(DEBUG) Helper::sysLog('[DEBUG] Found files: '.Helper::cleanForLog($inboxFiles));
 
 if(empty($inboxFiles)) {
@@ -100,24 +100,39 @@ foreach ($inboxFiles as $fileToImport) {
     $mime = finfo_file($finfo, $fileToImport);
     finfo_close($finfo);
     if($mime != "application/x-bzip2") {
-        Helper::sysLog("[ERROR] Import invalid mime type: ".Helper::cleanForLog($mime));
-        exit();
+        Helper::sysLog("[WARNING] Import invalid mime type: ".Helper::cleanForLog($mime));
+        rename($fileToImport, PATH_INBOX.'/invalidMimeType-'.time());
+        continue;
     }
 
     // decompress
     $fh = bzopen($fileToImport,'r');
+    $_unpackCounter = 1024; // default value for read bytes at bzread
+    $_unpackSizeMark = false;
     while(!feof($fh)) {
         $buffer = bzread($fh);
         if($buffer === FALSE) { Helper::sysLog('[ERROR] Decompress read problem'); exit(); }
         if(bzerrno($fh) !== 0) { Helper::sysLog('[ERROR] Decompress problem'); exit(); }
         file_put_contents($fileToImport.'.xml', $buffer, FILE_APPEND | LOCK_EX);
+        $_unpackCounter += 1024;
+        if($_unpackCounter > 60000000) { // 60MB max unpack size
+            $_unpackSizeMark = true;
+            break;
+        }
     }
     bzclose($fh);
+
+    if($_unpackSizeMark) {
+        Helper::sysLog('[WARNING] Max unpack filsize reached: '.Helper::cleanForLog($fileToImport));
+        rename($fileToImport, PATH_INBOX.'/invalidSize-'.time());
+        continue;
+    }
 
     $fileToWorkWith = $fileToImport.'.xml';
 
     if (!$xmlReader->open($fileToWorkWith)) {
-        Helper::sysLog('[ERROR] Can not read xml file: '.Helper::cleanForLog($fileToWorkWith));
+        Helper::sysLog('[WARNING] Can not read xml file: '.Helper::cleanForLog($fileToWorkWith));
+        rename($fileToImport, PATH_INBOX.'/invalidFile-'.time());
         continue;
     }
 
@@ -135,8 +150,9 @@ foreach ($inboxFiles as $fileToImport) {
         if (!$xmlReader->isValid()) {
             $_xmlErrors = libxml_get_last_error();
             if ($_xmlErrors && $_xmlErrors instanceof libXMLError) {
-                Helper::sysLog('[ERROR] Invalid xml file: '.$_xmlErrors->message);
+                Helper::sysLog('[WARNING] Invalid xml file: '.$_xmlErrors->message);
                 libxml_clear_errors();
+                rename($fileToWorkWith, PATH_INBOX.'/invalidXMLFile-'.time());
                 continue;
             }
         }
@@ -167,20 +183,24 @@ foreach ($inboxFiles as $fileToImport) {
 
                 # the package insert query
                 $_packXML = new SimpleXMLElement($_pack);
-                $_packID = md5((string)$_packXML['name'].(string)$_packXML['version'].(string)$_packXML['arch']);
+                $_packID = md5($_cat.(string)$_packXML['name'].(string)$_packXML['version'].(string)$_packXML['arch']);
                 $_packageName = (string)$_packXML['name'];
                 $queryPackage = "INSERT INTO `".DB_PREFIX."_package` SET
                                 `hash` = '".$DB->real_escape_string($_packID)."',
                                 `name` = '".$DB->real_escape_string($_packageName)."',
                                 `version` = '".$DB->real_escape_string((string)$_packXML['version'])."',
-                                `arch` = '".$DB->real_escape_string((string)$_packXML['arch'])."',
-                                `category_id` = '".$DB->real_escape_string($_catID)."'
+                                `arch` = '".$DB->real_escape_string((string)$_packXML['arch'])."'
                                 ON DUPLICATE KEY UPDATE `lastmodified` = NOW(), `importcount` = `importcount` + 1";
                 if(QUERY_DEBUG) Helper::sysLog('[QUERY] Package insert: '.Helper::cleanForLog($queryPackage));
 
+                # packageId does contain the category and not only the package name
+                $queryCat2Pkg = "INSERT IGNORE INTO `".DB_PREFIX."_cat2pkg` SET
+                                    `categoryId` = '".$DB->real_escape_string($_catID)."',
+                                    `packageId` = '".$DB->real_escape_string($_packID)."'";
+
                 if(empty($_catID) || empty($_packID)) {
-                    Helper::sysLog("[ERROR] Missing category '$_catID' or package '$_packID' id");
-                    exit();
+                    Helper::sysLog("[WARNING] Missing category '$_catID' or package '$_packID' id in file: ".$fileToWorkWith);
+                    continue;
                 }
 
                 # the commit is at the "end"
@@ -189,6 +209,7 @@ foreach ($inboxFiles as $fileToImport) {
 
                     $DB->query($queryCat);
                     $DB->query($queryPackage);
+                    $DB->query($queryCat2Pkg);
 
                 } catch (Exception $e) {
                     $DB->rollback();
@@ -212,7 +233,7 @@ foreach ($inboxFiles as $fileToImport) {
                                 if(!empty($_useWord) && !empty($_packID)) {
                                     $queryUses = "INSERT IGNORE INTO `".DB_PREFIX."_package_use` SET
                                                 `useword` = '".$DB->real_escape_string($_useWord)."',
-                                                `package_id` = '".$DB->real_escape_string($_packID)."'";
+                                                `packageId` = '".$DB->real_escape_string($_packID)."'";
                                     if(QUERY_DEBUG) Helper::sysLog('[QUERY] Use insert: '.Helper::cleanForLog($queryUses));
                                     try {
                                         $DB->query($queryUses);
@@ -242,15 +263,12 @@ foreach ($inboxFiles as $fileToImport) {
                                     continue;
                                 }
 
-                                # change results in a needed rehash which takes a long time
-                                # this is why $file is not used here.
-                                $hash = md5($_packID.$_catID.$filename.$fileinfo['dirname']);
+                                $hash = md5($path);
 
                                 switch((string) $file['type']) {
                                     case 'sym':
                                     case 'obj':
                                         $queryFile = "INSERT INTO `".DB_PREFIX."_file` SET
-                                            `package_id` = '".$DB->real_escape_string($_packID)."',
                                             `name` = '".$DB->real_escape_string($filename)."',
                                             `path` = '".$DB->real_escape_string($path)."',
                                             `hash` = '".$DB->real_escape_string($hash)."'
@@ -264,11 +282,16 @@ foreach ($inboxFiles as $fileToImport) {
                                         // nothing yet
                                 }
                                 if(!empty($queryFile)) {
+                                    $queryPgk2File = "INSERT IGNORE INTO `".DB_PREFIX."_pkg2file` SET
+                                                    `packageId` = '".$DB->real_escape_string($_packID)."',
+                                                    `fileId` = '".$DB->real_escape_string($hash)."'";
+
                                     # if this is triggered often, make sure the DB col length is also increased.
                                     if(strlen($path) > 200) Helper::sysLog('[WARNING] File path longer than 200 : '.Helper::cleanForLog($queryFile));
                                     if(QUERY_DEBUG) Helper::sysLog('[QUERY] File insert: '.Helper::cleanForLog($queryFile));
                                     try {
                                         $DB->query($queryFile);
+                                        $DB->query($queryPgk2File);
                                     } catch (Exception $e) {
                                         $DB->rollback();
                                         Helper::sysLog("[ERROR] File insert mysql catch: ".$e->getMessage());
@@ -305,7 +328,10 @@ foreach ($inboxFiles as $fileToImport) {
     }
     $xmlReader->close();
 
-    unlink($fileToWorkWith);
+    // could be renamed due an error
+    if(file_exists($fileToWorkWith)) {
+        unlink($fileToWorkWith);
+    }
 }
 
 $_controlFile = PATH_CACHE.'/purgecontrol';

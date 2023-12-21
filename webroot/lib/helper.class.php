@@ -129,7 +129,7 @@ class Helper {
 	 */
 	static function recursive_remove_directory(string $directory, bool $empty = false, int $fTime = 0): bool {
 		// if the path has a slash at the end we remove it here
-		if(substr($directory,-1) == '/') {
+		if(str_ends_with($directory, '/')) {
 			$directory = substr($directory,0,-1);
 		}
 
@@ -277,10 +277,10 @@ class Helper {
 	/**
 	 * Make the input more safe for logging
 	 *
-	 * @param string $string The string to be made more safe
+	 * @param mixed $input The string to be made more safe
 	 * @return string
 	 */
-	static function cleanForLog($input): string {
+	static function cleanForLog(mixed $input): string {
 		$input = var_export($input, true);
 		$input = preg_replace( "/[\t\n\r]/", " ", $input);
 		return addcslashes($input, "\000..\037\177..\377\\");
@@ -301,7 +301,7 @@ class Helper {
      *
      * @param string $url The request url
      * @param int $port
-     * @return string
+     * @return array
      */
     static function curlCall(string $url, int $port=0): array {
         $ret = array('status' => false, 'message' => 'Unknown');

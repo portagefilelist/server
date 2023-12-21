@@ -138,10 +138,14 @@ class Category {
 		$ret = array();
 
 		// split since part of it is used later
-		$querySelect = "p.hash, p.name, p.version, p.arch, p.category_id";
-		$queryFrom = " FROM `".DB_PREFIX."_package` AS p";
+		$querySelect = "p.hash, p.name, p.version, p.arch, 
+		                c2p.categoryId";
+		$queryFrom = " FROM `".DB_PREFIX."_cat2pkg` AS c2p";
 
-		$queryWhere = " WHERE p.category_id = '".$this->_DB->real_escape_string($hash)."'";
+		$queryJoin = " LEFT JOIN `".DB_PREFIX."_package` AS p on p.hash = c2p.packageId
+					   LEFT JOIN `".DB_PREFIX."_category` AS c ON c.hash = c2p.categoryId";
+
+		$queryWhere = " WHERE c2p.categoryId = '".$this->_DB->real_escape_string($hash)."'";
 
 		$queryOrder = " ORDER BY";
 		if (!empty($this->_queryOptions['sort'])) {
@@ -167,7 +171,7 @@ class Category {
 			}
 		}
 
-		$queryStr = "SELECT ".$querySelect.$queryFrom.$queryWhere.$queryOrder.$queryLimit;
+		$queryStr = "SELECT ".$querySelect.$queryFrom.$queryJoin.$queryWhere.$queryOrder.$queryLimit;
 		if(QUERY_DEBUG) Helper::sysLog("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
 
 		try {
@@ -178,7 +182,7 @@ class Category {
 					$ret['results'][$result['hash']] = $result;
 				}
 
-				$queryStrCount = "SELECT COUNT(p.hash) AS amount ".$queryFrom.$queryWhere;
+				$queryStrCount = "SELECT COUNT(p.hash) AS amount ".$queryFrom.$queryJoin.$queryWhere;
 				if(QUERY_DEBUG) Helper::sysLog("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStrCount));
 
 				$query = $this->_DB->query($queryStrCount);

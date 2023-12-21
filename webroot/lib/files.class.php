@@ -152,7 +152,7 @@ class Files {
 
 		if(str_contains($searchValue,'*')) {
 			$this->_wildcardsearch = true;
-			$searchValue = preg_replace('/\*{1,}/', '%', $searchValue);
+			$searchValue = preg_replace('/\*+/', '%', $searchValue);
 
 			if(strlen($searchValue) < 3) {
 				return false;
@@ -185,16 +185,15 @@ class Files {
 		$querySelect = "f.hash AS hash,
 						f.name AS name,
 						f.path AS path,
-						f.package_id AS packageId,
 						c.name AS categoryName,
+						c.hash AS categoryId,
 						p.name AS packageName,
 						p.arch AS packageArch,
-						p.version AS packageVersion,
-						p.category_id AS categoryId";
+						p.hash AS packageId,
+						p.version AS packageVersion";
 		if ($this->_queryOptions['unique']) {
 			$querySelect = "DISTINCT p.name AS packageName,
-							f.package_id AS packageId,
-							p.hash,
+							p.hash AS packageId,
 							p.arch AS packageArch,
 							p.version AS packageVersion,
 							c.hash AS categoryId,
@@ -203,8 +202,10 @@ class Files {
 
 		$queryFrom = " FROM `".DB_PREFIX."_file` AS f";
 
-		$queryJoin = " LEFT JOIN `".DB_PREFIX."_package` AS p ON f.package_id = p.hash";
-		$queryJoin .= " LEFT JOIN `".DB_PREFIX."_category` AS c ON p.category_id = c.hash";
+		$queryJoin = " LEFT JOIN `".DB_PREFIX."_pkg2file` AS p2f ON p2f.fileId = f.hash
+		                LEFT JOIN `".DB_PREFIX."_package` AS p ON p.hash = p2f.packageId
+		                LEFT JOIN `".DB_PREFIX."_cat2pkg` AS c2p ON c2p.packageId = p.hash
+		                LEFT JOIN `".DB_PREFIX."_category` AS c ON c.hash = c2p.categoryId";
 
 		if(str_contains($this->_searchValue, '/')) {
 			$queryWhere = " WHERE f.path";
@@ -250,7 +251,7 @@ class Files {
 
 			if($query !== false && $query->num_rows > 0) {
 				while(($result = $query->fetch_assoc()) != false) {
-					$ret['results'][$result['hash']] = $result;
+					$ret['results'][] = $result;
 				}
 
 				$queryStrCount = "SELECT COUNT(*) AS amount ".$queryFrom.$queryJoin.$queryWhere;
@@ -294,8 +295,10 @@ class Files {
 							p.hash,
 							c.name AS categoryName
 					FROM `".DB_PREFIX."_file` AS f
-					LEFT JOIN `".DB_PREFIX."_package` AS p ON f.package_id = p.hash
-					LEFT JOIN `".DB_PREFIX."_category` AS c ON p.category_id = c.hash
+					LEFT JOIN `".DB_PREFIX."_pkg2file` AS p2f ON p2f.fileId = f.hash
+		                LEFT JOIN `".DB_PREFIX."_package` AS p ON p.hash = p2f.packageId
+		                LEFT JOIN `".DB_PREFIX."_cat2pkg` AS c2p ON c2p.packageId = p.hash
+		                LEFT JOIN `".DB_PREFIX."_category` AS c ON c.hash = c2p.categoryId
 					ORDER BY f.lastmodified DESC
 					LIMIT 10";
 		if(QUERY_DEBUG) Helper::sysLog("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));

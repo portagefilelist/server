@@ -51,7 +51,7 @@
 		foreach($TemplateData['searchresults']['results'] as $key=>$entry) {
 			?>
 			<tr>
-				<td><a href="index.php?p=category&id=<?php echo $entry['category_id'] ?>"><?php echo $entry['categoryName']; ?></a></td>
+				<td><a href="index.php?p=category&id=<?php echo $entry['categoryId'] ?>"><?php echo $entry['categoryName']; ?></a></td>
 				<td><a href="index.php?p=package&id=<?php echo $entry['hash']; ?>"><?php echo $entry['categoryName'] ?? ''; ?>/<?php echo $entry['name'] ?? ''; ?></a></td>
 				<td><?php echo $entry['version'] ?? ''; ?></td>
 				<td><?php echo $entry['arch'] ?? ''; ?></td>

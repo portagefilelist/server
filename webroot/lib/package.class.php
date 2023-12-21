@@ -119,13 +119,15 @@ class Package {
 		$ret = array();
 
 		if(!empty($hash)) {
-			$queryStr = "SELECT p.hash, p.name, p.version, p.arch, p.category_id,
+			$queryStr = "SELECT p.hash, p.name, p.version, p.arch,
 								p.importcount,
 								pu.useword AS packageUse,
-								c.name AS categoryName
+								c.name AS categoryName,
+								c.hash AS categoryId
 							FROM `".DB_PREFIX."_package` AS p
-							LEFT JOIN `".DB_PREFIX."_package_use` AS pu ON p.hash = pu.package_id
-							LEFT JOIN `".DB_PREFIX."_category` AS c ON p.category_id = c.hash
+							LEFT JOIN `".DB_PREFIX."_package_use` AS pu ON p.hash = pu.packageId
+							LEFT JOIN `".DB_PREFIX."_cat2pkg` AS c2p ON p.hash = c2p.packageId
+							LEFT JOIN `".DB_PREFIX."_category` AS c ON c.hash = c2p.categoryId
 							WHERE p.hash = '".$this->_DB->real_escape_string($hash)."'";
 			try {
 				$query = $this->_DB->query($queryStr);
@@ -133,7 +135,7 @@ class Package {
 				if($query !== false && $query->num_rows > 0) {
 					$ret = $query->fetch_assoc();
 					$ret['usewords'] = $this->_useflags($hash);
-					$ret['otherVersions'] = $this->_otherVersionsForPackage($ret['name'], $hash, $ret['category_id']);
+					$ret['otherVersions'] = $this->_otherVersionsForPackage($ret['name'], $hash, $ret['categoryId']);
 				}
 			}
 			catch (Exception $e) {
@@ -154,10 +156,11 @@ class Package {
 		$ret = array();
 
 		// split since part of it is used later
-		$querySelect = "f.hash, f.name, f.path, f.package_id";
-		$queryFrom = " FROM `".DB_PREFIX."_file` AS f";
+		$querySelect = "f.hash, f.name, f.path";
+		$queryFrom = " FROM `".DB_PREFIX."_pkg2file` AS p2f";
+		$queryJoin = " LEFT JOIN `".DB_PREFIX."_file` AS f ON f.hash = p2f.fileId";
 
-		$queryWhere = " WHERE f.package_id = '".$this->_DB->real_escape_string($hash)."'";
+		$queryWhere = " WHERE p2f.packageId = '".$this->_DB->real_escape_string($hash)."'";
 
         if(!empty($this->_searchValue)) {
             if(str_contains($this->_searchValue, '/')) {
@@ -199,7 +202,7 @@ class Package {
 			}
 		}
 
-		$queryStr = "SELECT ".$querySelect.$queryFrom.$queryWhere.$queryOrder.$queryLimit;
+		$queryStr = "SELECT ".$querySelect.$queryFrom.$queryJoin.$queryWhere.$queryOrder.$queryLimit;
 		if(QUERY_DEBUG) Helper::sysLog("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
 
 		try {
@@ -210,7 +213,7 @@ class Package {
 					$ret['results'][$result['hash']] = $result;
 				}
 
-				$queryStrCount = "SELECT COUNT(f.hash) AS amount ".$queryFrom.$queryWhere;
+				$queryStrCount = "SELECT COUNT(f.hash) AS amount ".$queryFrom.$queryJoin.$queryWhere;
 				if(QUERY_DEBUG) Helper::sysLog("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStrCount));
 
 				$query = $this->_DB->query($queryStrCount);
@@ -237,7 +240,7 @@ class Package {
 
         if(str_contains($searchValue,'*')) {
             $this->_wildcardsearch = true;
-            $searchValue = preg_replace('/\*{1,}/', '%', $searchValue);
+            $searchValue = preg_replace('/\*+/', '%', $searchValue);
 
             if(strlen($searchValue) < 3) {
                 return false;
@@ -269,7 +272,7 @@ class Package {
 		if(!empty($pid)) {
 			$queryStr = "SELECT pu.useword
 							FROM `".DB_PREFIX."_package_use` AS pu
-							WHERE pu.package_id = '".$this->_DB->real_escape_string($pid)."'";
+							WHERE pu.packageId = '".$this->_DB->real_escape_string($pid)."'";
 			try {
 				$query = $this->_DB->query($queryStr);
 
@@ -302,12 +305,14 @@ class Package {
 
 		if(!empty($name) && !empty($hash) && !empty($catId)) {
 			$queryStr = "SELECT p.hash, p.name, p.version, p.arch,
-								c.name AS categoryName
+								c.name AS categoryName,
+								c.hash AS categoryId
 							FROM `".DB_PREFIX."_package` AS p
-							LEFT JOIN `".DB_PREFIX."_category` AS c ON p.category_id = c.hash
+							LEFT JOIN `".DB_PREFIX."_cat2pkg` AS c2p ON c2p.packageId = p.hash
+							LEFT JOIN `".DB_PREFIX."_category` AS c ON c.hash = c2p.categoryId
 							WHERE p.name = '".$this->_DB->real_escape_string($name)."'
 								AND p.hash <> '".$this->_DB->real_escape_string($hash)."'
-								AND p.category_id = '".$this->_DB->real_escape_string($catId)."'";
+								AND c.hash = '".$this->_DB->real_escape_string($catId)."'";
 			if(QUERY_DEBUG) Helper::sysLog("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
 			try {
 				$query = $this->_DB->query($queryStr);

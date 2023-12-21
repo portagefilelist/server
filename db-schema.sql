@@ -1,5 +1,4 @@
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
@@ -10,76 +9,92 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `pfl`
+-- Table structure for table `pflv3_cat2pkg`
 --
+
+DROP TABLE IF EXISTS `pflv3_cat2pkg`;
+CREATE TABLE `pflv3_cat2pkg` (
+  `categoryId` char(32) NOT NULL,
+  `packageId` char(32) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `pfl_category`
+-- Table structure for table `pflv3_category`
 --
 
-DROP TABLE IF EXISTS `pfl_category`;
-CREATE TABLE `pfl_category` (
+DROP TABLE IF EXISTS `pflv3_category`;
+CREATE TABLE `pflv3_category` (
   `hash` char(32) NOT NULL,
-  `name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NOT NULL,
+  `name` varchar(32) NOT NULL,
   `lastmodified` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `pfl_file`
+-- Table structure for table `pflv3_file`
 --
 
-DROP TABLE IF EXISTS `pfl_file`;
-CREATE TABLE `pfl_file` (
+DROP TABLE IF EXISTS `pflv3_file`;
+CREATE TABLE `pflv3_file` (
   `hash` char(32) NOT NULL,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NOT NULL,
-  `path` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NOT NULL,
-  `package_id` char(32) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `path` varchar(255) NOT NULL,
   `lastmodified` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `pfl_package`
+-- Table structure for table `pflv3_package`
 --
 
-DROP TABLE IF EXISTS `pfl_package`;
-CREATE TABLE `pfl_package` (
+DROP TABLE IF EXISTS `pflv3_package`;
+CREATE TABLE `pflv3_package` (
   `hash` char(32) NOT NULL,
-  `name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NOT NULL,
-  `version` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci DEFAULT NULL,
-  `arch` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci DEFAULT NULL,
-  `category_id` char(32) NOT NULL,
+  `name` varchar(64) NOT NULL,
+  `version` varchar(32) DEFAULT NULL,
+  `arch` varchar(10) DEFAULT NULL,
   `lastmodified` datetime NOT NULL DEFAULT current_timestamp(),
-  `importcount` int(10) NOT NULL
+  `importcount` int(11) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `pfl_package_use`
+-- Table structure for table `pflv3_package_use`
 --
 
-DROP TABLE IF EXISTS `pfl_package_use`;
-CREATE TABLE `pfl_package_use` (
-  `useword` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NOT NULL,
-  `package_id` char(32) NOT NULL
+DROP TABLE IF EXISTS `pflv3_package_use`;
+CREATE TABLE `pflv3_package_use` (
+  `useword` varchar(64) NOT NULL,
+  `packageId` char(32) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `pfl_statslog`
+-- Table structure for table `pflv3_pkg2file`
 --
 
-DROP TABLE IF EXISTS `pfl_statslog`;
-CREATE TABLE `pfl_statslog` (
-  `type` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NOT NULL,
-  `value` varchar(254) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NOT NULL,
+DROP TABLE IF EXISTS `pflv3_pkg2file`;
+CREATE TABLE `pflv3_pkg2file` (
+  `packageId` char(32) NOT NULL,
+  `fileId` char(32) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `pflv3_statslog`
+--
+
+DROP TABLE IF EXISTS `pflv3_statslog`;
+CREATE TABLE `pflv3_statslog` (
+  `type` varchar(16) NOT NULL,
+  `value` varchar(254) NOT NULL,
   `timestmp` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
@@ -88,44 +103,59 @@ CREATE TABLE `pfl_statslog` (
 --
 
 --
--- Indexes for table `pfl_category`
+-- Indexes for table `pflv3_cat2pkg`
 --
-ALTER TABLE `pfl_category`
+ALTER TABLE `pflv3_cat2pkg`
+  ADD UNIQUE KEY `categoryIdAndPackageId` (`categoryId`,`packageId`),
+  ADD KEY `categoryId` (`categoryId`),
+  ADD KEY `packageId` (`packageId`);
+
+--
+-- Indexes for table `pflv3_category`
+--
+ALTER TABLE `pflv3_category`
   ADD PRIMARY KEY (`hash`),
   ADD KEY `name` (`name`);
 
 --
--- Indexes for table `pfl_file`
+-- Indexes for table `pflv3_file`
 --
-ALTER TABLE `pfl_file`
+ALTER TABLE `pflv3_file`
   ADD PRIMARY KEY (`hash`),
   ADD KEY `name` (`name`),
   ADD KEY `lastmodified` (`lastmodified`),
-  ADD KEY `package_id` (`package_id`),
-  ADD KEY `packageandname` (`package_id`, `name`),
-  ADD KEY `packageandpath` (`package_id`, `path`),
   ADD KEY `path` (`path`);
 
 --
--- Indexes for table `pfl_package`
+-- Indexes for table `pflv3_package`
 --
-ALTER TABLE `pfl_package`
+ALTER TABLE `pflv3_package`
   ADD PRIMARY KEY (`hash`),
   ADD KEY `lastmodified` (`lastmodified`),
   ADD KEY `name` (`name`),
-  ADD KEY `category_id` (`category_id`);
+  ADD KEY `arch` (`arch`);
 
 --
--- Indexes for table `pfl_package_use`
+-- Indexes for table `pflv3_package_use`
 --
-ALTER TABLE `pfl_package_use`
-  ADD UNIQUE KEY `package_id` (`package_id`,`useword`);
+ALTER TABLE `pflv3_package_use`
+  ADD UNIQUE KEY `packageIdAndUseword` (`packageId`,`useword`),
+  ADD KEY `useword` (`useword`),
+  ADD KEY `packageId` (`packageId`);
 
 --
--- Indexes for table `pfl_statslog`
+-- Indexes for table `pflv3_pkg2file`
 --
-ALTER TABLE `pfl_statslog`
-  ADD KEY `type` (`type`, `value`);
+ALTER TABLE `pflv3_pkg2file`
+  ADD UNIQUE KEY `packageIdAndFileId` (`packageId`,`fileId`),
+  ADD KEY `packageId` (`packageId`),
+  ADD KEY `fileId` (`fileId`);
+
+--
+-- Indexes for table `pflv3_statslog`
+--
+ALTER TABLE `pflv3_statslog`
+  ADD KEY `type` (`type`,`value`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
