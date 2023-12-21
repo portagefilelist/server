@@ -31,5 +31,5 @@
 	SetEnvIfNoCase Request_URI \.(?:gif|jpe?g|png)$ no-gzip
 </IfModule>
 
-php_value post_max_size 6M
-php_value upload_max_filesize 5M
+php_value post_max_size 110M
+php_value upload_max_filesize 100M

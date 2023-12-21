@@ -121,14 +121,13 @@ class Package {
 		if(!empty($hash)) {
 			$queryStr = "SELECT p.hash, p.name, p.version, p.arch,
 								p.importcount,
-								pu.useword AS packageUse,
 								c.name AS categoryName,
 								c.hash AS categoryId
 							FROM `".DB_PREFIX."_package` AS p
-							LEFT JOIN `".DB_PREFIX."_package_use` AS pu ON p.hash = pu.packageId
 							LEFT JOIN `".DB_PREFIX."_cat2pkg` AS c2p ON p.hash = c2p.packageId
 							LEFT JOIN `".DB_PREFIX."_category` AS c ON c.hash = c2p.categoryId
 							WHERE p.hash = '".$this->_DB->real_escape_string($hash)."'";
+            if(QUERY_DEBUG) Helper::sysLog("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
 			try {
 				$query = $this->_DB->query($queryStr);
 
