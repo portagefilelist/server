@@ -22,6 +22,8 @@
  */
 class Helper {
 
+    private const BROWSER_AGENT_STRING = 'Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/119.0';
+
 	/**
 	 * validate the given string with the given type. Optional check the string
 	 * length
@@ -314,7 +316,7 @@ class Helper {
         curl_setopt($ch, CURLOPT_TIMEOUT, 30);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($ch, CURLOPT_MAXREDIRS, 2);
-        curl_setopt($ch, CURLOPT_USERAGENT,'Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/119.0');
+        curl_setopt($ch, CURLOPT_USERAGENT,self::BROWSER_AGENT_STRING);
 
         // curl_setopt($ch, CURLOPT_VERBOSE, true);
         // curl_setopt($ch, CURLOPT_HEADER, true);
@@ -334,6 +336,39 @@ class Helper {
         }
 
         curl_close($ch);
+
+        return $ret;
+    }
+
+    /**
+     * Download from given URL to given path
+     *
+     * @param string $url
+     * @param string $whereToStore
+     * @return bool
+     */
+    static function downloadFile(string $url, string $whereToStore): bool {
+        $fh = fopen($whereToStore, 'w+');
+
+        $ret = false;
+
+        if($fh !== false) {
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_FILE, $fh);
+
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($ch, CURLOPT_MAXREDIRS, 2);
+            curl_setopt($ch, CURLOPT_USERAGENT, self::BROWSER_AGENT_STRING);
+
+            curl_exec($ch);
+            curl_close($ch);
+
+            $ret = true;
+        }
+
+        fclose($fh);
 
         return $ret;
     }

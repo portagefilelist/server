@@ -383,7 +383,7 @@ if(!empty($toDelete)) {
     foreach($toDelete as $k=>$v) {
         unlink($k);
     }
-    Helper::sysLog('[INFO] Importer purged id files '.count($toDelete).' files');
+    Helper::sysLog('[INFO] Importer purged id '.count($toDelete).' files');
 }
 
 Helper::sysLog('[INFO] Importer imported '.$_fileCounter.' files');

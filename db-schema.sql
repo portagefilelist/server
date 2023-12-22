@@ -58,7 +58,9 @@ CREATE TABLE `pflv3_package` (
   `version` varchar(32) DEFAULT NULL,
   `arch` varchar(10) DEFAULT NULL,
   `lastmodified` datetime NOT NULL DEFAULT current_timestamp(),
-  `importcount` int(11) NOT NULL DEFAULT 1
+  `importcount` int(11) NOT NULL DEFAULT 1,
+  `topicality` date DEFAULT NULL,
+  `topicalityLastSeen` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
 -- --------------------------------------------------------
@@ -133,7 +135,8 @@ ALTER TABLE `pflv3_package`
   ADD PRIMARY KEY (`hash`),
   ADD KEY `lastmodified` (`lastmodified`),
   ADD KEY `name` (`name`),
-  ADD KEY `arch` (`arch`);
+  ADD KEY `arch` (`arch`),
+  ADD KEY `topicality` (`topicality`);
 
 --
 -- Indexes for table `pflv3_package_use`
