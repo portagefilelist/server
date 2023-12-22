@@ -29,7 +29,18 @@
 	</tr>
 	<tr>
 		<td>Version</td>
-		<td><?php echo $TemplateData['package']['version'] ?? ''; ?></td>
+		<td><?php echo $TemplateData['package']['version'] ?? ''; ?>
+			<?php
+			if(!empty($TemplateData['package']['topicality'])) {
+				echo '<small>Available in repo.</small>';
+			} else {
+                echo '<small>No data or not in repo available.</small>';
+                if(!empty($TemplateData['package']['topicalityLastSeen'])) {
+                    echo ' <small>Last seen: '.$TemplateData['package']['topicalityLastSeen'].'</small>';
+                }
+			}
+			?>
+		</td>
 	</tr>
 	<tr>
 		<td>Seen Arch</td>
