@@ -17,7 +17,7 @@
     	</sequence>
     	<attribute name="name" type="string" use="required"></attribute>
     </complexType>
-    
+
     <complexType name="package">
     	<sequence>
     		<element name="files" type="tns:files" maxOccurs="1"
@@ -28,8 +28,9 @@
     	</sequence>
     	<attribute name="name" type="string" use="required"></attribute>
     	<attribute name="version" type="string" use="required"></attribute>
-    	<attribute name="arch" type="string"></attribute>
-    	<attribute name="timestamp" type="int"></attribute>
+    	<attribute name="arch" type="string" use="required"></attribute>
+    	<attribute name="timestamp" type="int" use="required"></attribute>
+    	<attribute name="repo" type="string"></attribute>
     </complexType>
 
     <complexType name="files">

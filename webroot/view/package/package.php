@@ -29,17 +29,19 @@
 	</tr>
 	<tr>
 		<td>Version</td>
-		<td><?php echo $TemplateData['package']['version'] ?? ''; ?>
-			<?php
-			if(!empty($TemplateData['package']['topicality'])) {
-				echo '<small>Available in repo.</small>';
-			} else {
-                echo '<small>No data or not in repo available.</small>';
+		<td>
+			<?php echo $TemplateData['package']['version'] ?? ''; ?>
+
+            <?php
+            if(!empty($TemplateData['package']['topicality'])) {
+                echo '<small>Available in repo.</small>';
+            } else {
+                echo '<small>Availability not know.</small>';
                 if(!empty($TemplateData['package']['topicalityLastSeen'])) {
                     echo ' <small>Last seen: '.$TemplateData['package']['topicalityLastSeen'].'</small>';
                 }
-			}
-			?>
+            }
+            ?>
 		</td>
 	</tr>
 	<tr>
@@ -85,8 +87,17 @@
 		</td>
 	</tr>
 	<tr>
-		<td>Gentoo package website</td>
-		<td><a href="https://packages.gentoo.org/packages/<?php echo $TemplateData['package']['categoryName'] ?? ''; ?>/<?php echo $TemplateData['package']['name'] ?? ''; ?>" target="_blank">external <i class="icon icon-link"></i></a></td>
+		<td>Repository</td>
+		<td>
+			<?php
+			if($TemplateData['package']['repository'] == "gentoo") { ?>
+				<a href="https://packages.gentoo.org/packages/<?php echo $TemplateData['package']['categoryName'] ?? ''; ?>/<?php echo $TemplateData['package']['name'] ?? ''; ?>" target="_blank">Gentoo <i class="icon icon-link"></i></a>
+			<?php } elseif($TemplateData['package']['repository'] == "guru") { ?>
+				<a href="https://gitweb.gentoo.org/repo/proj/guru.git/tree/<?php echo $TemplateData['package']['categoryName'] ?? ''; ?>/<?php echo $TemplateData['package']['name'] ?? ''; ?>" target="_blank">GURU <i class="icon icon-link"></i></a>
+			<?php } else { ?>
+                <?php echo $TemplateData['package']['repository'] ?? ''; ?> :: <?php echo $TemplateData['package']['categoryName'] ?? ''; ?>/<?php echo $TemplateData['package']['name'] ?? ''; ?>
+			<?php } ?>
+		</td>
 </table>
 
 <div class="divider"></div>

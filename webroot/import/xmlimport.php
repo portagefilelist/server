@@ -184,13 +184,23 @@ foreach ($inboxFiles as $fileToImport) {
 
                 # the package insert query
                 $_packXML = new SimpleXMLElement($_pack);
-                $_packID = md5($_cat.(string)$_packXML['name'].(string)$_packXML['version'].(string)$_packXML['arch']);
+
+                $_repo = 'gentoo';
+                if(!empty((string)$_packXML['repo'])) {
+                    $_repo = (string)$_packXML['repo'];
+                }
+                $_packID = md5($_cat.(string)$_packXML['name'].(string)$_packXML['version'].(string)$_packXML['arch'].$_repo);
+                # to keep existing ids the same. repo is an addition to existing data.
+                if($_repo == "gentoo") {
+                    $_packID = md5($_cat.(string)$_packXML['name'].(string)$_packXML['version'].(string)$_packXML['arch']);
+                }
                 $_packageName = (string)$_packXML['name'];
                 $queryPackage = "INSERT INTO `".DB_PREFIX."_package` SET
                                 `hash` = '".$DB->real_escape_string($_packID)."',
                                 `name` = '".$DB->real_escape_string($_packageName)."',
                                 `version` = '".$DB->real_escape_string((string)$_packXML['version'])."',
-                                `arch` = '".$DB->real_escape_string((string)$_packXML['arch'])."'
+                                `arch` = '".$DB->real_escape_string((string)$_packXML['arch'])."',
+                                `repository` = '".$DB->real_escape_string($_repo)."'
                                 ON DUPLICATE KEY UPDATE `lastmodified` = NOW(), `importcount` = `importcount` + 1";
                 if(QUERY_DEBUG) Helper::sysLog('[QUERY] Package insert: '.Helper::cleanForLog($queryPackage));
 
@@ -198,6 +208,7 @@ foreach ($inboxFiles as $fileToImport) {
                 $queryCat2Pkg = "INSERT IGNORE INTO `".DB_PREFIX."_cat2pkg` SET
                                     `categoryId` = '".$DB->real_escape_string($_catID)."',
                                     `packageId` = '".$DB->real_escape_string($_packID)."'";
+                if(QUERY_DEBUG) Helper::sysLog('[QUERY] Package _cat2pkg insert: '.Helper::cleanForLog($queryCat2Pkg));
 
                 if(empty($_catID) || empty($_packID)) {
                     Helper::sysLog("[WARNING] Missing category '$_catID' or package '$_packID' id in file: ".$fileToWorkWith);
@@ -290,6 +301,7 @@ foreach ($inboxFiles as $fileToImport) {
                                     # if this is triggered often, make sure the DB col length is also increased.
                                     if(strlen($path) > 200) Helper::sysLog('[WARNING] File path longer than 200 : '.Helper::cleanForLog($queryFile));
                                     if(QUERY_DEBUG) Helper::sysLog('[QUERY] File insert: '.Helper::cleanForLog($queryFile));
+                                    if(QUERY_DEBUG) Helper::sysLog('[QUERY] File _pkg2file insert: '.Helper::cleanForLog($queryPgk2File));
                                     try {
                                         $DB->query($queryFile);
                                         $DB->query($queryPgk2File);

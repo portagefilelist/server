@@ -120,7 +120,7 @@ class Package {
 
 		if(!empty($hash)) {
 			$queryStr = "SELECT p.hash, p.name, p.version, p.arch,
-								p.importcount, p.topicality, p.topicalityLastSeen,
+								p.importcount, p.topicality, p.topicalityLastSeen, p.repository,
 								c.name AS categoryName,
 								c.hash AS categoryId
 							FROM `".DB_PREFIX."_package` AS p
