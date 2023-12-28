@@ -36,7 +36,7 @@
             if(!empty($TemplateData['package']['topicality'])) {
                 echo '<small>Available in repo.</small>';
             } else {
-                echo '<small>Availability not know.</small>';
+                echo '<small>Availability not known.</small>';
                 if(!empty($TemplateData['package']['topicalityLastSeen'])) {
                     echo ' <small>Last seen: '.$TemplateData['package']['topicalityLastSeen'].'</small>';
                 }
