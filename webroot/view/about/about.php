@@ -75,6 +75,7 @@
 
 <h2>Limitations</h2>
 <ul>
+	<li>Supported repositories are: <a href="https://packages.gentoo.org/">Gentoo</a> and <a href="https://wiki.gentoo.org/wiki/Project:GURU">GURU</a></li>
 	<li><a href="https://packages.gentoo.org/useflags/expand" target="_blank">USE Expand</a> useflags will be ignored.</li>
 	<li>Files with <i>/usr/src/linux</i>, <i>-gentoo-dist/</i>, <i>*__*</i> will be ignored. The package itself will still be added.</li>
 	<li>Only files or symlinks are indexed.</li>

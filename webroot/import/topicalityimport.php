@@ -100,7 +100,7 @@ $queryStrTemplate = "UPDATE `".DB_PREFIX."_package` AS p
                     LEFT JOIN `".DB_PREFIX."_cat2pkg` AS c2p ON c2p.packageId = p.hash 
                     LEFT JOIN `".DB_PREFIX."_category` AS c ON c.hash = c2p.categoryId
                     SET p.topicality = CURDATE(), p.topicalityLastSeen = CURDATE()
-                    WHERE p.name = '%s' AND c.name = '%s' AND p.version = '%s'";
+                    WHERE p.name = '%s' AND c.name = '%s' AND p.version = '%s' AND p.repository = 'gentoo'";
 $updateCounter = 0;
 $DB->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 // the package and category files which are updated

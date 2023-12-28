@@ -57,6 +57,7 @@ CREATE TABLE `pflv3_package` (
   `name` varchar(64) NOT NULL,
   `version` varchar(32) DEFAULT NULL,
   `arch` varchar(10) DEFAULT NULL,
+  `repository` varchar(16) DEFAULT NULL,
   `lastmodified` datetime NOT NULL DEFAULT current_timestamp(),
   `importcount` int(11) NOT NULL DEFAULT 1,
   `topicality` date DEFAULT NULL,
