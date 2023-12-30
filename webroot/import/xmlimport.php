@@ -99,10 +99,25 @@ foreach ($inboxFiles as $fileToImport) {
     $finfo = finfo_open(FILEINFO_MIME_TYPE);
     $mime = finfo_file($finfo, $fileToImport);
     finfo_close($finfo);
-    if($mime != "application/x-bzip2") {
+    // can be cleaned up with future vesions. Tar is the new one.
+    if($mime != "application/x-bzip2" && $mime != "application/x-tar") {
         Helper::sysLog("[WARNING] Import invalid mime type: ".Helper::cleanForLog($mime));
         rename($fileToImport, PATH_INBOX.'/invalidMimeType-'.time());
         continue;
+    }
+
+    // if tar extract it and continue. Extracted files will be processed next run.
+    if($mime == "application/x-tar") {
+        try {
+            $phar = new PharData($fileToImport);
+            $phar->extractTo(PATH_INBOX);
+            Helper::sysLog('[INFO] Importer extracted tar file: '.Helper::cleanForLog($fileToImport));
+            continue;
+        } catch (Exception $e) {
+            Helper::sysLog("[ERROR] Import can not extract tar file: ".Helper::cleanForLog($fileToImport));
+            rename($fileToImport, PATH_INBOX.'/invalidTar-'.time());
+            continue;
+        }
     }
 
     // decompress
