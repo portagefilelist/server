@@ -20,11 +20,8 @@
 
     <complexType name="package">
     	<sequence>
-    		<element name="files" type="tns:files" maxOccurs="1"
-    			minOccurs="1">
-    		</element>
-    		<element name="uses" type="tns:uses" maxOccurs="1" minOccurs="0">
-    		</element>
+    		<element name="files" type="tns:files" maxOccurs="1" minOccurs="1"></element>
+    		<element name="uses" type="tns:uses" maxOccurs="1" minOccurs="0"></element>
     	</sequence>
     	<attribute name="name" type="string" use="required"></attribute>
     	<attribute name="version" type="string" use="required"></attribute>
