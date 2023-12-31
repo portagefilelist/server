@@ -93,8 +93,6 @@ $_upId = array();
 
 foreach ($inboxFiles as $fileToImport) {
 
-    $xmlReader = new XMLReader;
-
     // check mimetype
     $finfo = finfo_open(FILEINFO_MIME_TYPE);
     $mime = finfo_file($finfo, $fileToImport);
@@ -108,14 +106,18 @@ foreach ($inboxFiles as $fileToImport) {
 
     // if tar extract it and continue. Extracted files will be processed next run.
     if($mime == "application/x-tar") {
+        $_tarFile = $fileToImport.'.tar';
         try {
-            $phar = new PharData($fileToImport);
+            // stupid PharData works on file suffix ...
+            rename($fileToImport, $_tarFile);
+            $phar = new PharData($_tarFile);
             $phar->extractTo(PATH_INBOX);
-            Helper::sysLog('[INFO] Importer extracted tar file: '.Helper::cleanForLog($fileToImport));
+            Helper::sysLog('[INFO] Importer extracted tar file: '.Helper::cleanForLog($_tarFile));
+            unlink($_tarFile);
             continue;
         } catch (Exception $e) {
-            Helper::sysLog("[ERROR] Import can not extract tar file: ".Helper::cleanForLog($fileToImport));
-            rename($fileToImport, PATH_INBOX.'/invalidTar-'.time());
+            Helper::sysLog("[ERROR] Import can not extract tar file: ".Helper::cleanForLog($e->getMessage()));
+            rename($_tarFile, PATH_INBOX.'/invalidTar-'.time());
             continue;
         }
     }
@@ -145,6 +147,8 @@ foreach ($inboxFiles as $fileToImport) {
     }
 
     $fileToWorkWith = $fileToImport.'.xml';
+
+    $xmlReader = new XMLReader;
 
     if (!$xmlReader->open($fileToWorkWith)) {
         Helper::sysLog('[WARNING] Can not read xml file: '.Helper::cleanForLog($fileToWorkWith));
@@ -359,6 +363,7 @@ foreach ($inboxFiles as $fileToImport) {
 
     // could be already moved due an error
     if(file_exists($fileToWorkWith)) {
+        Helper::sysLog("[INFO] Imported file: ".$fileToWorkWith);
         unlink($fileToWorkWith);
     }
 }
