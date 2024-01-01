@@ -190,6 +190,7 @@ class Files {
 						p.name AS packageName,
 						p.arch AS packageArch,
 						p.hash AS packageId,
+						p.repository AS packageRepo,
 						p.version AS packageVersion";
 		if ($this->_queryOptions['unique']) {
 			$querySelect = "DISTINCT p.name AS packageName,
