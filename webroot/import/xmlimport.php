@@ -27,10 +27,10 @@ mb_http_output('UTF-8');
 mb_internal_encoding('UTF-8');
 error_reporting(-1); // E_ALL & E_STRICT
 
-## config
+// config
 require_once('../config.php');
 
-## set the error reporting
+// set the error reporting
 ini_set('log_errors',true);
 if(DEBUG === true) {
     ini_set('display_errors',true);
@@ -39,13 +39,13 @@ else {
     ini_set('display_errors',false);
 }
 
-# time settings
+// time settings
 date_default_timezone_set(TIMEZONE);
 
-# static helper class
+// static helper class
 require_once '../lib/helper.class.php';
 
-# import start secret is needed
+// import start secret is needed
 $_check = '';
 $argOptions = getopt('s:');
 if(isset($argOptions['s']) && !empty($argOptions['s'])) {
@@ -58,7 +58,7 @@ if($_check !== IMPORTER_SECRET) {
     exit();
 }
 
-# get available files from inbox
+// get available files from inbox
 $inboxFiles = glob(PATH_INBOX.'/pfl*');
 if(DEBUG) Helper::sysLog('[DEBUG] Found files: '.Helper::cleanForLog($inboxFiles));
 
@@ -74,7 +74,7 @@ if($_fileCounter < 5) {
 
 Helper::sysLog('[INFO] Importer starting.');
 
-## DB connection
+// DB connection
 $DB = new mysqli(DB_HOST, DB_USERNAME,DB_PASSWORD, DB_NAME);
 if ($DB->connect_errno) exit('Can not connect to MySQL Server');
 $DB->set_charset("utf8mb4");
@@ -84,7 +84,7 @@ $driver->report_mode = MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT;
 
 libxml_use_internal_errors(true);
 
-# set time limit since it is long running
+// set time limit since it is long running
 set_time_limit(300);
 
 // the package and category files which are updated
@@ -93,16 +93,33 @@ $_upId = array();
 
 foreach ($inboxFiles as $fileToImport) {
 
-    $xmlReader = new XMLReader;
-
     // check mimetype
     $finfo = finfo_open(FILEINFO_MIME_TYPE);
     $mime = finfo_file($finfo, $fileToImport);
     finfo_close($finfo);
-    if($mime != "application/x-bzip2") {
+    // can be cleaned up with future vesions. Tar is the new one.
+    if($mime != "application/x-bzip2" && $mime != "application/x-tar") {
         Helper::sysLog("[WARNING] Import invalid mime type: ".Helper::cleanForLog($mime));
         rename($fileToImport, PATH_INBOX.'/invalidMimeType-'.time());
         continue;
+    }
+
+    // if tar extract it and continue. Extracted files will be processed next run.
+    if($mime == "application/x-tar") {
+        $_tarFile = $fileToImport.'.tar';
+        try {
+            // stupid PharData works on file suffix ...
+            rename($fileToImport, $_tarFile);
+            $phar = new PharData($_tarFile);
+            $phar->extractTo(PATH_INBOX);
+            Helper::sysLog('[INFO] Importer extracted tar file: '.Helper::cleanForLog($_tarFile));
+            unlink($_tarFile);
+            continue;
+        } catch (Exception $e) {
+            Helper::sysLog("[ERROR] Import can not extract tar file: ".Helper::cleanForLog($e->getMessage()));
+            rename($_tarFile, PATH_INBOX.'/invalidTar-'.time());
+            continue;
+        }
     }
 
     // decompress
@@ -115,7 +132,7 @@ foreach ($inboxFiles as $fileToImport) {
         if(bzerrno($fh) !== 0) { Helper::sysLog('[ERROR] Decompress problem'); exit(); }
         file_put_contents($fileToImport.'.xml', $buffer, FILE_APPEND | LOCK_EX);
         $_unpackCounter += 1024;
-        if($_unpackCounter > 100000000) { // 100MB max unpack size
+        if($_unpackCounter > 300000000) { // 300MB max unpack size
             $_unpackSizeMark = true;
             break;
         }
@@ -131,6 +148,8 @@ foreach ($inboxFiles as $fileToImport) {
 
     $fileToWorkWith = $fileToImport.'.xml';
 
+    $xmlReader = new XMLReader;
+
     if (!$xmlReader->open($fileToWorkWith)) {
         Helper::sysLog('[WARNING] Can not read xml file: '.Helper::cleanForLog($fileToWorkWith));
         rename($fileToImport, PATH_INBOX.'/invalidFile-'.time());
@@ -140,9 +159,10 @@ foreach ($inboxFiles as $fileToImport) {
     // delete compressed file
     unlink($fileToImport);
 
-    # validation does not work on the complete document
-    # if the document is read in chunks
-    # so the is valid call is while reading the file
+    // validation does not work on the complete document
+    // https://www.php.net/manual/en/xmlreader.isvalid.php
+    // if the document is read in chunks
+    // so the is valid call is while reading the file
     $xmlReader->setParserProperty(XMLReader::VALIDATE, true);
     $xmlReader->setSchema('schema.xsd');
 
@@ -154,7 +174,7 @@ foreach ($inboxFiles as $fileToImport) {
                 Helper::sysLog('[WARNING] Invalid xml file: '.$_xmlErrors->message);
                 libxml_clear_errors();
                 rename($fileToWorkWith, PATH_INBOX.'/invalidXMLFile-'.time());
-                continue;
+                break;
             }
         }
 
@@ -174,7 +194,7 @@ foreach ($inboxFiles as $fileToImport) {
             // make sure to jump to the next category at the end
             if(!empty($_cat) && !empty($_pack)) {
 
-                # the category insert query
+                // the category insert query
                 $_catID = md5($_cat);
                 $queryCat = "INSERT INTO `".DB_PREFIX."_category` SET
                                 `name` = '".$DB->real_escape_string($_cat)."',
@@ -182,7 +202,7 @@ foreach ($inboxFiles as $fileToImport) {
                                 ON DUPLICATE KEY UPDATE `lastmodified` = NOW()";
                 if(QUERY_DEBUG) Helper::sysLog('[QUERY] Category insert: '.Helper::cleanForLog($queryCat));
 
-                # the package insert query
+                // the package insert query
                 $_packXML = new SimpleXMLElement($_pack);
 
                 $_repo = 'gentoo';
@@ -190,7 +210,7 @@ foreach ($inboxFiles as $fileToImport) {
                     $_repo = (string)$_packXML['repo'];
                 }
                 $_packID = md5($_cat.(string)$_packXML['name'].(string)$_packXML['version'].(string)$_packXML['arch'].$_repo);
-                # to keep existing ids the same. repo is an addition to existing data.
+                // to keep existing ids the same. repo is an addition to existing data.
                 if($_repo == "gentoo") {
                     $_packID = md5($_cat.(string)$_packXML['name'].(string)$_packXML['version'].(string)$_packXML['arch']);
                 }
@@ -204,7 +224,7 @@ foreach ($inboxFiles as $fileToImport) {
                                 ON DUPLICATE KEY UPDATE `lastmodified` = NOW(), `importcount` = `importcount` + 1";
                 if(QUERY_DEBUG) Helper::sysLog('[QUERY] Package insert: '.Helper::cleanForLog($queryPackage));
 
-                # packageId does contain the category and not only the package name
+                // packageId does contain the category and not only the package name
                 $queryCat2Pkg = "INSERT IGNORE INTO `".DB_PREFIX."_cat2pkg` SET
                                     `categoryId` = '".$DB->real_escape_string($_catID)."',
                                     `packageId` = '".$DB->real_escape_string($_packID)."'";
@@ -215,7 +235,7 @@ foreach ($inboxFiles as $fileToImport) {
                     continue;
                 }
 
-                # the commit is at the "end"
+                // the commit is at the "end"
                 try {
                     $DB->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 
@@ -229,15 +249,15 @@ foreach ($inboxFiles as $fileToImport) {
                     exit();
                 }
 
-                # now the package content
+                // now the package content
                 foreach($_packXML->children() as $child) {
                     switch ($child->getName()) {
                         case 'uses':
                             foreach($child->children() as $use) {
                                 $_useWord = (string)$use;
 
-                                # ignores
-                                # use expands
+                                // ignores
+                                // use expands
                                 if(strstr($_useWord,'_')) {
                                     continue;
                                 }
@@ -265,9 +285,9 @@ foreach ($inboxFiles as $fileToImport) {
                                 $filename = $fileinfo['basename'];
                                 $path = (string)$file;
 
-                                # ignores
-                                # kernel sources, dist kernel
-                                # __ which are often __pycache and other testfiles
+                                // ignores
+                                // kernel sources, dist kernel
+                                // __ which are often __pycache and other testfiles
                                 if(strstr($path, '/usr/src/linux')
                                     || strstr($path, '-gentoo-dist/')
                                     || strstr($path, '__')
@@ -298,7 +318,7 @@ foreach ($inboxFiles as $fileToImport) {
                                                     `packageId` = '".$DB->real_escape_string($_packID)."',
                                                     `fileId` = '".$DB->real_escape_string($hash)."'";
 
-                                    # if this is triggered often, make sure the DB col length is also increased.
+                                    // if this is triggered often, make sure the DB col length is also increased.
                                     if(strlen($path) > 200) Helper::sysLog('[WARNING] File path longer than 200 : '.Helper::cleanForLog($queryFile));
                                     if(QUERY_DEBUG) Helper::sysLog('[QUERY] File insert: '.Helper::cleanForLog($queryFile));
                                     if(QUERY_DEBUG) Helper::sysLog('[QUERY] File _pkg2file insert: '.Helper::cleanForLog($queryPgk2File));
@@ -341,8 +361,9 @@ foreach ($inboxFiles as $fileToImport) {
     }
     $xmlReader->close();
 
-    // could be renamed due an error
+    // could be already moved due an error
     if(file_exists($fileToWorkWith)) {
+        Helper::sysLog("[INFO] Imported file: ".$fileToWorkWith);
         unlink($fileToWorkWith);
     }
 }

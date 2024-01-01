@@ -115,6 +115,7 @@ if(isset($result['results'])) {
 			'path' => '',
 			'file' => '',
 			'version' => '',
+			'repository' => '',
 			'archs' => array()
 		);
 
@@ -124,6 +125,7 @@ if(isset($result['results'])) {
 		$_t['archs'] = array($entry['packageArch']);
 		$_t['file'] = $entry['name'];
 		$_t['version'] = $entry['packageVersion'];
+		$_t['repository'] = $entry['packageRepo'];
 
 		$returnData['result'][] = $_t;
 	}

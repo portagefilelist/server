@@ -23,7 +23,7 @@ ini_set('error_reporting',-1); // E_ALL & E_STRICT
 
 require_once 'config.php';
 
-## set the error reporting
+// set the error reporting
 ini_set('log_errors',true);
 if(DEBUG === true) {
 	ini_set('display_errors',true);
@@ -32,16 +32,16 @@ else {
 	ini_set('display_errors',false);
 }
 
-# time settings
+// time settings
 date_default_timezone_set(TIMEZONE);
 
-# static helper class
+// static helper class
 require_once 'lib/helper.class.php';
 
 header('Content-Type: text/plain');
 
-# check inbox size
-# currently abort if dir is larger then 1Gb
+// check inbox size
+// currently abort if dir is larger then 1Gb
 if(Helper::folderSize(PATH_INBOX) > 1000000000) {
 	Helper::sysLog("ERROR Upload inbox full!");
     http_response_code(507);
@@ -63,7 +63,8 @@ if(isset($_FILES['foo'])) {
 		$finfo = finfo_open(FILEINFO_MIME_TYPE);
 		$mime = finfo_file($finfo, $_uploadFile['tmp_name']);
 		finfo_close($finfo);
-		if($mime != "application/x-bzip2") {
+        // can be cleaned up after some time. tar is the new format
+		if($mime != "application/x-bzip2" && $mime != "application/x-tar") {
 			Helper::sysLog("ERROR Upload invalid mime type: ".Helper::cleanForLog($mime));
             http_response_code(400);
             echo "Invalid mime type.";
