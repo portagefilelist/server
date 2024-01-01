@@ -132,7 +132,7 @@ foreach ($inboxFiles as $fileToImport) {
         if(bzerrno($fh) !== 0) { Helper::sysLog('[ERROR] Decompress problem'); exit(); }
         file_put_contents($fileToImport.'.xml', $buffer, FILE_APPEND | LOCK_EX);
         $_unpackCounter += 1024;
-        if($_unpackCounter > 100000000) { // 100MB max unpack size
+        if($_unpackCounter > 300000000) { // 300MB max unpack size
             $_unpackSizeMark = true;
             break;
         }
