@@ -69,73 +69,69 @@ $DB->query("SET collation_connection = 'utf8mb4_unicode_520_ci'");
 $driver = new mysqli_driver();
 $driver->report_mode = MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT;
 
-$ebuildFile = PATH_ABSOLUTE.'/import/tree-flat-ebuild.txt';
+$ebuildFiles = array(
+    'gentoo' => array(
+        'file' => PATH_ABSOLUTE.'/import/tree-gentoo-flat-ebuild.txt',
+        'url' => 'http://91.132.146.200/webroot/tree-gentoo-flat-ebuild.txt'
+    ),
+    'guru' => array(
+        'file' => PATH_ABSOLUTE.'/import/tree-guru-flat-ebuild.txt',
+        'url' => 'http://91.132.146.200/webroot/tree-guru-flat-ebuild.txt'
+    )
+);
 
-// cleanup
-if(file_exists($ebuildFile)) {
-    unlink($ebuildFile);
-}
-
-Helper::downloadFile('http://91.132.146.200/webroot/tree-flat-ebuild.txt', PATH_ABSOLUTE.'/import/tree-flat-ebuild.txt');
-if(!file_exists($ebuildFile)) {
-    Helper::sysLog('[ERROR] Can not download topicality file.');
-    exit();
-}
-
-$categories = array();
-$queryStr = "SELECT * FROM `".DB_PREFIX."_category`";
-try {
-    $query = $DB->query($queryStr);
-    if($query !== false && $query->num_rows > 0) {
-        while(($result = $query->fetch_assoc()) != false) {
-            $categories[$result['hash']] = $result['name'];
-        }
+foreach($ebuildFiles as $repo=>$info) {
+    Helper::downloadFile($info['url'], $info['file']);
+    if(!file_exists($info['file'])) {
+        Helper::sysLog('[WARNING] Can not download topicality file. '.$info['url']);
     }
-} catch (Exception $e) {
-    Helper::sysLog("[ERROR] Topicality category list mysql catch: ".$e->getMessage());
-    exit();
 }
 
+// those are sprintf placeholders, not prepared query stuff
 $queryStrTemplate = "UPDATE `".DB_PREFIX."_package` AS p 
                     LEFT JOIN `".DB_PREFIX."_cat2pkg` AS c2p ON c2p.packageId = p.hash 
                     LEFT JOIN `".DB_PREFIX."_category` AS c ON c.hash = c2p.categoryId
                     SET p.topicality = CURDATE(), p.topicalityLastSeen = CURDATE()
-                    WHERE p.name = '%s' AND c.name = '%s' AND p.version = '%s' AND p.repository = 'gentoo'";
+                    WHERE p.name = '%s' AND c.name = '%s' AND p.version = '%s' AND p.repository = '%s'";
 $updateCounter = 0;
 $DB->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 // the package and category files which are updated
 // and then used in cache clean
 $_upId = array();
 
-$file = new SplFileObject($ebuildFile);
-while (!$file->eof()) {
-    $line = trim($file->fgets());
-    $line = str_replace('./', '',$line);
+foreach($ebuildFiles as $repo=>$info) {
+    if(!file_exists($info['file'])) continue;
 
-    if(substr_count($line, '/') == 2) {
-        # sys-process/systemd-cron/systemd-cron-2.3.0-r1.ebuild
-        $_t = explode('/', $line);
-        $_version = $_t[2];
-        $_version = str_replace('.ebuild', '', $_version);
-        $_version = str_replace($_t[1].'-', '', $_version);
+    $file = new SplFileObject($info['file']);
+    while (!$file->eof()) {
+        $line = trim($file->fgets());
+        $line = str_replace('./', '',$line);
 
-        if(!empty($_t[0]) && !empty($_t[1]) && $_version != '') {
-            $queryStr =  sprintf($queryStrTemplate, $_t[1], $_t[0], $_version);
-            if(QUERY_DEBUG) Helper::sysLog('[QUERY] Topicality update: '.Helper::cleanForLog($queryStr));
-            if(DEBUG) Helper::sysLog("[DEBUG] Topicality update: ".Helper::cleanForLog($_t));
-            try {
-                $query = $DB->query($queryStr);
-                if($DB->affected_rows > 0) {
-                    $updateCounter++;
+        if(substr_count($line, '/') == 2) {
+            # sys-process/systemd-cron/systemd-cron-2.3.0-r1.ebuild
+            $_t = explode('/', $line);
+            $_version = $_t[2];
+            $_version = str_replace('.ebuild', '', $_version);
+            $_version = str_replace($_t[1].'-', '', $_version);
+
+            if(!empty($_t[0]) && !empty($_t[1]) && $_version != '') {
+                $queryStr =  sprintf($queryStrTemplate, $_t[1], $_t[0], $_version, $repo);
+                if(QUERY_DEBUG) Helper::sysLog('[QUERY] Topicality update: '.Helper::cleanForLog($queryStr));
+                if(DEBUG) Helper::sysLog("[DEBUG] Topicality update: ".Helper::cleanForLog($_t));
+                try {
+                    $query = $DB->query($queryStr);
+                    if($DB->affected_rows > 0) {
+                        $updateCounter++;
+                    }
+                } catch (Exception $e) {
+                    Helper::sysLog("[ERROR] Topicality update catch: ".$e->getMessage());
+                    exit();
                 }
-            } catch (Exception $e) {
-                Helper::sysLog("[ERROR] Topicality update catch: ".$e->getMessage());
-                exit();
             }
         }
     }
+    $file = null;
 }
-$file = null;
 
 if($updateCounter > 0) {
     try {
@@ -175,11 +171,6 @@ if($updateCounter > 0) {
         }
         Helper::sysLog('[INFO] Topicality importer purged id '.count($toDelete).' files');
     }
-}
-
-// cleanup
-if(file_exists($ebuildFile)) {
-    unlink($ebuildFile);
 }
 
 Helper::sysLog('[INFO] Topicality importer updated: '.$updateCounter);
