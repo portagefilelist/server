@@ -46,31 +46,25 @@
 	</div>
 </div>
 
-<h2>Usage</h2>
-<p>
-	Install <a href="https://packages.gentoo.org/packages/app-portage/pfl" target="_blank">app-portage/pfl</a>
-	with <code>emerge app-portage/pfl</code> and let the cron to its job.
-</p>
-<p>
-	To search for files use either the webseach (this website) or use the <code>e-file</code> command.
-</p>
-<p>
-	For more options for both of the commands, visit the <a href="https://wiki.gentoo.org/wiki/Pfl" target="_blank">official Gentoo PFL Wiki.</a>
-</p>
-
 <h2>You can help</h2>
 <p>
 	PFL needs Portage data from your system. The more ebuilds you have installed the better.
 	The more exotic ebuilds you have installed the better. Every Gentoo user can help!
 </p>
-
-<code>emerge app-portage/pfl</code>
-<br /> <br />
-
 <p>
-	This will install a cron job that submits new data to the PFL servers every week.
+    <code>emerge -av app-portage/pfl</code>
+</p>
+<p>
+	This will install the <a href="https://packages.gentoo.org/packages/app-portage/pfl" target="_blank">the package</a>, its
+    commands and a cron job that submits new data to the PFL servers every week.
 	Don't worry, your privacy mains protected as we are not collecting anything else
 	than portage data, and we don't store who sends what.
+</p>
+<h3>Usage</h3>
+<p>
+    To search for files use either the webseach (this website) or use the <code>e-file</code> command.
+    To manually update your portage information, use the command <code>pfl</code>.
+    For more options for both of the commands, visit the <a href="https://wiki.gentoo.org/wiki/Pfl" target="_blank">official Gentoo PFL Wiki.</a>
 </p>
 
 <h2>Limitations</h2>
