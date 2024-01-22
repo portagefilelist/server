@@ -140,7 +140,7 @@ foreach ($inboxFiles as $fileToImport) {
     bzclose($fh);
 
     if($_unpackSizeMark) {
-        Helper::sysLog('[WARNING] Max unpack filsize reached: '.Helper::cleanForLog($fileToImport));
+        Helper::sysLog('[WARNING] Max unpack filesize reached: '.Helper::cleanForLog($fileToImport));
         rename($fileToImport, PATH_INBOX.'/invalidSize-'.time());
         unlink($fileToImport.'.xml');
         continue;
