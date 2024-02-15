@@ -58,7 +58,7 @@
 	</main>
 	<div class="divider"></div>
 	<footer>
-		<div class="text-small">&copy; 2023 - <a href="index.php?p=imprint">Imprint</a></div>
+		<div class="text-small">Copyright &copy; 2023 - <?php echo date("Y"); ?> Portagefilelist - <a href="index.php?p=imprint">Imprint</a></div>
 	</footer>
 </body>
 </html>

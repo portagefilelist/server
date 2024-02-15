@@ -20,19 +20,19 @@ echo "lint"
 xmllint --format ${WORKFILE}.out -o $NEWFILENAME
 
 echo "split"
-#xml_split -b $RA $NEWFILENAME
+xml_split -b $RA $NEWFILENAME
 # if splitting by package you need different text added
-xml_split -b $RA -l 2 $NEWFILENAME
+#xml_split -b $RA -l 2 $NEWFILENAME
 
 rm *-00.xml
 
 echo "adding"
 for FIL in pfl-*; do
-	#sed -i '1 a<pfl xmlns="http://www.portagefilelist.de/xsd/collect">' $FIL
-	#echo -e "\n</pfl>" >> $FIL
+	sed -i '1 a<pfl xmlns="http://www.portagefilelist.de/xsd/collect">' $FIL
+	echo -e "\n</pfl>" >> $FIL
 	
-	sed -i '1 a<pfl xmlns="http://www.portagefilelist.de/xsd/collect"><category name="sys-kernel">' $FIL
-	echo -e "\n</category>\n</pfl>" >> $FIL
+	#sed -i '1 a<pfl xmlns="http://www.portagefilelist.de/xsd/collect"><category name="sys-kernel">' $FIL
+	#echo -e "\n</category>\n</pfl>" >> $FIL
 done
 
 echo "zipping"

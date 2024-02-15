@@ -232,14 +232,18 @@ class Packages {
 	/**
 	 * Return some general stats about packages table
 	 *
-	 * @return array('latest' => array(), 'amount' => '', 'arch' => array(), 'use' => array())
+	 * @return array(
+	 * 		'latest' => array(), 'amount' => '', 'arch' => array(), 'use' => array(),
+	 * 		'repository'  => array()
+	 * )
 	 */
 	public function stats():array {
 		$ret = array(
 			'latest' => array(),
 			'amount' => '',
 			'arch' => array(),
-			'use' => array()
+			'use' => array(),
+			'repository' => array()
 		);
 
 		// latest updated
@@ -328,6 +332,25 @@ class Packages {
         }
         catch (Exception $e) {
             Helper::sysLog("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
+        }
+
+        // packages per repository
+        $queryStr = "SELECT p.repository, COUNT(*) AS amount 
+        			FROM `".DB_PREFIX."_package` AS p 
+        			GROUP BY p.repository";
+        if(QUERY_DEBUG) Helper::sysLog("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
+
+        try {
+        	$query = $this->_DB->query($queryStr);
+
+			if($query !== false && $query->num_rows > 0) {
+				while(($result = $query->fetch_assoc()) != false) {
+					$ret['repository'][$result['repository']] = $result['amount'];
+				}
+			}
+        }
+        catch (Exception $e) {
+        	Helper::sysLog("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
         }
 
 		return $ret;
