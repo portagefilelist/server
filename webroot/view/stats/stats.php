@@ -19,7 +19,8 @@
 ?>
 <h1>Statistics</h1>
 <p>
-	Repositories indexed: <a href="https://packages.gentoo.org/">Gentoo</a> and <a href="https://wiki.gentoo.org/wiki/Project:GURU">GURU</a><br />
+	Repositories indexed: <a href="https://packages.gentoo.org/">Gentoo</a>(<?php echo $TemplateData['p']['repository']['gentoo'] ?? ''; ?>) 
+	and <a href="https://wiki.gentoo.org/wiki/Project:GURU">GURU</a>(<?php echo $TemplateData['p']['repository']['guru'] ?? ''; ?>) <br />
 	Amount of indexed packages: <b><?php echo $TemplateData['p']['amount'] ?? ''; ?></b><br />
 	Amount of indexed files: <b><?php echo $TemplateData['f']['amount'] ?? ''; ?></b><br />
 	Indexed architectures: <b><?php echo implode(", ", $TemplateData['p']['arch']); ?></b>

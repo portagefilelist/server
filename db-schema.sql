@@ -137,6 +137,7 @@ ALTER TABLE `pflv3_package`
   ADD KEY `lastmodified` (`lastmodified`),
   ADD KEY `name` (`name`),
   ADD KEY `arch` (`arch`),
+  ADD KEY `repository` (`repository`),
   ADD KEY `topicality` (`topicality`);
 
 --
