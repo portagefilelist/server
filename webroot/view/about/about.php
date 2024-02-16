@@ -14,37 +14,30 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.
  *
  * pre 2023 - https://github.com/tuxmainy
- * 2023 https://www.bananas-playground.net/projekt/portagefilelist/
+ * 2023 - 2024 https://www.bananas-playground.net/projekt/portagefilelist/
  */
 ?>
+<img src="view/asset/pfl-logo.png" width="135px" class="uk-float-right"/>
 <h1>About</h1>
-
-<div class="tile">
-	<div class="tile-icon">
-		<img src="view/asset/pfl-logo.png" width="135px" />
-	</div>
-	<div class="tile-content">
-		<h2 class="tile-title">What is Portage File List?</h2>
-		<p>
-			Portage File List collects which files are installed by which ebuild on
-			users machines. It shares this data publicly for searching/browsing.
-			It allows user to search for files that are not installed on their
-			system and figure out which ebuild they need to install in order to obtain it.
-		</p>
-		<p>
-			Let's make a short example: You want to use the command brctl, but it's not installed on your system.
-			Portage offers no way for you to figure out the name of the ebuild. You have to guess.
-			Or you can search PFL and hope that someone else has installed brctl and thus PFL knows which ebuild does that.<br />
-			<br />
-			Try it: <a href="index.php?fs=brctl&unique=1">query Portagefilelist for brctl</a><br />
-			Apparently the ebuild is net-misc/bridge-utils.
-		</p>
-		<p>
-			Gentoo wiki: <a href="https://wiki.gentoo.org/wiki/Pfl" target="_blank">PFL</a><br />
-			Gentoo package: <a href="https://packages.gentoo.org/packages/app-portage/pfl" target="_blank">app-portage/pfl</a>
-		</p>
-	</div>
-</div>
+<h2 class="tile-title">What is Portage File List?</h2>
+<p>
+    Portage File List collects which files are installed by which ebuild on
+    users machines. It shares this data publicly for searching/browsing.
+    It allows user to search for files that are not installed on their
+    system and figure out which ebuild they need to install in order to obtain it.
+</p>
+<p>
+    Let's make a short example: You want to use the command brctl, but it's not installed on your system.
+    Portage offers no way for you to figure out the name of the ebuild. You have to guess.
+    Or you can search PFL and hope that someone else has installed brctl and thus PFL knows which ebuild does that.<br />
+    <br />
+    Try it: <a href="index.php?fs=brctl&unique=1">query Portagefilelist for brctl</a><br />
+    Apparently the ebuild is net-misc/bridge-utils.
+</p>
+<p>
+    Gentoo wiki: <a href="https://wiki.gentoo.org/wiki/Pfl" target="_blank">PFL</a><br />
+    Gentoo package: <a href="https://packages.gentoo.org/packages/app-portage/pfl" target="_blank">app-portage/pfl</a>
+</p>
 
 <h2>You can help</h2>
 <p>
@@ -60,12 +53,17 @@
 	Don't worry, your privacy mains protected as we are not collecting anything else
 	than portage data, and we don't store who sends what.
 </p>
+
 <h3>Usage</h3>
 <p>
     To search for files use either the webseach (this website) or use the <code>e-file</code> command.
     To manually update your portage information, use the command <code>pfl</code>.
     For more options for both of the commands, visit the <a href="https://wiki.gentoo.org/wiki/Pfl" target="_blank">official Gentoo PFL Wiki.</a>
 </p>
+
+<h3>Feedback</h3>
+<p>Please visit <a href="https://github.com/portagefilelist/client" target="_blank">PFL Github repository</a> for development.</p>
+<p>You have found a bug or have suggestions for improvement? <a href="https://github.com/portagefilelist/client/issues" target="_blank">Let me know!</a></p>
 
 <h2>Limitations</h2>
 <ul>
@@ -74,11 +72,6 @@
 	<li>Files with <i>/usr/src/linux</i>, <i>-gentoo-dist/</i>, <i>*__*</i> will be ignored. The package itself will still be added.</li>
 	<li>Only files or symlinks are indexed.</li>
 </ul>
-
-<h2>Feedback</h2>
-
-<p>Please visit <a href="https://github.com/portagefilelist/client" target="_blank">PFL Github repository</a> for development.</p>
-<p>You have found a bug or have suggestions for improvement? <a href="https://github.com/portagefilelist/client/issues" target="_blank">Let me know!</a></p>
 
 <h2>History</h2>
 <ul>

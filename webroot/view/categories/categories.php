@@ -14,27 +14,28 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.
  *
  * pre 2023 - https://github.com/tuxmainy
- * 2023 https://www.bananas-playground.net/projekt/portagefilelist/
+ * 2023 - 2024 https://www.bananas-playground.net/projekt/portagefilelist/
  */
 ?>
-
-<form method="get" action="#panchor" id="panchor">
-	<input type="hidden" name="p" value="categories" />
-	<div class="form-group">
-		<label class="form-label" for="category">
-			Search for a category (<samp>media-libs</samp>).<br />
-			Using * as a wildcard (<samp>media-li*</samp>) will <i>slow</i> down the query!
-		</label>
-		<input class="form-input" type="text" placeholder="Use * as a wildcard" id="category" name="cs" value="<?php echo $TemplateData['searchInput']; ?>">
-	</div>
-	<div class="form-group">
-		<input class="btn" type="submit" value="Search">
-	</div>
+<form class="uk-form-stacked" method="get" action="#panchor" id="panchor">
+    <input type="hidden" name="p" value="categories" />
+    <div class="uk-margin">
+        <label class="uk-form-label" for="category">
+            Search for a category (<samp>media-libs</samp>).<br />
+            Using * as a wildcard (<samp>media-li*</samp>) will <i>slow</i> down the query!
+        </label>
+        <div class="uk-form-controls">
+            <input class="uk-input" type="text" placeholder="Searchterm. Use * as a wildcard" id="category" name="cs" value="<?php echo $TemplateData['searchInput']; ?>">
+        </div>
+    </div>
+    <div class="uk-margin">
+        <input class="uk-button uk-button-primary" type="submit" value="Search">
+    </div>
 </form>
 
 <?php include_once 'view/system/pagination_fe.inc.php'; ?>
 
-<table class="table">
+<table class="uk-table uk-table-striped">
 	<thead>
 	<tr>
 		<th role="columnheader">Name</th>

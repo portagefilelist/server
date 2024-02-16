@@ -14,7 +14,7 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.
  *
  * pre 2023 - https://github.com/tuxmainy
- * 2023 https://www.bananas-playground.net/projekt/portagefilelist/
+ * 2023 - 2024 https://www.bananas-playground.net/projekt/portagefilelist/
  */
 ?>
 <!DOCTYPE html>
@@ -24,11 +24,9 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'">
 
-	<link rel="stylesheet" href="view/asset/css/spectre/spectre.min.css">
-	<link rel="stylesheet" href="view/asset/css/spectre/spectre-exp.min.css">
-	<link rel="stylesheet" href="view/asset/css/spectre/spectre-icons.min.css">
-
-	<link rel="stylesheet" href="view/asset/css/style.css">
+	<link rel="stylesheet" href="view/asset/uikit/uikit.min.css">
+    <script src="view/asset/uikit/uikit.min.js"></script>
+    <script src="view/asset/uikit/uikit-icons.min.js"></script>
 
 	<meta name="author" content="https://www.bananas-playground.net/" />
 	<title>PFL / <?php echo $TemplateData['pageTitle']; ?> / Portagefilelist.de</title>
@@ -42,9 +40,9 @@
 	<link rel="search" type="application/opensearchdescription+xml" title="PFL – Packages" href="/opensearch/packages.xml">
 	<link rel="search" type="application/opensearchdescription+xml" title="PFL – Categories" href="/opensearch/categories.xml">
 </head>
-<body>
+<body class="uk-container">
 
-	<header class="navbar">
+	<header>
 		<?php require_once $ViewMenu; ?>
 	</header>
 
