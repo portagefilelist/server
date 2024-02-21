@@ -19,7 +19,7 @@
 ?>
 <img src="view/asset/pfl-logo.png" width="135px" class="uk-float-right"/>
 <h1>About</h1>
-<h2 class="tile-title">What is Portage File List?</h2>
+<h2>What is Portage File List?</h2>
 <p>
     Portage File List collects which files are installed by which ebuild on
     users machines. It shares this data publicly for searching/browsing.

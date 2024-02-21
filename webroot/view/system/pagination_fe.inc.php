@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.
  *
- * pre 2023 - https://github.com/tuxmainy
+ * pre 2023 https://github.com/tuxmainy
  * 2023 - 2024 https://www.bananas-playground.net/projekt/portagefilelist/
  */
 
@@ -64,7 +64,7 @@ if(!empty($TemplateData['pagination']) && $TemplateData['pagination']['pages'] >
 				        <a href="">Options</a>
 				        <div class="uk-dropdown">
 					        <ul class="uk-nav uk-dropdown-nav">
-						        <li class="uk-nav-header">Column</li>
+						        <li class="uk-nav-header">Sort Column</li>
                                 <?php
                                 foreach($TemplateData['pagination']['sortOptions'] as $k=>$v) {
                                     $active = '';

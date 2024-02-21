@@ -13,8 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.
  *
- * pre 2023 - https://github.com/tuxmainy
- * 2023 https://www.bananas-playground.net/projekt/portagefilelist/
+ * pre 2023 https://github.com/tuxmainy
+ * 2023 - 2024 https://www.bananas-playground.net/projekt/portagefilelist/
  */
 
 require_once 'lib/categories.class.php';
@@ -78,11 +78,11 @@ if(isset($_GET['cs'])) {
 			$TemplateData['searchInput'] = htmlspecialchars($searchValue);
 			$TemplateData['pagination']['currentGetParameters']['cs'] = urlencode($searchValue);
 		} else {
-			$messageData['status'] = "error";
+			$messageData['status'] = "danger";
 			$messageData['message'] = "Invalid search criteria. At least two (without wildcard) chars.";
 		}
 	} else {
-		$messageData['status'] = "error";
+		$messageData['status'] = "danger";
 		$messageData['message'] = "Invalid search criteria.";
 	}
 }

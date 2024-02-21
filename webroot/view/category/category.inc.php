@@ -75,7 +75,7 @@ if(!empty($_id)) {
 		$TemplateData['pageTitle'] = $category['name'];
 		$TemplateData['pagination']['currentGetParameters']['id'] = $_id;
 	} else {
-		$messageData['status'] = "error";
+		$messageData['status'] = "danger";
 		$messageData['message'] = "Invalid category id";
 	}
 }

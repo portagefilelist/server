@@ -78,11 +78,11 @@ if(isset($_GET['ps'])) {
 			$TemplateData['searchInput'] = htmlspecialchars($searchValue);
 			$TemplateData['pagination']['currentGetParameters']['ps'] = urlencode($searchValue);
 		} else {
-			$messageData['status'] = "error";
+			$messageData['status'] = "danger";
 			$messageData['message'] = "Invalid search criteria. At least two (without wildcard) chars.";
 		}
 	} else {
-		$messageData['status'] = "error";
+		$messageData['status'] = "danger";
 		$messageData['message'] = "Invalid search criteria.";
 	}
 }

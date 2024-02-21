@@ -91,11 +91,11 @@ if(isset($_GET['fs'])) {
 			$TemplateData['searchInput'] = htmlspecialchars($searchValue);
 			$TemplateData['pagination']['currentGetParameters']['fs'] = urlencode($searchValue);
 		} else {
-			$messageData['status'] = "error";
+			$messageData['status'] = "danger";
 			$messageData['message'] = "Invalid search criteria. At least two (without wildcard) chars.";
 		}
 	} else {
-		$messageData['status'] = "error";
+		$messageData['status'] = "danger";
 		$messageData['message'] = "Invalid search criteria.";
 	}
 }
