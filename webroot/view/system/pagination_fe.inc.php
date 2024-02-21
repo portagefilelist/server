@@ -13,83 +13,95 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.
  *
- * pre 2023 - https://github.com/tuxmainy
- * 2023 https://www.bananas-playground.net/projekt/portagefilelist/
+ * pre 2023 https://github.com/tuxmainy
+ * 2023 - 2024 https://www.bananas-playground.net/projekt/portagefilelist/
  */
 
-if(!empty($TemplateData['pagination']) && $TemplateData['pagination']['pages'] > 1) { ?>
-
-<div class="columns">
-	<div class="column col-6 col-lg-12">
-		<ul class="pagination">
+if(!empty($TemplateData['pagination']) && $TemplateData['pagination']['pages'] > 0) { ?>
+<div class="uk-grid">
+	<div class="uk-width-1-2">
+		<ul class="uk-pagination">
 <?php
 	if($TemplateData['pagination']['curPage'] > 1) {
-		echo '<li class="page-item"><a href="index.php?'.Helper::createFromParameterLinkQuery($TemplateData['pagination']['currentGetParameters'],array('page'=>($TemplateData['pagination']['curPage']-1))).'#panchor">&lt;</a></li>';
+		echo '<li class=""><a href="index.php?'.Helper::createFromParameterLinkQuery($TemplateData['pagination']['currentGetParameters'],array('page'=>($TemplateData['pagination']['curPage']-1))).'#panchor"><span uk-pagination-previous></span></a></li>';
 	} else {
-		echo '<li class="page-item disabled"><a href="">&lt;</a></li>';
+		echo '<li class="uk-disabled"><a href=""><span uk-pagination-previous></span></a></li>';
 	}
 	$ellipsisShown = 0;
 
 	for($i=1;$i<=$TemplateData['pagination']['pages'];$i++) {
 		$active = '';
-		if($i == $TemplateData['pagination']['curPage']) $active = 'active';
+		if($i == $TemplateData['pagination']['curPage']) $active = 'uk-active';
 
 		if(in_array($i,$TemplateData['pagination']['visibleRange'])) {
-			echo '<li class="page-item '.$active.'"><a href="index.php?'.Helper::createFromParameterLinkQuery($TemplateData['pagination']['currentGetParameters'],array('page'=>$i)).'#panchor" title="Goto page '.$i.'">'.$i.'</a></li>';
+			echo '<li class="'.$active.'"><a href="index.php?'.Helper::createFromParameterLinkQuery($TemplateData['pagination']['currentGetParameters'],array('page'=>$i)).'#panchor" title="Goto page '.$i.'">'.$i.'</a></li>';
 		}
 		else {
 			if($i < $TemplateData['pagination']['currentRangeStart'] && $ellipsisShown == 0) {
-				echo '<li class="page-item disabled"><span>&hellip;</span></li>';
+				echo '<li class="uk-disabled"><span>&hellip;</span></li>';
 				$ellipsisShown = 1;
 			}
 			if($i > $TemplateData['pagination']['currentRangeEnd'] && ($ellipsisShown == 0 || $ellipsisShown == 1)) {
-				echo '<li class="page-item disabled"><span>&hellip;</span></li>';
+				echo '<li class="uk-disabled"><span>&hellip;</span></li>';
 				$ellipsisShown = 2;
 			}
 		}
 	}
 
 	if($TemplateData['pagination']['curPage'] < $TemplateData['pagination']['pages']) {
-		echo '<li class="page-item"><a href="index.php?'.Helper::createFromParameterLinkQuery($TemplateData['pagination']['currentGetParameters'],array('page'=>($TemplateData['pagination']['curPage']+1))).'#panchor">&gt;</a></li>';
+		echo '<li class=""><a href="index.php?'.Helper::createFromParameterLinkQuery($TemplateData['pagination']['currentGetParameters'],array('page'=>($TemplateData['pagination']['curPage']+1))).'#panchor"><span uk-pagination-next></span></a></li>';
 	} else {
-		echo '<li class="page-item disabled"><a href="">&gt;</a></li>';
+		echo '<li class="uk-disabled"><a href=""><span uk-pagination-next></span></a></li>';
 	}
 ?>
 		</ul>
 	</div>
-	<div class="column col-6 col-lg-12 text-right">
-		<div class="paginationSortCol">
-			<div class="dropdown dropdown-right">
-				<a class="btn dropdown-toggle" tabindex="0">Column <i class="icon icon-caret"></i></a>
-				<ul class="menu text-left">
-				<?php
-				foreach($TemplateData['pagination']['sortOptions'] as $k=>$v) {
-                    $active = '';
-					if($k === $TemplateData['pagination']['currentGetParameters']['s']) $active = "active";
-				?>
-					<li class="menu-item"><a class="<?php echo $active; ?>" href="index.php?<?php echo Helper::createFromParameterLinkQuery($TemplateData['pagination']['currentGetParameters'], array('s' => $k));  ?>#panchor"><?php echo $v['displayText']; ?></a></li>
-				<?php } ?>
-				</ul>
-			</div>
-			<div class="dropdown dropdown-right">
-				<a class="btn dropdown-toggle" tabindex="0">Sort <i class="icon icon-caret"></i></a>
-				<ul class="menu text-left">
-					<li class="menu-item"><a class="<?php if($TemplateData['pagination']['currentGetParameters']['sd'] === "asc") echo "active"; ?>" href="index.php?<?php echo Helper::createFromParameterLinkQuery($TemplateData['pagination']['currentGetParameters'], array('sd' => 'asc'));  ?>#panchor">ASC (default)</a></li>
-					<li class="menu-item"><a class="<?php if($TemplateData['pagination']['currentGetParameters']['sd'] === "desc") echo "active"; ?>" href="index.php?<?php echo Helper::createFromParameterLinkQuery($TemplateData['pagination']['currentGetParameters'], array('sd' => 'desc'));  ?>#panchor">DESC</a></li>
-				</ul>
-			</div>
-			<div class="dropdown dropdown-right">
-				<a class="btn dropdown-toggle" tabindex="0">Amount <i class="icon icon-caret"></i></a>
-				<ul class="menu text-left">
-					<li class="menu-item"><a class="<?php if($TemplateData['pagination']['currentGetParameters']['rpp'] == RESULTS_PER_PAGE) echo "active"; ?>" href="index.php?<?php echo Helper::createFromParameterLinkQuery($TemplateData['pagination']['currentGetParameters'], array('rpp' => RESULTS_PER_PAGE, 'page' => '1')); ?>#panchor"><?php echo RESULTS_PER_PAGE; ?> (default)</a></li>
-					<li class="menu-item"><a class="<?php if($TemplateData['pagination']['currentGetParameters']['rpp'] == RESULTS_PER_PAGE*2) echo "active"; ?>" href="index.php?<?php echo Helper::createFromParameterLinkQuery($TemplateData['pagination']['currentGetParameters'], array('rpp' => RESULTS_PER_PAGE*2, 'page' => '1'));  ?>#panchor"><?php echo RESULTS_PER_PAGE*2; ?></a></li>
-					<li class="menu-item"><a class="<?php if($TemplateData['pagination']['currentGetParameters']['rpp'] == RESULTS_PER_PAGE*3) echo "active"; ?>" href="index.php?<?php echo Helper::createFromParameterLinkQuery($TemplateData['pagination']['currentGetParameters'], array('rpp' => RESULTS_PER_PAGE*3, 'page' => '1'));  ?>#panchor"><?php echo RESULTS_PER_PAGE*3; ?></a></li>
-				</ul>
-			</div>
-		</div>
+	<div class="uk-width-1-2">
+        <div class="uk-align-right">
+	        <nav uk-dropnav>
+		        <ul class="uk-subnav">
+			        <li>
+				        <a href="">Options</a>
+				        <div class="uk-dropdown">
+					        <ul class="uk-nav uk-dropdown-nav">
+						        <li class="uk-nav-header">Sort Column</li>
+                                <?php
+                                foreach($TemplateData['pagination']['sortOptions'] as $k=>$v) {
+                                    $active = '';
+                                    if($k === $TemplateData['pagination']['currentGetParameters']['s']) $active = "uk-active";
+                                    ?>
+							        <li class="<?php echo $active; ?>">
+							            <a href="index.php?<?php echo Helper::createFromParameterLinkQuery($TemplateData['pagination']['currentGetParameters'], array('s' => $k));  ?>#panchor"><?php echo $v['displayText']; ?></a>
+						            </li>
+                                <?php } ?>
+						        <li class="uk-nav-header">Sort</li>
+						        <li class="<?php if($TemplateData['pagination']['currentGetParameters']['sd'] === "asc") echo "uk-active"; ?>">
+						            <a href="index.php?<?php echo Helper::createFromParameterLinkQuery($TemplateData['pagination']['currentGetParameters'], array('sd' => 'asc'));  ?>#panchor">ASC (default)</a>
+					            </li>
+						        <li class="<?php if($TemplateData['pagination']['currentGetParameters']['sd'] === "desc") echo "uk-active"; ?>">
+						            <a href="index.php?<?php echo Helper::createFromParameterLinkQuery($TemplateData['pagination']['currentGetParameters'], array('sd' => 'desc'));  ?>#panchor">DESC</a>
+					            </li>
+						        <li class="uk-nav-header">Amount</li>
+						        <li class="<?php if($TemplateData['pagination']['currentGetParameters']['rpp'] == RESULTS_PER_PAGE) echo "uk-active"; ?>">
+						            <a href="index.php?<?php echo Helper::createFromParameterLinkQuery($TemplateData['pagination']['currentGetParameters'], array('rpp' => RESULTS_PER_PAGE, 'page' => '1')); ?>#panchor"><?php echo RESULTS_PER_PAGE; ?> (default)</a>
+					            </li>
+						        <li class="<?php if($TemplateData['pagination']['currentGetParameters']['rpp'] == RESULTS_PER_PAGE*2) echo "uk-active"; ?>">
+						            <a href="index.php?<?php echo Helper::createFromParameterLinkQuery($TemplateData['pagination']['currentGetParameters'], array('rpp' => RESULTS_PER_PAGE*2, 'page' => '1'));  ?>#panchor"><?php echo RESULTS_PER_PAGE*2; ?></a>
+						        </li>
+						        <li class="<?php if($TemplateData['pagination']['currentGetParameters']['rpp'] == RESULTS_PER_PAGE*3) echo "uk-active"; ?>">
+						            <a href="index.php?<?php echo Helper::createFromParameterLinkQuery($TemplateData['pagination']['currentGetParameters'], array('rpp' => RESULTS_PER_PAGE*3, 'page' => '1'));  ?>#panchor"><?php echo RESULTS_PER_PAGE*3; ?></a>
+						        </li>
+						        <li>
+							        <a href="index.php?<?php echo Helper::createFromParameterLinkQuery($TemplateData['pagination']['currentGetParameters'], array('rpp' => RESULTS_PER_PAGE, 'page' => '1', 'sd' => 'asc', 's' => '')); ?>#panchor">Reset</a>
+						        </li>
+					        </ul>
+				        </div>
+			        </li>
+		        </ul>
+	        </nav>
+        </div>
 	</div>
 </div>
-
 <?php
 }
 ?>

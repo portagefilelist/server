@@ -13,33 +13,32 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.
  *
- * pre 2023 - https://github.com/tuxmainy
- * 2023 https://www.bananas-playground.net/projekt/portagefilelist/
+ * pre 2023 https://github.com/tuxmainy
+ * 2023 - 2024 https://www.bananas-playground.net/projekt/portagefilelist/
  */
 ?>
 <h1>Category details</h1>
-<table class="table table-striped table-hover">
+<table class="uk-table uk-table-striped">
 	<tr>
-		<td>Name:</td>
+		<td class="uk-width-medium@s uk-width-auto">Name:</td>
 		<td><?php echo $TemplateData['category']['name'] ?? ''; ?></td>
 	</tr>
 	<tr>
 		<td>Gentoo category website:</td>
-		<td><a href="https://packages.gentoo.org/categories/<?php echo $TemplateData['category']['name'] ?? ''; ?>/" target="_blank">external <i class="icon icon-link"></i></a></td>
+		<td><a href="https://packages.gentoo.org/categories/<?php echo $TemplateData['category']['name'] ?? ''; ?>/" target="_blank">external <span uk-icon="link-external"></span></a></td>
+	</tr>
 </table>
-
-<div class="divider"></div>
 
 <h2 id="panchor">Category packages</h2>
 
 <?php include_once 'view/system/pagination_fe.inc.php'; ?>
 
-<table class="table">
+<table class="uk-table uk-table-striped">
 	<thead>
 	<tr>
 		<th role="columnheader">Name</th>
-		<th role="columnheader">Version</th>
-		<th role="columnheader">Arch</th>
+		<th role="columnheader" class="uk-width-small@s uk-width-auto">Version</th>
+		<th role="columnheader" class="uk-width-small@s uk-width-auto">Arch</th>
 	</tr>
 	</thead>
 	<tbody>

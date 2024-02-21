@@ -14,13 +14,28 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.
  *
  * pre 2023 - https://github.com/tuxmainy
- * 2023 https://www.bananas-playground.net/projekt/portagefilelist/
+ * 2023 - 2024 https://www.bananas-playground.net/projekt/portagefilelist/
  */
 ?>
-<section class="navbar-section">
-	<img src="view/asset/pfl-logo.png" width="50px" height="50px" alt="PFL Logo" /><a href="index.php" class="btn btn-link <?php if($_requestMode == "home") echo 'active'; ?>">Home</a>
-	<a href="index.php?p=packages" class="btn btn-link <?php if($_requestMode == "packages") echo 'active'; ?>">Packages</a>
-	<a href="index.php?p=categories" class="btn btn-link <?php if($_requestMode == "categories") echo 'active'; ?>">Categories</a>
-	<a href="index.php?p=stats" class="btn btn-link <?php if($_requestMode == "stats") echo 'active'; ?>">Stats</a>
-	<a href="index.php?p=about" class="btn btn-link <?php if($_requestMode == "about") echo 'active'; ?>">About</a>
-</section>
+<nav class="uk-navbar-container">
+    <div class="uk-container">
+        <div class="uk-navbar">
+            <div class="uk-navbar-left">
+                <a class="uk-navbar-item uk-logo" href="index.php" aria-label="Back to Home"><img src="view/asset/pfl-logo.png" width="50px" height="50px" alt="PFL Logo" /></a>
+                <ul class="uk-navbar-nav">
+                    <li class="<?php if($_requestMode == "packages") echo 'uk-active'; ?>">
+                        <a href="index.php?p=packages">Packages</a>
+                    </li>
+                    <li class="<?php if($_requestMode == "categories") echo 'uk-active'; ?>">
+                        <a href="index.php?p=categories">Categories</a>
+                    </li>
+                    <li class="<?php if($_requestMode == "stats") echo 'uk-active'; ?>">
+                        <a href="index.php?p=stats">Stats</a>
+                    <li class="<?php if($_requestMode == "about") echo 'uk-active'; ?>">
+                        <a href="index.php?p=about">About</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>

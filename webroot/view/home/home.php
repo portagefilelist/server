@@ -16,73 +16,75 @@
  * pre 2023 - https://github.com/tuxmainy
  * 2023 https://www.bananas-playground.net/projekt/portagefilelist/
  */
+if(empty($TemplateData['searchresults']['results'])) {
 ?>
-<div class="container">
-    <div class="columns">
-        <div class="column col-lg-12 hide-sm">
+<h1>Portagefilelist</h1>
+<div class="uk-grid uk-child-width-1-2 uk-visible@s">
+	<div>
+		<p>
+			Portage File List collects which files are installed by which ebuild on users machines.<br />
+			It shares this data publicly for searching/browsing. It allows user to search for files that are not
+			installed on their system and figure out which ebuild they need to install in order to obtain it.<br />
+			A more detailed description what this site is about, can be <a href="index.php?p=about">read here</a>.
+		</p>
+	</div>
+	<div>
+        <?php if(!empty($TemplateData['topSearch'])) { ?>
 			<p>
-				Portage File List collects which files are installed by which ebuild on users machines.<br />
-				It shares this data publicly for searching/browsing. It allows user to search for files that are not
-				installed on their system and figure out which ebuild they need to install in order to obtain it.<br />
-				A more detailed description what this site is about, can be <a href="index.php?p=about">read here</a>.<br />
+				Latest top searches:
+                <?php foreach($TemplateData['topSearch'] as $amount=>$value) {
+                    echo '<span><a href="index.php?fs='.$value.'">'.$value.'</a></span>&#x20;';
+                }
+                ?>
 			</p>
-        </div>
-        <div class="column col-lg-12 hide-sm">
+        <?php } ?>
 
-<?php if(!empty($TemplateData['topSearch'])) { ?>
-<p>
-	Latest top searches:
-	<?php foreach($TemplateData['topSearch'] as $amount=>$value) {
-		echo '<span class="chip"><a href="index.php?fs='.$value.'">'.$value.'</a></span>';
-	}
-	?>
-</p>
-<?php } ?>
-
-<?php if(!empty($TemplateData['latestPackages'])) { ?>
-<p>
-	Latest packages:
-	<?php foreach($TemplateData['latestPackages'] as $key=>$entry) {
-		echo '<span class="chip"><a href="index.php?p=package&id='.$entry['hash'].'">'.$entry['name'].'</a></span>';
-	}
-	?>
-</p>
-<?php } ?>
-
-        </div>
-    </div>
+        <?php if(!empty($TemplateData['latestPackages'])) { ?>
+			<p>
+				Latest packages:
+                <?php foreach($TemplateData['latestPackages'] as $key=>$entry) {
+                    echo '<span class="chip"><a href="index.php?p=package&id='.$entry['hash'].'">'.$entry['name'].'</a></span>&#x20;';
+                }
+                ?>
+			</p>
+        <?php } ?>
+	</div>
 </div>
 
-<form method="get" action="#panchor" id="panchor">
-	<div class="form-group">
-		<label class="form-label" for="filename">
+<?php } ?>
+<p>&#x20;</p>
+<form method="get" action="#panchor" id="panchor" class="uk-form-stacked">
+	<div class="uk-margin">
+		<label class="uk-form-label" for="filename">
 			Search for a package by a filename (<samp>slice.hpp</samp>) or path (<samp>/usr/include/exiv2/slice.hpp</samp>).<br />
 			Using * as a wildcard (<samp>slice.*</samp>) (<samp>/usr/include/exiv2/*</samp>) will <i>slow</i> down the query!
 		</label>
-		<input class="form-input" type="text" placeholder="Use * as a wildcard" id="filename" name="fs" value="<?php echo $TemplateData['searchInput']; ?>">
+		<div class="uk-form-controls">
+			<input class="uk-input" type="text" placeholder="Searchterm. Use * as a wildcard" id="filename" name="fs" value="<?php echo $TemplateData['searchInput']; ?>">
+		</div>
 	</div>
-	<div class="form-group">
-		<label class="form-switch">
-			<input type="checkbox" name="unique" value="1" <?php echo $TemplateData['searchUnique']; ?>>
-			<i class="form-icon"></i> Unique packages
+	<div class="uk-margin">
+		<label>
+			<input class="uk-checkbox" type="checkbox" name="unique" value="1" <?php echo $TemplateData['searchUnique']; ?>>
+			Unique packages
 		</label>
 	</div>
-	<div class="form-group">
-		<input class="btn" type="submit" value="Search">
+	<div class="uk-margin">
+		<input class="uk-button uk-button-primary" type="submit" value="Search">
 	</div>
 </form>
 
 <?php include_once 'view/system/pagination_fe.inc.php'; ?>
 
-<table class="table">
+<table class="uk-table uk-table-striped">
 	<thead>
 		<tr>
 			<th role="columnheader">Filename</th>
 			<th role="columnheader">Filepath</th>
 			<th role="columnheader">Category</th>
 			<th role="columnheader">Package</th>
-			<th role="columnheader">Version</th>
-			<th role="columnheader">Arch</th>
+			<th role="columnheader" class="uk-width-small@s uk-width-auto">Version</th>
+			<th role="columnheader" class="uk-width-small@s uk-width-auto">Arch</th>
 		</tr>
 	</thead>
 	<tbody>

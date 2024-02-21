@@ -18,9 +18,9 @@
  */
 
 if(!empty($messageData)) {
-	$cssClass="toast-primary";
+	$cssClass="uk-alert-primary";
 	if(isset($messageData['status'])) {
-		$cssClass="toast-".$messageData['status'];
+		$cssClass="uk-alert-".$messageData['status'];
 	}
 	$message = $messageData['message'];
 	if(is_array($message)) {
@@ -29,7 +29,7 @@ if(!empty($messageData)) {
 
 	if(!empty($message)) {
 ?>
-	<div class="toast <?php echo $cssClass; ?>"><?php echo $message; ?></div>
+	<div class="uk-alert <?php echo $cssClass; ?>"><p><?php echo $message; ?></div>
 <?php
 	}
 }
