@@ -58,7 +58,10 @@
 	</main>
 	<hr>
 	<footer>
-		<div class="uk-text-small">Copyright &copy; 2023 - <?php echo date("Y"); ?> Portagefilelist - <a href="index.php?p=imprint">Imprint</a></div>
+		<div class="uk-text-small">
+            Copyright &copy; 2023 - <?php echo date("Y"); ?> Portagefilelist - <a href="index.php?p=imprint">Imprint</a><br />
+            <a href="https://www.gentoo.org/" target="_blank">Gentoo</a>
+        </div>
 	</footer>
 </body>
 </html>
