@@ -84,6 +84,7 @@ foreach($ebuildFiles as $repo=>$info) {
     Helper::downloadFile($info['url'], $info['file']);
     if(!file_exists($info['file'])) {
         Helper::sysLog('[WARNING] Can not download topicality file. '.$info['url']);
+        Helper::notify("Can not download topicality file: ".$info['url']);
     }
 }
 

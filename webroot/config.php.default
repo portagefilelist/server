@@ -39,8 +39,14 @@ const DB_PASSWORD = 'pass';
 const DB_NAME = 'portagefilelist';
 const DB_PREFIX = 'pfl'; # a _ is added automatically as separation
 
+# importer access secret
 const IMPORTER_SECRET = "<random string>";
+const IMPORTER_BOT_TOKEN = "";
+const IMPORTER_BOT_CHATID = "";
+const IMPORTER_BOT_ENDPOINT = "";
 
-const RESULTS_PER_PAGE = 20;
+# how may results per page for pagination
+const RESULTS_PER_PAGE = 10;
 
+# how long a client should keep the result in cache
 const CACHE_LIVETIME_SEC = 60*60*3; // three hours
