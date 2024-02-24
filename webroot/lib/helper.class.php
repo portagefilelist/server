@@ -299,7 +299,7 @@ class Helper {
 	}
 
     /**
-     * execute a curl call to the given $url
+     * execute a curl GET call to the given $url
      *
      * @param string $url The request url
      * @param int $port
@@ -371,5 +371,60 @@ class Helper {
         fclose($fh);
 
         return $ret;
+    }
+
+    /**
+     * Execute a POST to given URL with data and optional headers
+     *
+     * return array('status' => boolean, 'message' => 'curl return')
+     *
+     * @param string $url
+     * @param mixed $data
+     * @param array $header
+     * @return array
+     */
+    static function curlPOST(string $url, mixed $data, array $header = array('Content-Type:  multipart/form-data')): array {
+        $ret = array('status' => false, 'message' => '');
+
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_MAXREDIRS, 2);
+        curl_setopt($ch, CURLOPT_USERAGENT,self::BROWSER_AGENT_STRING);
+
+        $do = curl_exec($ch);
+
+        if(is_string($do) === true) {
+            $ret['status'] = true;
+            $ret['message'] = $do;
+        }
+        else {
+            $ret['message'] = curl_error($ch);
+        }
+
+        curl_close($ch);
+
+        return $ret;
+    }
+
+    /**
+     * Send message to bot service
+     *
+     * @param string $message
+     * @return void
+     */
+    static function notify(string $message): void {
+        Helper::curlPOST(IMPORTER_BOT_ENDPOINT,
+            json_encode(array("chat_id" => IMPORTER_BOT_CHATID, "text" => $message, "disable_notification" => false)),
+            array('Content-Type:application/json', 'Accept: application/json')
+        );
     }
 }

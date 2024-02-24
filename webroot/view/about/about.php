@@ -22,9 +22,9 @@
 <h2>What is Portage File List?</h2>
 <p>
     Portage File List collects which files are installed by which ebuild on
-    users machines. It shares this data publicly for searching/browsing.
-    It allows user to search for files that are not installed on their
-    system and figure out which ebuild they need to install in order to obtain it.
+    users machines using <a href="https://www.gentoo.org/get-started/about/" target="_blank">Gentoo Linux</a>.
+    It shares this data publicly for searching/browsing. It allows user to search for files that are not installed on their
+    system and figure out which <a href="https://wiki.gentoo.org/wiki/Ebuild" target="_blank">ebuild</a> they need to install in order to obtain it.
 </p>
 <p>
     Let's make a short example: You want to use the command brctl, but it's not installed on your system.

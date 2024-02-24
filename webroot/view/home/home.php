@@ -22,7 +22,8 @@ if(empty($TemplateData['searchresults']['results'])) {
 <div class="uk-grid uk-child-width-1-2 uk-visible@s">
 	<div>
 		<p>
-			Portage File List collects which files are installed by which ebuild on users machines.<br />
+            Portage File List collects which files are installed by which <a href="https://www.gentoo.org/" target="_blank">Gentoo</a>
+            ebuild on users machines.<br />
 			It shares this data publicly for searching/browsing. It allows user to search for files that are not
 			installed on their system and figure out which ebuild they need to install in order to obtain it.<br />
 			A more detailed description what this site is about, can be <a href="index.php?p=about">read here</a>.
