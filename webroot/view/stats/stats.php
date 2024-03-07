@@ -83,7 +83,6 @@
 			<thead>
 				<tr>
 					<th role="columnheader">File</th>
-					<th role="columnheader">Package</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -92,8 +91,7 @@
 					foreach($TemplateData['f']['latest'] as $key=>$entry) {
 						?>
 						<tr>
-							<td><?php echo $entry['name']; ?></a></td>
-							<td><a href="index.php?p=package&id=<?php echo $entry['hash']; ?>"><?php echo $entry['categoryName']; ?>/<?php echo $entry['packageName']; ?></a></td>
+							<td><a href="index.php?fs=<?php echo urlencode($entry['name']); ?>"><?php echo $entry['name']; ?></a></td>
 						</tr>
 						<?php
 					}
