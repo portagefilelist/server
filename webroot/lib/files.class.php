@@ -291,7 +291,7 @@ class Files {
 		);
 
 		// latest updated
-        $queryStr = "SELECT f.name, f.hash
+        $queryStr = "SELECT f.name, f.path
 					FROM `".DB_PREFIX."_file` AS f
 					ORDER BY f.lastmodified DESC
 					LIMIT 10";
