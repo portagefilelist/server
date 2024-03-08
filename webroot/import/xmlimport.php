@@ -101,6 +101,7 @@ foreach ($inboxFiles as $fileToImport) {
     if($mime != "application/x-bzip2" && $mime != "application/x-tar") {
         Helper::sysLog("[WARNING] Import invalid mime type: ".Helper::cleanForLog($mime));
         rename($fileToImport, PATH_INBOX.'/invalidMimeType-'.time());
+        Helper::notify("Import invalid mime type");
         continue;
     }
 
@@ -118,6 +119,7 @@ foreach ($inboxFiles as $fileToImport) {
         } catch (Exception $e) {
             Helper::sysLog("[ERROR] Import can not extract tar file: ".Helper::cleanForLog($e->getMessage()));
             rename($_tarFile, PATH_INBOX.'/invalidTar-'.time());
+            Helper::notify("Import can not extract tar file");
             continue;
         }
     }
@@ -143,6 +145,7 @@ foreach ($inboxFiles as $fileToImport) {
         Helper::sysLog('[WARNING] Max unpack filesize reached: '.Helper::cleanForLog($fileToImport));
         rename($fileToImport, PATH_INBOX.'/invalidSize-'.time());
         unlink($fileToImport.'.xml');
+        Helper::notify("Max unpack filesize reached");
         continue;
     }
 
@@ -153,6 +156,7 @@ foreach ($inboxFiles as $fileToImport) {
     if (!$xmlReader->open($fileToWorkWith)) {
         Helper::sysLog('[WARNING] Can not read xml file: '.Helper::cleanForLog($fileToWorkWith));
         rename($fileToImport, PATH_INBOX.'/invalidFile-'.time());
+        Helper::notify("Can not read xml file");
         continue;
     }
 
@@ -174,6 +178,7 @@ foreach ($inboxFiles as $fileToImport) {
                 Helper::sysLog('[WARNING] Invalid xml file: '.$_xmlErrors->message);
                 libxml_clear_errors();
                 rename($fileToWorkWith, PATH_INBOX.'/invalidXMLFile-'.time());
+                Helper::notify("Invalid xml file");
                 break;
             }
         }
