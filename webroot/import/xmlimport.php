@@ -97,7 +97,7 @@ foreach ($inboxFiles as $fileToImport) {
     $finfo = finfo_open(FILEINFO_MIME_TYPE);
     $mime = finfo_file($finfo, $fileToImport);
     finfo_close($finfo);
-    // can be cleaned up with future vesions. Tar is the new one.
+    // can be cleaned up with future versions. Tar is the new one.
     if($mime != "application/x-bzip2" && $mime != "application/x-tar") {
         Helper::sysLog("[WARNING] Import invalid mime type: ".Helper::cleanForLog($mime));
         rename($fileToImport, PATH_INBOX.'/invalidMimeType-'.time());
