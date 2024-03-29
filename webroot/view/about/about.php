@@ -71,6 +71,7 @@
 	<li><a href="https://packages.gentoo.org/useflags/expand" target="_blank">USE Expand</a> useflags will be ignored.</li>
 	<li>Files with <i>/usr/src/linux</i>, <i>-gentoo-dist/</i>, <i>*__*</i> will be ignored. The package itself will still be added.</li>
 	<li>Only files or symlinks are indexed.</li>
+	<li>The search will consider the <a href="https://wiki.gentoo.org/wiki/Merge-usr" target=_blank>merge-usr</a> cases</li>
 </ul>
 
 <h2>History</h2>

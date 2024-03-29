@@ -112,6 +112,8 @@ class Files {
         $this->_so2use = $this->_sortOptions;
         if(isset($options['unique']) && $options['unique'] === true) {
             $this->_so2use = $this->_sortOptionsUnique;
+        } else {
+            $options['unique'] = false;
         }
         if(isset($options['sort']) && isset($this->_so2use[$options['sort']])) {
             $options['sort'] = $this->_so2use[$options['sort']]['col'];
@@ -218,6 +220,9 @@ class Files {
 			$queryWhere .= " LIKE '".$this->_DB->real_escape_string($this->_searchValue)."'";
 		} else {
 			$queryWhere .= " = '".$this->_DB->real_escape_string($this->_searchValue)."'";
+            if(str_contains($this->_searchValue, '/') && !empty($this->_usrMrgAlias())) {
+                $queryWhere .= " OR f.path = '".$this->_DB->real_escape_string($this->_usrMrgAlias())."'";
+            }
 		}
 
 		$queryOrder = " ORDER BY";
@@ -380,5 +385,45 @@ class Files {
 		$options['sort'] = 'default';
 		$options['sortDirection'] = '';
 		$this->setQueryOptions($options);
+	}
+
+    /**
+     * The usr merge symlinks
+     *
+     * Files will be installed by a package into one of the left hand dirs.
+     * Those are symlinks to the right hand ones.
+     * Portage does record the left hand one, as wanted by the software/package.
+     * A search for /bin/command does return a result. But `which command` does
+     * return /usr/bin/command. The user does a `e-file /usr/bin/command`  and
+     * will not get a result.
+     *
+     * Works with $this->_searchValue
+     *
+     * /bin - /usr/bin
+     * /sbin - /usr/sbin
+     * /lib - /usr/lib
+     * /lib64 - /usr/lib64
+     *
+     * https://www.freedesktop.org/wiki/Software/systemd/TheCaseForTheUsrMerge/
+     * https://wiki.gentoo.org/wiki/Merge-usr
+     *
+     * @return string
+     */
+	private function _usrMrgAlias(): string {
+	    $ret = '';
+
+	    $folders = array('/bin/' => '/usr/bin/',
+	            '/sbin' => '/usr/sbin/',
+	            '/lib/' =>  '/usr/lib/',
+	            '/lib64' =>  '/usr/lib64'
+        );
+	    foreach($folders as $replace => $folder) {
+            if(str_starts_with($this->_searchValue, $folder)) {
+                $ret = str_replace($folder, $replace, $this->_searchValue);
+                break;
+            }
+	    }
+
+	    return $ret;
 	}
 }
