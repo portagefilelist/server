@@ -91,7 +91,7 @@
 					foreach($TemplateData['f']['latest'] as $key=>$entry) {
 						?>
 						<tr>
-							<td><a href="index.php?fs=<?php echo urlencode($entry['name']); ?>"><?php echo $entry['name']; ?></a></td>
+							<td><a href="index.php?fs=<?php echo urlencode($entry['path']); ?>"><?php echo $entry['name']; ?></a></td>
 						</tr>
 						<?php
 					}

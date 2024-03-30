@@ -97,7 +97,7 @@ foreach ($inboxFiles as $fileToImport) {
     $finfo = finfo_open(FILEINFO_MIME_TYPE);
     $mime = finfo_file($finfo, $fileToImport);
     finfo_close($finfo);
-    // can be cleaned up with future vesions. Tar is the new one.
+    // can be cleaned up with future versions. Tar is the new one.
     if($mime != "application/x-bzip2" && $mime != "application/x-tar") {
         Helper::sysLog("[WARNING] Import invalid mime type: ".Helper::cleanForLog($mime));
         rename($fileToImport, PATH_INBOX.'/invalidMimeType-'.time());
@@ -125,21 +125,34 @@ foreach ($inboxFiles as $fileToImport) {
     }
 
     // decompress
-    $fh = bzopen($fileToImport,'r');
+    $fhRead = bzopen($fileToImport,'r');
     $_unpackCounter = 1024; // default value for read bytes at bzread
     $_unpackSizeMark = false;
-    while(!feof($fh)) {
-        $buffer = bzread($fh);
+
+    $filetoWrite = $fileToImport.'.xml';
+    if (!$fhWrite = fopen($filetoWrite, 'a')) {
+        Helper::sysLog('[WARNING] Can not open file : '.Helper::cleanForLog($filetoWrite));
+        continue;
+    }
+
+    while(!feof($fhRead)) {
+        $buffer = bzread($fhRead);
         if($buffer === FALSE) { Helper::sysLog('[ERROR] Decompress read problem'); exit(); }
-        if(bzerrno($fh) !== 0) { Helper::sysLog('[ERROR] Decompress problem'); exit(); }
-        file_put_contents($fileToImport.'.xml', $buffer, FILE_APPEND | LOCK_EX);
+        if(bzerrno($fhRead) !== 0) { Helper::sysLog('[ERROR] Decompress problem'); exit(); }
+
+        if (fwrite($fhWrite, $buffer) === FALSE) {
+            Helper::sysLog('[WARNING] Can not write to file : '.Helper::cleanForLog($filetoWrite));
+            break;
+        }
+        //file_put_contents($fileToImport.'.xml', $buffer, FILE_APPEND | LOCK_EX);
         $_unpackCounter += 1024;
         if($_unpackCounter > 300000000) { // 300MB max unpack size
             $_unpackSizeMark = true;
             break;
         }
     }
-    bzclose($fh);
+    bzclose($fhRead);
+    fclose($fhWrite);
 
     if($_unpackSizeMark) {
         Helper::sysLog('[WARNING] Max unpack filesize reached: '.Helper::cleanForLog($fileToImport));
@@ -171,7 +184,6 @@ foreach ($inboxFiles as $fileToImport) {
     $xmlReader->setSchema('schema.xsd');
 
     while ($xmlReader->read()) {
-
         if (!$xmlReader->isValid()) {
             $_xmlErrors = libxml_get_last_error();
             if ($_xmlErrors && $_xmlErrors instanceof libXMLError) {
