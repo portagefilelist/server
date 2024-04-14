@@ -132,19 +132,38 @@ foreach ($inboxFiles as $fileToImport) {
     $filetoWrite = $fileToImport.'.xml';
     if (!$fhWrite = fopen($filetoWrite, 'a')) {
         Helper::sysLog('[WARNING] Can not open file : '.Helper::cleanForLog($filetoWrite));
+        bzclose($fhRead);
         continue;
     }
 
     while(!feof($fhRead)) {
         $buffer = bzread($fhRead);
-        if($buffer === FALSE) { Helper::sysLog('[ERROR] Decompress read problem'); exit(); }
-        if(bzerrno($fhRead) !== 0) { Helper::sysLog('[ERROR] Decompress problem'); exit(); }
-
-        if (fwrite($fhWrite, $buffer) === FALSE) {
-            Helper::sysLog('[WARNING] Can not write to file : '.Helper::cleanForLog($filetoWrite));
-            break;
+        if($buffer === false) {
+            Helper::sysLog('[ERROR] Decompress read problem');
+            Helper::notify('[ERROR] Decompress read problem');
+            bzclose($fhRead);
+            fclose($fhWrite);
+            unlink($fileToImport);
+            unlink($filetoWrite);
+            exit();
         }
-        //file_put_contents($fileToImport.'.xml', $buffer, FILE_APPEND | LOCK_EX);
+        if(bzerrno($fhRead) !== 0) {
+            Helper::sysLog('[ERROR] Decompress problem');
+            Helper::notify('[ERROR] Decompress problem');
+            bzclose($fhRead);
+            fclose($fhWrite);
+            unlink($fileToImport);
+            unlink($filetoWrite);
+            exit();
+        }
+        if (fwrite($fhWrite, $buffer) === false) {
+            Helper::sysLog('[ERROR] Can not write to file : '.Helper::cleanForLog($filetoWrite));
+            Helper::notify('[ERROR] Can not write to file');
+            bzclose($fhRead);
+            fclose($fhWrite);
+            unlink($filetoWrite);
+            exit();
+        }
         $_unpackCounter += 1024;
         if($_unpackCounter > 300000000) { // 300MB max unpack size
             $_unpackSizeMark = true;
@@ -156,9 +175,9 @@ foreach ($inboxFiles as $fileToImport) {
 
     if($_unpackSizeMark) {
         Helper::sysLog('[WARNING] Max unpack filesize reached: '.Helper::cleanForLog($fileToImport));
-        rename($fileToImport, PATH_INBOX.'/invalidSize-'.time());
-        unlink($fileToImport.'.xml');
         Helper::notify("Max unpack filesize reached");
+        rename($fileToImport, PATH_INBOX.'/invalidSize-'.time());
+        unlink($filetoWrite);
         continue;
     }
 
