@@ -34,7 +34,7 @@ if(empty($TemplateData['searchresults']['results'])) {
 			<p>
 				Latest top searches:
                 <?php foreach($TemplateData['topSearch'] as $amount=>$value) {
-                    echo '<span><a href="index.php?fs='.$value.'">'.$value.'</a></span>&#x20;';
+                    echo $value.',&#x20;';
                 }
                 ?>
 			</p>
