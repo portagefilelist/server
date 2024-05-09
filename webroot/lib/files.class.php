@@ -150,7 +150,7 @@ class Files {
 	 * @return bool
 	 */
 	public function prepareSearchValue(string $searchValue): bool {
-		Helper::sysLog("[INFO] ".__METHOD__." wanted searchvalue: ".Helper::cleanForLog($searchValue));
+		//Helper::sysLog("[INFO] ".__METHOD__." wanted searchvalue: ".Helper::cleanForLog($searchValue));
 
 		if(str_contains($searchValue,'*')) {
 			$this->_wildcardsearch = true;

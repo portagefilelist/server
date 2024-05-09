@@ -83,9 +83,12 @@ if(isset($_GET['fs'])) {
 			$Files->setQueryOptions($queryOptions);
 			$TemplateData['searchresults'] = $Files->getFiles();
 
+            $Loki->log("search.start", array("page" => "home", "value" => $searchValue));
+
 			if(empty($TemplateData['searchresults'])) {
 				$messageData['status'] = "warning";
 				$messageData['message'] = "Nothing found for this criteria term or the data is not known yet.";
+                $Loki->log("search.empty", array("page" => "home", "value" => $searchValue));
 			}
 
 			$TemplateData['searchInput'] = htmlspecialchars($searchValue);
@@ -93,10 +96,14 @@ if(isset($_GET['fs'])) {
 		} else {
 			$messageData['status'] = "danger";
 			$messageData['message'] = "Invalid search criteria. At least two (without wildcard) chars.";
+
+			$Loki->log("search.invalid.length", array("page" => "home", "value" => $searchValue));
 		}
 	} else {
 		$messageData['status'] = "danger";
 		$messageData['message'] = "Invalid search criteria.";
+
+        $Loki->log("search.invalid", array("page" => "home", "value" => $searchValue));
 	}
 }
 ## search end
@@ -111,6 +118,8 @@ if(!empty($TemplateData['searchresults']['amount'])) {
 	$TemplateData['pagination']['currentGetParameters']['sd'] = $_sortDirection;
 	$TemplateData['pagination']['currentGetParameters']['rpp'] = $_rpp;
     $TemplateData['pagination']['sortOptions'] = $Files->getSortOptions();
+
+    $Loki->log("search.result", array("page" => "home", "value" => $searchValue, "amount" => $TemplateData['searchresults']['amount']));
 }
 
 if($TemplateData['pagination']['pages'] > 11) {

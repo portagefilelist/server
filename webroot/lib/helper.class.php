@@ -254,8 +254,7 @@ class Helper {
 	static function folderSize(string $dir): int {
 		$size = 0;
 
-		//foreach (glob(rtrim($dir, '/').'/*', GLOB_NOSORT) as $each) {
-		foreach (glob(rtrim($dir, '/').'/{,.}*[!.]*', GLOB_MARK | GLOB_BRACE) as $each) {
+        foreach (glob(rtrim($dir, '/').'/{,.}*[!.]*', GLOB_MARK | GLOB_BRACE) as $each) {
 			$size += is_file($each) ? filesize($each) : self::folderSize($each);
 		}
 

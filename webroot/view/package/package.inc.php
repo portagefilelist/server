@@ -86,9 +86,13 @@ if(!empty($_id)) {
                 if($Package->prepareSearchValue($searchValue)) {
                     $TemplateData['files'] = $Package->getPackageFiles($_id);
 
+                    $Loki->log("search.start", array("page" => "package", "value" => $searchValue));
+
                     if(empty($TemplateData['files'])) {
                         $messageData['status'] = "warning";
                         $messageData['message'] = "Nothing found for this criteria term or the data is not known yet.";
+
+                        $Loki->log("search.empty", array("page" => "package", "value" => $searchValue));
                     }
 
                     $TemplateData['searchInput'] = htmlspecialchars($searchValue);
@@ -96,10 +100,14 @@ if(!empty($_id)) {
                 } else {
                     $messageData['status'] = "danger";
                     $messageData['message'] = "Invalid search criteria. At least two (without wildcard) chars.";
+
+                    $Loki->log("search.invalid.length", array("page" => "package", "value" => $searchValue));
                 }
             } else {
                 $messageData['status'] = "danger";
                 $messageData['message'] = "Invalid search criteria.";
+
+                $Loki->log("search.invalid", array("page" => "package", "value" => $searchValue));
             }
         } else {
             $TemplateData['files'] = $Package->getPackageFiles($_id);
@@ -123,6 +131,8 @@ if(!empty($TemplateData['files']['amount'])) {
 	$TemplateData['pagination']['currentGetParameters']['sd'] = $_sortDirection;
     $TemplateData['pagination']['currentGetParameters']['rpp'] = $_rpp;
     $TemplateData['pagination']['sortOptions'] = $Package->getSortOptions();
+
+    $Loki->log("search.result", array("page" => "package", "value" => $searchValue, "amount" => $TemplateData['searchresults']['amount']));
 }
 
 if($TemplateData['pagination']['pages'] > 11) {
