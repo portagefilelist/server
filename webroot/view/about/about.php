@@ -41,17 +41,17 @@
 
 <h2>You can help</h2>
 <p>
-	PFL needs Portage data from your system. The more ebuilds you have installed the better.
-	The more exotic ebuilds you have installed the better. Every Gentoo user can help!
+    PFL needs Portage data from your system. The more ebuilds you have installed the better.
+    The more exotic ebuilds you have installed the better. Every Gentoo user can help!
 </p>
 <p>
     <code>emerge -av app-portage/pfl</code>
 </p>
 <p>
-	This will install the <a href="https://packages.gentoo.org/packages/app-portage/pfl" target="_blank">the package</a>, its
+    This will install the <a href="https://packages.gentoo.org/packages/app-portage/pfl" target="_blank">the package</a>, its
     commands and a cron job that submits new data to the PFL servers every week.
-	Don't worry, your privacy mains protected as we are not collecting anything else
-	than portage data, and we don't store who sends what.
+    Don't worry, your privacy mains protected as we are not collecting anything else
+    than portage data, and we don't store who sends what.
 </p>
 
 <h3>Usage</h3>
@@ -67,25 +67,25 @@
 
 <h2>Limitations</h2>
 <ul>
-	<li>Supported repositories are: <a href="https://packages.gentoo.org/">Gentoo</a> and <a href="https://wiki.gentoo.org/wiki/Project:GURU">GURU</a></li>
-	<li><a href="https://packages.gentoo.org/useflags/expand" target="_blank">USE Expand</a> useflags will be ignored.</li>
-	<li>Files with <i>/usr/src/linux</i>, <i>-gentoo-dist/</i>, <i>*__*</i> will be ignored. The package itself will still be added.</li>
-	<li>Only files or symlinks are indexed.</li>
-	<li>The search will consider the <a href="https://wiki.gentoo.org/wiki/Merge-usr" target=_blank>merge-usr</a> cases</li>
+    <li>Supported repositories are: <a href="https://packages.gentoo.org/">Gentoo</a> and <a href="https://wiki.gentoo.org/wiki/Project:GURU">GURU</a></li>
+    <li><a href="https://packages.gentoo.org/useflags/expand" target="_blank">USE Expand</a> useflags will be ignored.</li>
+    <li>Files with <i>/usr/src/linux</i>, <i>-gentoo-dist/</i>, <i>*__*</i> will be ignored. The package itself will still be added.</li>
+    <li>Only files or symlinks are indexed.</li>
+    <li>The search will consider the <a href="https://wiki.gentoo.org/wiki/Merge-usr" target=_blank>merge-usr</a> cases</li>
 </ul>
 
 <h2>History</h2>
 <ul>
-	<li>D. Buschke - Original creator</li>
-	<li>vispillo, Ionic and all the other peoples from #gentoo.de@quakenet</li>
-	<li>vispillo was implementing the first user of PFL - it was a bot ;-)</li>
-	<li>Ionic was the first beta tester of every version</li>
-	<li>thanks to all the other peoples of the channel for ignoring my bot tests</li>
-	<li>Desastre created an ebuild</li>
-	<li>Neza created the PFL logo</li>
-	<li>bones7456 created the e-file script which allows you to search files from cmd line</li>
-	<li>odi has written the texts of the frontpage</li>
-	<li>billie was pulling PFL into the Gentoo portage</li>
-	<li>Richard Grenville created/is creating a new python base e-file script</li>
-	<li>Eduardo (deb_security) reported a <a href="https://www.openbugbounty.org/reports/541568/" target="_blank">XSS problem</a></li>
+    <li>D. Buschke - Original creator</li>
+    <li>vispillo, Ionic and all the other peoples from #gentoo.de@quakenet</li>
+    <li>vispillo was implementing the first user of PFL - it was a bot ;-)</li>
+    <li>Ionic was the first beta tester of every version</li>
+    <li>thanks to all the other peoples of the channel for ignoring my bot tests</li>
+    <li>Desastre created an ebuild</li>
+    <li>Neza created the PFL logo</li>
+    <li>bones7456 created the e-file script which allows you to search files from cmd line</li>
+    <li>odi has written the texts of the frontpage</li>
+    <li>billie was pulling PFL into the Gentoo portage</li>
+    <li>Richard Grenville created/is creating a new python base e-file script</li>
+    <li>Eduardo (deb_security) reported a <a href="https://www.openbugbounty.org/reports/541568/" target="_blank">XSS problem</a></li>
 </ul>

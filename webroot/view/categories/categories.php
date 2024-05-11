@@ -29,7 +29,7 @@
         </div>
     </div>
     <div class="uk-margin">
-	    <input type="hidden" name="p" value="categories" />
+        <input type="hidden" name="p" value="categories" />
         <input class="uk-button uk-button-primary" type="submit" value="Search">
     </div>
 </form>
@@ -37,22 +37,22 @@
 <?php include_once 'view/system/pagination_fe.inc.php'; ?>
 
 <table class="uk-table uk-table-striped">
-	<thead>
-	<tr>
-		<th role="columnheader">Name</th>
-	</tr>
-	</thead>
-	<tbody>
-	<?php
-	if(isset($TemplateData['searchresults']['results']) && !empty($TemplateData['searchresults']['results'])) {
-		foreach($TemplateData['searchresults']['results'] as $key=>$entry) {
-			?>
-			<tr>
-				<td><a href="index.php?p=category&id=<?php echo $entry['hash'] ?>"><?php echo $entry['name']; ?></a></td>
-			</tr>
-			<?php
-		}
-	}
-	?>
-	</tbody>
+    <thead>
+    <tr>
+        <th role="columnheader">Name</th>
+    </tr>
+    </thead>
+    <tbody>
+    <?php
+    if(isset($TemplateData['searchresults']['results']) && !empty($TemplateData['searchresults']['results'])) {
+        foreach($TemplateData['searchresults']['results'] as $key=>$entry) {
+            ?>
+            <tr>
+                <td><a href="index.php?p=category&id=<?php echo $entry['hash'] ?>"><?php echo $entry['name']; ?></a></td>
+            </tr>
+            <?php
+        }
+    }
+    ?>
+    </tbody>
 </table>

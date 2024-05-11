@@ -25,20 +25,20 @@ $TemplateData['pagination'] = array('pages' => 0, 'currentGetParameters' => arra
 
 $_curPage = 1;
 if(isset($_GET['page']) && !empty($_GET['page'])) {
-	$_curPage = trim($_GET['page']);
-	$_curPage = Helper::validate($_curPage,'digit') ? $_curPage : 1;
+    $_curPage = trim($_GET['page']);
+    $_curPage = Helper::validate($_curPage,'digit') ? $_curPage : 1;
 }
 
 $_sort = 'default';
 if(isset($_GET['s']) && !empty($_GET['s'])) {
-	$_sort = trim($_GET['s']);
-	$_sort = Helper::validate($_sort,'nospace') ? $_sort : 'default';
+    $_sort = trim($_GET['s']);
+    $_sort = Helper::validate($_sort,'nospace') ? $_sort : 'default';
 }
 
 $_sortDirection = '';
 if(isset($_GET['sd']) && !empty($_GET['sd'])) {
-	$_sortDirection = trim($_GET['sd']);
-	$_sortDirection = Helper::validate($_sortDirection,'nospace') ? $_sortDirection : '';
+    $_sortDirection = trim($_GET['sd']);
+    $_sortDirection = Helper::validate($_sortDirection,'nospace') ? $_sortDirection : '';
 }
 
 $_rpp = RESULTS_PER_PAGE;
@@ -48,17 +48,17 @@ if(isset($_GET['rpp']) && !empty($_GET['rpp'])) {
 }
 
 $queryOptions = array(
-	'limit' => $_rpp,
-	'offset' => ($_rpp * ($_curPage-1)),
-	'sort' => $_sort,
-	'sortDirection' => $_sortDirection
+    'limit' => $_rpp,
+    'offset' => ($_rpp * ($_curPage-1)),
+    'sort' => $_sort,
+    'sortDirection' => $_sortDirection
 );
 ## pagination end
 
 $_id = '';
 if(isset($_GET['id']) && !empty($_GET['id'])) {
-	$_id = trim($_GET['id']);
-	$_id = Helper::validate($_id,'nospace') ? $_id : '';
+    $_id = trim($_GET['id']);
+    $_id = Helper::validate($_id,'nospace') ? $_id : '';
 }
 
 $TemplateData['pageTitle'] = 'Category details';
@@ -66,48 +66,48 @@ $TemplateData['category'] = array();
 $TemplateData['packages'] = array();
 
 if(!empty($_id)) {
-	$Category->setQueryOptions($queryOptions);
-	$category = $Category->getCategory($_id);
-	if(!empty($category)) {
-		$TemplateData['category'] = $category;
-		$TemplateData['packages'] = $Category->getPackages($_id);
+    $Category->setQueryOptions($queryOptions);
+    $category = $Category->getCategory($_id);
+    if(!empty($category)) {
+        $TemplateData['category'] = $category;
+        $TemplateData['packages'] = $Category->getPackages($_id);
 
-		$TemplateData['pageTitle'] = $category['name'];
-		$TemplateData['pagination']['currentGetParameters']['id'] = $_id;
-	} else {
-		$messageData['status'] = "danger";
-		$messageData['message'] = "Invalid category id";
-	}
+        $TemplateData['pageTitle'] = $category['name'];
+        $TemplateData['pagination']['currentGetParameters']['id'] = $_id;
+    } else {
+        $messageData['status'] = "danger";
+        $messageData['message'] = "Invalid category id";
+    }
 }
 
 ## pagination
 if(!empty($TemplateData['packages']['amount'])) {
-	$TemplateData['pagination']['pages'] = (int)ceil($TemplateData['packages']['amount'] / $_rpp);
-	$TemplateData['pagination']['curPage'] = $_curPage;
+    $TemplateData['pagination']['pages'] = (int)ceil($TemplateData['packages']['amount'] / $_rpp);
+    $TemplateData['pagination']['curPage'] = $_curPage;
 
-	$TemplateData['pagination']['currentGetParameters']['page'] = $_curPage;
-	$TemplateData['pagination']['currentGetParameters']['s'] = $_sort;
-	$TemplateData['pagination']['currentGetParameters']['sd'] = $_sortDirection;
+    $TemplateData['pagination']['currentGetParameters']['page'] = $_curPage;
+    $TemplateData['pagination']['currentGetParameters']['s'] = $_sort;
+    $TemplateData['pagination']['currentGetParameters']['sd'] = $_sortDirection;
     $TemplateData['pagination']['currentGetParameters']['rpp'] = $_rpp;
     $TemplateData['pagination']['sortOptions'] = $Category->getSortOptions();
 }
 
 if($TemplateData['pagination']['pages'] > 11) {
-	# first pages
-	$TemplateData['pagination']['visibleRange'] = range(1,3);
-	# last pages
-	foreach(range($TemplateData['pagination']['pages']-2, $TemplateData['pagination']['pages']) as $e) {
-		$TemplateData['pagination']['visibleRange'][] = $e;
-	}
-	# pages before and after current page
-	$cRange = range($TemplateData['pagination']['curPage']-1, $TemplateData['pagination']['curPage']+1);
-	foreach($cRange as $e) {
-		$TemplateData['pagination']['visibleRange'][] = $e;
-	}
-	$TemplateData['pagination']['currentRangeStart'] = array_shift($cRange);
-	$TemplateData['pagination']['currentRangeEnd'] = array_pop($cRange);
+    # first pages
+    $TemplateData['pagination']['visibleRange'] = range(1,3);
+    # last pages
+    foreach(range($TemplateData['pagination']['pages']-2, $TemplateData['pagination']['pages']) as $e) {
+        $TemplateData['pagination']['visibleRange'][] = $e;
+    }
+    # pages before and after current page
+    $cRange = range($TemplateData['pagination']['curPage']-1, $TemplateData['pagination']['curPage']+1);
+    foreach($cRange as $e) {
+        $TemplateData['pagination']['visibleRange'][] = $e;
+    }
+    $TemplateData['pagination']['currentRangeStart'] = array_shift($cRange);
+    $TemplateData['pagination']['currentRangeEnd'] = array_pop($cRange);
 }
 else {
-	$TemplateData['pagination']['visibleRange'] = range(1,$TemplateData['pagination']['pages']);
+    $TemplateData['pagination']['visibleRange'] = range(1,$TemplateData['pagination']['pages']);
 }
 ## pagination end

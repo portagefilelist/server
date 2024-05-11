@@ -19,112 +19,112 @@
 ?>
 <h1>Statistics</h1>
 <p>
-	Repositories indexed: <a href="https://packages.gentoo.org/">Gentoo</a>(<?php echo $TemplateData['p']['repository']['gentoo'] ?? ''; ?>)
-	and <a href="https://wiki.gentoo.org/wiki/Project:GURU">GURU</a>(<?php echo $TemplateData['p']['repository']['guru'] ?? ''; ?>) <br />
-	Amount of indexed packages: <b><?php echo $TemplateData['p']['amount'] ?? ''; ?></b><br />
-	Amount of indexed files: <b><?php echo $TemplateData['f']['amount'] ?? ''; ?></b><br />
-	Indexed architectures: <b><?php echo implode(", ", $TemplateData['p']['arch']); ?></b>
+    Repositories indexed: <a href="https://packages.gentoo.org/">Gentoo</a>(<?php echo $TemplateData['p']['repository']['gentoo'] ?? ''; ?>)
+    and <a href="https://wiki.gentoo.org/wiki/Project:GURU">GURU</a>(<?php echo $TemplateData['p']['repository']['guru'] ?? ''; ?>) <br />
+    Amount of indexed packages: <b><?php echo $TemplateData['p']['amount'] ?? ''; ?></b><br />
+    Amount of indexed files: <b><?php echo $TemplateData['f']['amount'] ?? ''; ?></b><br />
+    Indexed architectures: <b><?php echo implode(", ", $TemplateData['p']['arch']); ?></b>
 </p>
 
 <div class="uk-grid uk-child-width-1-1 uk-child-width-1-2@m uk-child-width-1-3@l">
-	<div>
-		<h3>Top successful file searches</h3>
-		<table class="uk-table uk-table-striped">
-			<thead>
-			<tr>
-				<th role="columnheader">Name</th>
-				<th role="columnheader">#</th>
-			</tr>
-			</thead>
-			<tbody>
-			<?php
-			if(!empty($TemplateData['topFSearch'])) {
-				foreach($TemplateData['topFSearch'] as $amount=>$value) {
-					?>
-					<tr>
-						<td><?php echo $value; ?></a></td>
-						<td><?php echo $amount; ?></td>
-					</tr>
-					<?php
-				}
-			}
-			?>
-			</tbody>
-		</table>
-	</div>
-	<div>
-		<h3>Latest updated packages</h3>
-		<table class="uk-table uk-table-striped">
-			<thead>
-				<tr>
-					<th role="columnheader">Name</th>
-					<th role="columnheader">Unique name</th>
-				</tr>
-			</thead>
-			<tbody>
-				<?php
-				if(!empty($TemplateData['p']['latest'])) {
-					foreach($TemplateData['p']['latest'] as $key=>$entry) {
-						?>
-						<tr>
-							<td><?php echo $entry['name']; ?></td>
-							<td><a href="index.php?p=package&id=<?php echo $entry['hash']; ?>"><?php echo $entry['categoryName']; ?>/<?php echo $entry['name']; ?></a></td>
-						</tr>
-						<?php
-					}
-				}
-				?>
-			</tbody>
-		</table>
-	</div>
-	<div>
-		<h3>Latest updated files</h3>
-		<table class="uk-table uk-table-striped">
-			<thead>
-				<tr>
-					<th role="columnheader">File</th>
-				</tr>
-			</thead>
-			<tbody>
-				<?php
-				if(!empty($TemplateData['f']['latest'])) {
-					foreach($TemplateData['f']['latest'] as $key=>$entry) {
-						?>
-						<tr>
-							<td><a href="index.php?fs=<?php echo urlencode($entry['path']); ?>"><?php echo $entry['name']; ?></a></td>
-						</tr>
-						<?php
-					}
-				}
-				?>
-			</tbody>
-		</table>
-	</div>
-	<div>
-		<h3>USE flag top 10</h3>
-		<table class="uk-table uk-table-striped">
-			<thead>
-				<tr>
-					<th role="columnheader">Use</th>
-					<th role="columnheader">#</th>
-				</tr>
-			</thead>
-			<tbody>
-				<?php
-				if(!empty($TemplateData['p']['use'])) {
-					foreach($TemplateData['p']['use'] as $key=>$entry) {
-						?>
-						<tr>
-							<td><?php echo $entry['useword']; ?></a></td>
-							<td><?php echo $entry['amount']; ?></td>
-						</tr>
-						<?php
-					}
-				}
-				?>
-			</tbody>
-		</table>
-	</div>
+    <div>
+        <h3>Top successful file searches</h3>
+        <table class="uk-table uk-table-striped">
+            <thead>
+            <tr>
+                <th role="columnheader">Name</th>
+                <th role="columnheader">#</th>
+            </tr>
+            </thead>
+            <tbody>
+            <?php
+            if(!empty($TemplateData['topFSearch'])) {
+                foreach($TemplateData['topFSearch'] as $amount=>$value) {
+                    ?>
+                    <tr>
+                        <td><?php echo $value; ?></a></td>
+                        <td><?php echo $amount; ?></td>
+                    </tr>
+                    <?php
+                }
+            }
+            ?>
+            </tbody>
+        </table>
+    </div>
+    <div>
+        <h3>Latest updated packages</h3>
+        <table class="uk-table uk-table-striped">
+            <thead>
+                <tr>
+                    <th role="columnheader">Name</th>
+                    <th role="columnheader">Unique name</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                if(!empty($TemplateData['p']['latest'])) {
+                    foreach($TemplateData['p']['latest'] as $key=>$entry) {
+                        ?>
+                        <tr>
+                            <td><?php echo $entry['name']; ?></td>
+                            <td><a href="index.php?p=package&id=<?php echo $entry['hash']; ?>"><?php echo $entry['categoryName']; ?>/<?php echo $entry['name']; ?></a></td>
+                        </tr>
+                        <?php
+                    }
+                }
+                ?>
+            </tbody>
+        </table>
+    </div>
+    <div>
+        <h3>Latest updated files</h3>
+        <table class="uk-table uk-table-striped">
+            <thead>
+                <tr>
+                    <th role="columnheader">File</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                if(!empty($TemplateData['f']['latest'])) {
+                    foreach($TemplateData['f']['latest'] as $key=>$entry) {
+                        ?>
+                        <tr>
+                            <td><a href="index.php?fs=<?php echo urlencode($entry['path']); ?>"><?php echo $entry['name']; ?></a></td>
+                        </tr>
+                        <?php
+                    }
+                }
+                ?>
+            </tbody>
+        </table>
+    </div>
+    <div>
+        <h3>USE flag top 10</h3>
+        <table class="uk-table uk-table-striped">
+            <thead>
+                <tr>
+                    <th role="columnheader">Use</th>
+                    <th role="columnheader">#</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                if(!empty($TemplateData['p']['use'])) {
+                    foreach($TemplateData['p']['use'] as $key=>$entry) {
+                        ?>
+                        <tr>
+                            <td><?php echo $entry['useword']; ?></a></td>
+                            <td><?php echo $entry['amount']; ?></td>
+                        </tr>
+                        <?php
+                    }
+                }
+                ?>
+            </tbody>
+        </table>
+    </div>
     <div>
         <h3>Most installs</h3>
         <table class="uk-table uk-table-striped">

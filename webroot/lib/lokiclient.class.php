@@ -89,23 +89,6 @@ class Loki {
 
         if(!LOKI_ENABLE) return $ret;
 
-        /*
-        $data = array(
-            "streams" => array(
-                array(
-                    "stream" => array(
-                        "app" => "pfl",
-                        "source" => "website"
-                    ),
-                    "values" => array (
-                        array($_nanosec, "visit", array("custom" => "values")),
-                        array($_nanosec, "search")
-                    )
-                )
-            )
-        );
-        */
-
         $data = array(
             "streams" => array(
                 array(
