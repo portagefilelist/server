@@ -26,10 +26,10 @@ require_once 'config.php';
 // set the error reporting
 ini_set('log_errors',true);
 if(DEBUG === true) {
-	ini_set('display_errors',true);
+    ini_set('display_errors',true);
 }
 else {
-	ini_set('display_errors',false);
+    ini_set('display_errors',false);
 }
 
 // time settings
@@ -47,7 +47,7 @@ if(Helper::folderSize(PATH_INBOX) > 1000000000) {
     echo "Not accepting any new files.";
     Helper::sysLog("ERROR Upload inbox full!");
     Helper::notify("Upload dir full");
-	exit();
+    exit();
 }
 
 # Loki
@@ -55,50 +55,50 @@ require_once 'lib/lokiclient.class.php';
 $Loki = new Loki(LOKI_HOST, LOKI_PORT, array("app" => "pfl", "source" => "data"));
 
 if(isset($_FILES['foo'])) {
-	$_uploadFile = $_FILES['foo'];
+    $_uploadFile = $_FILES['foo'];
 
-	if(DEBUG) Helper::sysLog("INFO Upload starting upload with FILES: ".Helper::cleanForLog($_FILES));
+    if(DEBUG) Helper::sysLog("INFO Upload starting upload with FILES: ".Helper::cleanForLog($_FILES));
     $Loki->log("data.starting");
 
-	if(isset($_uploadFile['name'])
-		&& isset($_uploadFile['type'])
-		&& isset($_uploadFile['size'])
-		&& isset($_uploadFile['tmp_name'])
-		&& isset($_uploadFile['error'])
-	) {
-		$finfo = finfo_open(FILEINFO_MIME_TYPE);
-		$mime = finfo_file($finfo, $_uploadFile['tmp_name']);
-		finfo_close($finfo);
+    if(isset($_uploadFile['name'])
+        && isset($_uploadFile['type'])
+        && isset($_uploadFile['size'])
+        && isset($_uploadFile['tmp_name'])
+        && isset($_uploadFile['error'])
+    ) {
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mime = finfo_file($finfo, $_uploadFile['tmp_name']);
+        finfo_close($finfo);
         // can be cleaned up after some time. tar is the new format
-		if($mime != "application/x-bzip2" && $mime != "application/x-tar") {
-			Helper::sysLog("ERROR Upload invalid mime type: ".Helper::cleanForLog($mime));
+        if($mime != "application/x-bzip2" && $mime != "application/x-tar") {
+            Helper::sysLog("ERROR Upload invalid mime type: ".Helper::cleanForLog($mime));
             http_response_code(400);
             echo "Invalid mime type.";
             $Loki->log("data.error", array("type" => "mimetype"));
             $Loki->send();
-			exit();
-		}
+            exit();
+        }
 
-		$_uploadTarget = tempnam(PATH_INBOX.'/','pfl');
-		if(move_uploaded_file($_uploadFile['tmp_name'], $_uploadTarget)) {
-			Helper::sysLog("INFO Upload success. Target : ".Helper::cleanForLog($_uploadTarget));
+        $_uploadTarget = tempnam(PATH_INBOX.'/','pfl');
+        if(move_uploaded_file($_uploadFile['tmp_name'], $_uploadTarget)) {
+            Helper::sysLog("INFO Upload success. Target : ".Helper::cleanForLog($_uploadTarget));
             $Loki->log("data.uploaded");
-		}
-		else {
-			Helper::sysLog("ERROR Upload error while upload move: ".Helper::cleanForLog($_FILES));
+        }
+        else {
+            Helper::sysLog("ERROR Upload error while upload move: ".Helper::cleanForLog($_FILES));
             http_response_code(500);
             echo "Something went wrong.";
             $Loki->log("data.error", array("type" => "move"));
             $Loki->send();
-			exit();
-		}
+            exit();
+        }
 
-	} else {
-		Helper::sysLog("ERROR Upload incomplete FILES: ".Helper::cleanForLog($_FILES));
+    } else {
+        Helper::sysLog("ERROR Upload incomplete FILES: ".Helper::cleanForLog($_FILES));
         http_response_code(500);
         echo "Upload incomplete.";
         $Loki->log("data.error", array("type" => "incomplete"));
-	}
+    }
 }
 http_response_code(200);
 echo "Thank you.";
