@@ -43,11 +43,15 @@ date_default_timezone_set(TIMEZONE);
 # static helper class
 require_once 'lib/helper.class.php';
 
+# Loki
+require_once 'lib/lokiclient.class.php';
+$Loki = new Loki(LOKI_HOST, LOKI_PORT, array("app" => "pfl", "source" => "query"));
+
 $returnData = array();
 
 $_search = '';
 if(isset($_GET['file']) && !empty($_GET['file'])) {
-	Helper::sysLog("[INFO] query with : ".Helper::cleanForLog($_GET));
+	if(DEBUG) Helper::sysLog("[DEBUG] query with : ".Helper::cleanForLog($_GET));
 	$_search = trim($_GET['file']);
 	$_search = Helper::validate($_search,'nospaceP') ? $_search : '';
 
@@ -63,6 +67,8 @@ if(empty($_search)) {
 	header('Access-Control-Allow-Origin: *');
 	header('Content-Type: application/json');
 	echo json_encode($returnData);
+    $Loki->log("query.error", array("type" => "invalid"));
+    $Loki->send();
 	exit();
 }
 
@@ -91,6 +97,8 @@ if(!$Files->prepareSearchValue($_search)) {
 	header('Access-Control-Allow-Origin: *');
 	header('Content-Type: application/json');
 	echo json_encode($returnData);
+    $Loki->log("query.error", array("type" => "invalid"));
+    $Loki->send();
 	exit();
 }
 $result = $Files->getFiles();
@@ -103,6 +111,8 @@ if(empty($result)) {
 	header('Access-Control-Allow-Origin: *');
 	header('Content-Type: application/json');
 	echo json_encode($returnData);
+    $Loki->log("query.error", array("type" => "empty"));
+    $Loki->send();
 	exit();
 }
 
@@ -134,4 +144,8 @@ if(isset($result['results'])) {
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 echo json_encode($returnData);
+
+$Loki->log("query.success");
+$Loki->send();
+
 exit();
