@@ -185,10 +185,10 @@ if($updateCounter > 0) {
 
 Helper::sysLog('[INFO] Topicality importer updated: '.$updateCounter);
 Helper::sysLog('[INFO] Topicality importer ended.');
-$Loki->log("import.updated", array("value" => $updateCounter));
+$Loki->log("import.updated", array("value" => strval($updateCounter)));
 
 $cacheFilesI = new FilesystemIterator(PATH_CACHE, FilesystemIterator::SKIP_DOTS);
-$Loki->log("import.cachefiles", array("value" => iterator_count($cacheFilesI)));
+$Loki->log("import.cachefiles", array("amount" => strval(iterator_count($cacheFilesI))));
 
 $_l = $Loki->send();
 if(DEBUG) Helper::sysLog("[DEBUG] loki send ".$_l);

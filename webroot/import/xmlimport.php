@@ -65,7 +65,7 @@ $Loki = new Loki(LOKI_HOST, LOKI_PORT, array("app" => "pfl", "source" => "import
 // get available files from inbox
 $inboxFiles = glob(PATH_INBOX.'/pfl*');
 if(DEBUG) Helper::sysLog('[DEBUG] Found files: '.Helper::cleanForLog($inboxFiles));
-$Loki->log("import.files", array("value" => count($inboxFiles)));
+$Loki->log("import.files", array("amount" => strval(count($inboxFiles))));
 
 if(empty($inboxFiles)) {
     Helper::sysLog('[INFO] Nothing in inbox.');
@@ -454,7 +454,7 @@ if(!empty($cacheFiles) && $_purge) {
         unlink($cf);
     }
     Helper::sysLog('[INFO] Importer purged non id files '.count($cacheFiles).' files');
-    $Loki->log("import.purge", array("type" => "nonid", "value" => count($cacheFiles)));
+    $Loki->log("import.purge", array("type" => "nonid", "amount" => strval(count($cacheFiles))));
 
     // call stats page to create new cache entry
     $call = Helper::curlCall("https://www.portagefilelist.de/index.php?p=stats");
@@ -480,15 +480,15 @@ if(!empty($toDelete)) {
         unlink($k);
     }
     if(DEBUG) Helper::sysLog('[DEBUG] Importer purged id '.count($toDelete).' files');
-    $Loki->log("import.purge", array("type" => "id", "value" => count($toDelete)));
+    $Loki->log("import.purge", array("type" => "id", "amount" => strval(count($toDelete))));
 }
 
 Helper::sysLog('[INFO] Importer imported '.$_fileCounter.' files');
 Helper::sysLog('[INFO] Importer ended.');
-$Loki->log("import.imported", array("value" => $_fileCounter));
+$Loki->log("import.imported", array("amount" => strval($_fileCounter)));
 
 $cacheFilesI = new FilesystemIterator(PATH_CACHE, FilesystemIterator::SKIP_DOTS);
-$Loki->log("import.cachefiles", array("value" => iterator_count($cacheFilesI)));
+$Loki->log("import.cachefiles", array("amount" => strval(iterator_count($cacheFilesI))));
 
 $_l = $Loki->send();
 if(DEBUG) Helper::sysLog("[DEBUG] loki send ".$_l);
