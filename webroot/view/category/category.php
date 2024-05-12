@@ -19,14 +19,14 @@
 ?>
 <h1>Category details</h1>
 <table class="uk-table uk-table-striped">
-	<tr>
-		<td class="uk-width-medium@s uk-width-auto">Name:</td>
-		<td><?php echo $TemplateData['category']['name'] ?? ''; ?></td>
-	</tr>
-	<tr>
-		<td>Gentoo category website:</td>
-		<td><a href="https://packages.gentoo.org/categories/<?php echo $TemplateData['category']['name'] ?? ''; ?>/" target="_blank">external <span uk-icon="link-external"></span></a></td>
-	</tr>
+    <tr>
+        <td class="uk-width-medium@s uk-width-auto">Name:</td>
+        <td><?php echo $TemplateData['category']['name'] ?? ''; ?></td>
+    </tr>
+    <tr>
+        <td>Gentoo category website:</td>
+        <td><a href="https://packages.gentoo.org/categories/<?php echo $TemplateData['category']['name'] ?? ''; ?>/" target="_blank">external <span uk-icon="link-external"></span></a></td>
+    </tr>
 </table>
 
 <h2 id="panchor">Category packages</h2>
@@ -34,29 +34,29 @@
 <?php include_once 'view/system/pagination_fe.inc.php'; ?>
 
 <table class="uk-table uk-table-striped">
-	<thead>
-	<tr>
-		<th role="columnheader">Name</th>
-		<th role="columnheader" class="uk-width-small@s uk-width-auto">Version</th>
-		<th role="columnheader" class="uk-width-small@s uk-width-auto">Arch</th>
-	</tr>
-	</thead>
-	<tbody>
+    <thead>
+    <tr>
+        <th role="columnheader">Name</th>
+        <th role="columnheader" class="uk-width-small@s uk-width-auto">Version</th>
+        <th role="columnheader" class="uk-width-small@s uk-width-auto">Arch</th>
+    </tr>
+    </thead>
+    <tbody>
 
-	<?php
-	if(!empty($TemplateData['packages'])) {
-		foreach($TemplateData['packages']['results'] as $key=>$entry) {
-			?>
+    <?php
+    if(!empty($TemplateData['packages'])) {
+        foreach($TemplateData['packages']['results'] as $key=>$entry) {
+            ?>
 
-			<tr>
-				<td><a href="index.php?p=package&id=<?php echo $entry['hash']; ?>"><?php echo $entry['name']; ?></a></td>
-				<td><?php echo $entry['version']; ?></td>
-				<td><?php echo $entry['arch']; ?></td>
-			</tr>
+            <tr>
+                <td><a href="index.php?p=package&id=<?php echo $entry['hash']; ?>"><?php echo $entry['name']; ?></a></td>
+                <td><?php echo $entry['version']; ?></td>
+                <td><?php echo $entry['arch']; ?></td>
+            </tr>
 
-			<?php
-		}
-	}
-	?>
-	</tbody>
+            <?php
+        }
+    }
+    ?>
+    </tbody>
 </table>

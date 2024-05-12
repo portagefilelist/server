@@ -18,19 +18,19 @@
  */
 
 if(!empty($messageData)) {
-	$cssClass="uk-alert-primary";
-	if(isset($messageData['status'])) {
-		$cssClass="uk-alert-".$messageData['status'];
-	}
-	$message = $messageData['message'];
-	if(is_array($message)) {
-		$message = implode("<br />", $message);
-	}
+    $cssClass="uk-alert-primary";
+    if(isset($messageData['status'])) {
+        $cssClass="uk-alert-".$messageData['status'];
+    }
+    $message = $messageData['message'];
+    if(is_array($message)) {
+        $message = implode("<br />", $message);
+    }
 
-	if(!empty($message)) {
+    if(!empty($message)) {
 ?>
-	<div class="uk-alert <?php echo $cssClass; ?>"><p><?php echo $message; ?></div>
+    <div class="uk-alert <?php echo $cssClass; ?>"><p><?php echo $message; ?></div>
 <?php
-	}
+    }
 }
 ?>

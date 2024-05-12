@@ -14,7 +14,7 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.
  *
  * pre 2023 https://github.com/tuxmainy
- * 2023 - 2024https://www.bananas-playground.net/projekt/portagefilelist/
+ * 2023 - 2024 https://www.bananas-playground.net/projekt/portagefilelist/
  */
 
 /**
@@ -58,9 +58,14 @@ if($_check !== IMPORTER_SECRET) {
     exit();
 }
 
+# Loki
+require_once '../lib/lokiclient.class.php';
+$Loki = new Loki(LOKI_HOST, LOKI_PORT, array("app" => "pfl", "source" => "import"));
+
 // get available files from inbox
 $inboxFiles = glob(PATH_INBOX.'/pfl*');
 if(DEBUG) Helper::sysLog('[DEBUG] Found files: '.Helper::cleanForLog($inboxFiles));
+$Loki->log("import.files", array("amount" => strval(count($inboxFiles))));
 
 if(empty($inboxFiles)) {
     Helper::sysLog('[INFO] Nothing in inbox.');
@@ -72,7 +77,7 @@ if($_fileCounter < 5) {
     exit();
 }
 
-Helper::sysLog('[INFO] Importer starting.');
+if(DEBUG) Helper::sysLog('[DEBUG] Importer starting.');
 
 // DB connection
 $DB = new mysqli(DB_HOST, DB_USERNAME,DB_PASSWORD, DB_NAME);
@@ -99,9 +104,10 @@ foreach ($inboxFiles as $fileToImport) {
     finfo_close($finfo);
     // can be cleaned up with future versions. Tar is the new one.
     if($mime != "application/x-bzip2" && $mime != "application/x-tar") {
-        Helper::sysLog("[WARNING] Import invalid mime type: ".Helper::cleanForLog($mime));
         rename($fileToImport, PATH_INBOX.'/invalidMimeType-'.time());
+        Helper::sysLog("[WARNING] Import invalid mime type: ".Helper::cleanForLog($mime));
         Helper::notify("Import invalid mime type");
+        $Loki->log("import.error", array("type" => "mimetype"));
         continue;
     }
 
@@ -113,13 +119,14 @@ foreach ($inboxFiles as $fileToImport) {
             rename($fileToImport, $_tarFile);
             $phar = new PharData($_tarFile);
             $phar->extractTo(PATH_INBOX);
-            Helper::sysLog('[INFO] Importer extracted tar file: '.Helper::cleanForLog($_tarFile));
+            if(DEBUG) Helper::sysLog('[DEBUG] Importer extracted tar file: '.Helper::cleanForLog($_tarFile));
             unlink($_tarFile);
             continue;
         } catch (Exception $e) {
             Helper::sysLog("[ERROR] Import can not extract tar file: ".Helper::cleanForLog($e->getMessage()));
             rename($_tarFile, PATH_INBOX.'/invalidTar-'.time());
             Helper::notify("Import can not extract tar file");
+            $Loki->log("import.error", array("type" => "extract"));
             continue;
         }
     }
@@ -132,19 +139,45 @@ foreach ($inboxFiles as $fileToImport) {
     $filetoWrite = $fileToImport.'.xml';
     if (!$fhWrite = fopen($filetoWrite, 'a')) {
         Helper::sysLog('[WARNING] Can not open file : '.Helper::cleanForLog($filetoWrite));
+        bzclose($fhRead);
+        $Loki->log("import.error", array("type" => "open"));
         continue;
     }
 
     while(!feof($fhRead)) {
         $buffer = bzread($fhRead);
-        if($buffer === FALSE) { Helper::sysLog('[ERROR] Decompress read problem'); exit(); }
-        if(bzerrno($fhRead) !== 0) { Helper::sysLog('[ERROR] Decompress problem'); exit(); }
-
-        if (fwrite($fhWrite, $buffer) === FALSE) {
-            Helper::sysLog('[WARNING] Can not write to file : '.Helper::cleanForLog($filetoWrite));
-            break;
+        if($buffer === false) {
+            bzclose($fhRead);
+            fclose($fhWrite);
+            unlink($fileToImport);
+            unlink($filetoWrite);
+            Helper::sysLog('[ERROR] Decompress read problem');
+            Helper::notify('[ERROR] Decompress read problem');
+            $Loki->log("import.error", array("type" => "decompress"));
+            $Loki->send();
+            exit();
         }
-        //file_put_contents($fileToImport.'.xml', $buffer, FILE_APPEND | LOCK_EX);
+        if(bzerrno($fhRead) !== 0) {
+            bzclose($fhRead);
+            fclose($fhWrite);
+            unlink($fileToImport);
+            unlink($filetoWrite);
+            Helper::sysLog('[ERROR] Decompress problem');
+            Helper::notify('[ERROR] Decompress problem');
+            $Loki->log("import.error", array("type" => "decompress"));
+            $Loki->send();
+            exit();
+        }
+        if (fwrite($fhWrite, $buffer) === false) {
+            bzclose($fhRead);
+            fclose($fhWrite);
+            unlink($filetoWrite);
+            Helper::sysLog('[ERROR] Can not write to file : '.Helper::cleanForLog($filetoWrite));
+            Helper::notify('[ERROR] Can not write to file');
+            $Loki->log("import.error", array("type" => "write"));
+            $Loki->send();
+            exit();
+        }
         $_unpackCounter += 1024;
         if($_unpackCounter > 300000000) { // 300MB max unpack size
             $_unpackSizeMark = true;
@@ -155,10 +188,11 @@ foreach ($inboxFiles as $fileToImport) {
     fclose($fhWrite);
 
     if($_unpackSizeMark) {
-        Helper::sysLog('[WARNING] Max unpack filesize reached: '.Helper::cleanForLog($fileToImport));
         rename($fileToImport, PATH_INBOX.'/invalidSize-'.time());
-        unlink($fileToImport.'.xml');
+        unlink($filetoWrite);
+        Helper::sysLog('[WARNING] Max unpack filesize reached: '.Helper::cleanForLog($fileToImport));
         Helper::notify("Max unpack filesize reached");
+        $Loki->log("import.error", array("type" => "size"));
         continue;
     }
 
@@ -167,9 +201,10 @@ foreach ($inboxFiles as $fileToImport) {
     $xmlReader = new XMLReader;
 
     if (!$xmlReader->open($fileToWorkWith)) {
-        Helper::sysLog('[WARNING] Can not read xml file: '.Helper::cleanForLog($fileToWorkWith));
         rename($fileToImport, PATH_INBOX.'/invalidFile-'.time());
+        Helper::sysLog('[WARNING] Can not read xml file: '.Helper::cleanForLog($fileToWorkWith));
         Helper::notify("Can not read xml file");
+        $Loki->log("import.error", array("type" => "xmlread"));
         continue;
     }
 
@@ -187,10 +222,11 @@ foreach ($inboxFiles as $fileToImport) {
         if (!$xmlReader->isValid()) {
             $_xmlErrors = libxml_get_last_error();
             if ($_xmlErrors && $_xmlErrors instanceof libXMLError) {
-                Helper::sysLog('[WARNING] Invalid xml file: '.$_xmlErrors->message);
                 libxml_clear_errors();
                 rename($fileToWorkWith, PATH_INBOX.'/invalidXMLFile-'.time());
+                Helper::sysLog('[WARNING] Invalid xml file: '.$_xmlErrors->message);
                 Helper::notify("Invalid xml file");
+                $Loki->log("import.error", array("type" => "xmlinvalid"));
                 break;
             }
         }
@@ -263,6 +299,8 @@ foreach ($inboxFiles as $fileToImport) {
                 } catch (Exception $e) {
                     $DB->rollback();
                     Helper::sysLog("[ERROR] Category or Package insert mysql catch: ".$e->getMessage());
+                    $Loki->log("import.error", array("type" => "query"));
+                    $Loki->send();
                     exit();
                 }
 
@@ -289,6 +327,8 @@ foreach ($inboxFiles as $fileToImport) {
                                     } catch (Exception $e) {
                                         $DB->rollback();
                                         Helper::sysLog("[ERROR] Use insert mysql catch: ".$e->getMessage());
+                                        $Loki->log("import.error", array("type" => "query"));
+                                        $Loki->send();
                                         exit();
                                     }
                                 }
@@ -345,6 +385,8 @@ foreach ($inboxFiles as $fileToImport) {
                                     } catch (Exception $e) {
                                         $DB->rollback();
                                         Helper::sysLog("[ERROR] File insert mysql catch: ".$e->getMessage());
+                                        $Loki->log("import.error", array("type" => "query"));
+                                        $Loki->send();
                                         exit();
                                     }
                                 }
@@ -362,6 +404,8 @@ foreach ($inboxFiles as $fileToImport) {
                 } catch (Exception $e) {
                     $DB->rollback();
                     Helper::sysLog("[ERROR] Package commit mysql catch: ".$e->getMessage());
+                    $Loki->log("import.error", array("type" => "query"));
+                    $Loki->send();
                     exit();
                 }
 
@@ -380,8 +424,9 @@ foreach ($inboxFiles as $fileToImport) {
 
     // could be already moved due an error
     if(file_exists($fileToWorkWith)) {
-        Helper::sysLog("[INFO] Imported file: ".$fileToWorkWith);
         unlink($fileToWorkWith);
+        if(DEBUG) Helper::sysLog("[DEBUG] Imported file: ".$fileToWorkWith);
+        $Loki->log("import.file");
     }
 }
 
@@ -409,11 +454,12 @@ if(!empty($cacheFiles) && $_purge) {
         unlink($cf);
     }
     Helper::sysLog('[INFO] Importer purged non id files '.count($cacheFiles).' files');
+    $Loki->log("import.purge", array("type" => "nonid", "amount" => strval(count($cacheFiles))));
 
     // call stats page to create new cache entry
     $call = Helper::curlCall("https://www.portagefilelist.de/index.php?p=stats");
     if($call['status'] !== false) {
-        Helper::sysLog('[INFO] Importer http call '.Helper::cleanForLog($call['status']));
+        if(DEBUG) Helper::sysLog('[DEBUG] Importer http call '.Helper::cleanForLog($call['status']));
     } else {
         Helper::sysLog('[ERROR] Importer http call failed '.Helper::cleanForLog($call['message']));
     }
@@ -433,8 +479,16 @@ if(!empty($toDelete)) {
     foreach($toDelete as $k=>$v) {
         unlink($k);
     }
-    Helper::sysLog('[INFO] Importer purged id '.count($toDelete).' files');
+    if(DEBUG) Helper::sysLog('[DEBUG] Importer purged id '.count($toDelete).' files');
+    $Loki->log("import.purge", array("type" => "id", "amount" => strval(count($toDelete))));
 }
 
 Helper::sysLog('[INFO] Importer imported '.$_fileCounter.' files');
 Helper::sysLog('[INFO] Importer ended.');
+$Loki->log("import.imported", array("amount" => strval($_fileCounter)));
+
+$cacheFilesI = new FilesystemIterator(PATH_CACHE, FilesystemIterator::SKIP_DOTS);
+$Loki->log("import.cachefiles", array("amount" => strval(iterator_count($cacheFilesI))));
+
+$_l = $Loki->send();
+if(DEBUG) Helper::sysLog("[DEBUG] loki send ".$_l);

@@ -30,5 +30,5 @@ $TemplateData['p'] = $Packages->stats();
 $TemplateData['f'] = $Files->stats();
 $TemplateData['topFSearch'] = $Files->topSearch();
 if(count($TemplateData['topFSearch']) > 10) {
-	$TemplateData['topFSearch'] = array_slice($TemplateData['topFSearch'], 0, 10, true);
+    $TemplateData['topFSearch'] = array_slice($TemplateData['topFSearch'], 0, 10, true);
 }

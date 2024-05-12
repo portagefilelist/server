@@ -14,27 +14,27 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.
  *
  * pre 2023 - https://github.com/tuxmainy
- * 2023 https://www.bananas-playground.net/projekt/portagefilelist/
+ * 2023 - 2024 https://www.bananas-playground.net/projekt/portagefilelist/
  */
 
 class Package {
-	/**
-	 * the database object
-	 *
-	 * @var mysqli
-	 */
-	private mysqli $_DB;
+    /**
+     * the database object
+     *
+     * @var mysqli
+     */
+    private mysqli $_DB;
 
-	/**
-	 * Options for db queries
-	 *  'limit' => int,
-	 *  'offset' => int,
-	 *  'orderby' => string,
-	 *  'sortDirection' => ASC|DESC
-	 *
-	 * @var array
-	 */
-	private array $_queryOptions;
+    /**
+     * Options for db queries
+     *  'limit' => int,
+     *  'offset' => int,
+     *  'orderby' => string,
+     *  'sortDirection' => ASC|DESC
+     *
+     * @var array
+     */
+    private array $_queryOptions;
 
     /**
      * @var string $_searchValue
@@ -57,30 +57,30 @@ class Package {
         'path' => array('col' => 'f.path', 'displayText' => 'Path')
     );
 
-	/**
-	 * Package constructor.
-	 *
-	 * @param mysqli $databaseConnectionObject
-	 */
-	public function __construct(mysqli $databaseConnectionObject) {
-		$this->_DB = $databaseConnectionObject;
-		$this->_setDefaults();
-	}
+    /**
+     * Package constructor.
+     *
+     * @param mysqli $databaseConnectionObject
+     */
+    public function __construct(mysqli $databaseConnectionObject) {
+        $this->_DB = $databaseConnectionObject;
+        $this->_setDefaults();
+    }
 
-	/**
-	 * Set the following options which can be used in DB queries
-	 * array(
-	 *  'limit' => RESULTS_PER_PAGE,
-	 *  'offset' => (RESULTS_PER_PAGE * ($_curPage-1)),
-	 *  'orderby' => $_sort,
-	 *  'sortDirection' => $_sortDirection
-	 * );
-	 *
-	 * @param array $options
-	 */
-	public function setQueryOptions(array $options): void {
-		if(!isset($options['limit'])) $options['limit'] = 20;
-		if(!isset($options['offset'])) $options['offset'] = false;
+    /**
+     * Set the following options which can be used in DB queries
+     * array(
+     *  'limit' => RESULTS_PER_PAGE,
+     *  'offset' => (RESULTS_PER_PAGE * ($_curPage-1)),
+     *  'orderby' => $_sort,
+     *  'sortDirection' => $_sortDirection
+     * );
+     *
+     * @param array $options
+     */
+    public function setQueryOptions(array $options): void {
+        if(!isset($options['limit'])) $options['limit'] = 20;
+        if(!isset($options['offset'])) $options['offset'] = false;
 
         if(isset($options['sort']) && isset($this->_sortOptions[$options['sort']])) {
             $options['sort'] = $this->_sortOptions[$options['sort']]['col'];
@@ -88,17 +88,17 @@ class Package {
             $options['sort'] = '';
         }
 
-		if(isset($options['sortDirection'])) {
+        if(isset($options['sortDirection'])) {
             $options['sortDirection'] = match ($options['sortDirection']) {
                 'desc' => "DESC",
                 default => "ASC",
             };
-		} else {
-		    $options['sortDirection'] = '';
+        } else {
+            $options['sortDirection'] = '';
         }
 
-		$this->_queryOptions = $options;
-	}
+        $this->_queryOptions = $options;
+    }
 
     /**
      * Return the available sort options and the active used one
@@ -109,57 +109,57 @@ class Package {
         return $this->_sortOptions;
     }
 
-	/**
-	 * Load a package by given hash
-	 *
-	 * @param string $hash
-	 * @return array
-	 */
-	public function getPackage(string $hash): array {
-		$ret = array();
+    /**
+     * Load a package by given hash
+     *
+     * @param string $hash
+     * @return array
+     */
+    public function getPackage(string $hash): array {
+        $ret = array();
 
-		if(!empty($hash)) {
-			$queryStr = "SELECT p.hash, p.name, p.version, p.arch,
-								p.importcount, p.topicality, p.topicalityLastSeen, p.repository,
-								c.name AS categoryName,
-								c.hash AS categoryId
-							FROM `".DB_PREFIX."_package` AS p
-							LEFT JOIN `".DB_PREFIX."_cat2pkg` AS c2p ON p.hash = c2p.packageId
-							LEFT JOIN `".DB_PREFIX."_category` AS c ON c.hash = c2p.categoryId
-							WHERE p.hash = '".$this->_DB->real_escape_string($hash)."'";
+        if(!empty($hash)) {
+            $queryStr = "SELECT p.hash, p.name, p.version, p.arch,
+                                p.importcount, p.topicality, p.topicalityLastSeen, p.repository,
+                                c.name AS categoryName,
+                                c.hash AS categoryId
+                            FROM `".DB_PREFIX."_package` AS p
+                            LEFT JOIN `".DB_PREFIX."_cat2pkg` AS c2p ON p.hash = c2p.packageId
+                            LEFT JOIN `".DB_PREFIX."_category` AS c ON c.hash = c2p.categoryId
+                            WHERE p.hash = '".$this->_DB->real_escape_string($hash)."'";
             if(QUERY_DEBUG) Helper::sysLog("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
-			try {
-				$query = $this->_DB->query($queryStr);
+            try {
+                $query = $this->_DB->query($queryStr);
 
-				if($query !== false && $query->num_rows > 0) {
-					$ret = $query->fetch_assoc();
-					$ret['usewords'] = $this->_useflags($hash);
-					$ret['otherVersions'] = $this->_otherVersionsForPackage($ret['name'], $hash, $ret['categoryId']);
-				}
-			}
-			catch (Exception $e) {
-				Helper::sysLog("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
-			}
-		}
+                if($query !== false && $query->num_rows > 0) {
+                    $ret = $query->fetch_assoc();
+                    $ret['usewords'] = $this->_useflags($hash);
+                    $ret['otherVersions'] = $this->_otherVersionsForPackage($ret['name'], $hash, $ret['categoryId']);
+                }
+            }
+            catch (Exception $e) {
+                Helper::sysLog("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
+            }
+        }
 
-		return $ret;
-	}
+        return $ret;
+    }
 
-	/**
-	 * Return the package files by given package hash
-	 *
-	 * @param string $hash
-	 * @return array
-	 */
-	public function getPackageFiles(string $hash): array {
-		$ret = array();
+    /**
+     * Return the package files by given package hash
+     *
+     * @param string $hash
+     * @return array
+     */
+    public function getPackageFiles(string $hash): array {
+        $ret = array();
 
-		// split since part of it is used later
-		$querySelect = "f.hash, f.name, f.path";
-		$queryFrom = " FROM `".DB_PREFIX."_pkg2file` AS p2f";
-		$queryJoin = " LEFT JOIN `".DB_PREFIX."_file` AS f ON f.hash = p2f.fileId";
+        // split since part of it is used later
+        $querySelect = "f.hash, f.name, f.path";
+        $queryFrom = " FROM `".DB_PREFIX."_pkg2file` AS p2f";
+        $queryJoin = " LEFT JOIN `".DB_PREFIX."_file` AS f ON f.hash = p2f.fileId";
 
-		$queryWhere = " WHERE p2f.packageId = '".$this->_DB->real_escape_string($hash)."'";
+        $queryWhere = " WHERE p2f.packageId = '".$this->_DB->real_escape_string($hash)."'";
 
         if(!empty($this->_searchValue)) {
             if(str_contains($this->_searchValue, '/')) {
@@ -176,56 +176,56 @@ class Package {
         }
 
 
-		$queryOrder = " ORDER BY";
-		if (!empty($this->_queryOptions['sort'])) {
-			$queryOrder .= ' '.$this->_queryOptions['sort'].' ';
-		}
-		else {
-			$queryOrder .= " ".$this->_sortOptions['default']['col'];
-		}
+        $queryOrder = " ORDER BY";
+        if (!empty($this->_queryOptions['sort'])) {
+            $queryOrder .= ' '.$this->_queryOptions['sort'].' ';
+        }
+        else {
+            $queryOrder .= " ".$this->_sortOptions['default']['col'];
+        }
 
-		if (!empty($this->_queryOptions['sortDirection'])) {
-			$queryOrder .= ' '.$this->_queryOptions['sortDirection'];
-		}
-		else {
-			$queryOrder .= " ASC";
-		}
+        if (!empty($this->_queryOptions['sortDirection'])) {
+            $queryOrder .= ' '.$this->_queryOptions['sortDirection'];
+        }
+        else {
+            $queryOrder .= " ASC";
+        }
 
 
-		$queryLimit = '';
-		if(!empty($this->_queryOptions['limit'])) {
-			$queryLimit .= " LIMIT ".$this->_queryOptions['limit'];
-			# offset can be 0
-			if($this->_queryOptions['offset'] !== false) {
-				$queryLimit .= " OFFSET ".$this->_queryOptions['offset'];
-			}
-		}
+        $queryLimit = '';
+        if(!empty($this->_queryOptions['limit'])) {
+            $queryLimit .= " LIMIT ".$this->_queryOptions['limit'];
+            # offset can be 0
+            if($this->_queryOptions['offset'] !== false) {
+                $queryLimit .= " OFFSET ".$this->_queryOptions['offset'];
+            }
+        }
 
-		$queryStr = "SELECT ".$querySelect.$queryFrom.$queryJoin.$queryWhere.$queryOrder.$queryLimit;
-		if(QUERY_DEBUG) Helper::sysLog("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
+        $queryStr = "SELECT ".$querySelect.$queryFrom.$queryJoin.$queryWhere.$queryOrder.$queryLimit;
+        if(QUERY_DEBUG) Helper::sysLog("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
 
-		try {
-			$query = $this->_DB->query($queryStr);
+        try {
+            $query = $this->_DB->query($queryStr);
 
-			if($query !== false && $query->num_rows > 0) {
-				while(($result = $query->fetch_assoc()) != false) {
-					$ret['results'][$result['hash']] = $result;
-				}
+            if($query !== false && $query->num_rows > 0) {
+                while(($result = $query->fetch_assoc()) != false) {
+                    $ret['results'][$result['hash']] = $result;
+                }
 
-				$queryStrCount = "SELECT COUNT(f.hash) AS amount ".$queryFrom.$queryJoin.$queryWhere;
-				if(QUERY_DEBUG) Helper::sysLog("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStrCount));
+                $queryStrCount = "SELECT COUNT(f.hash) AS amount ".$queryFrom.$queryJoin.$queryWhere;
+                if(QUERY_DEBUG) Helper::sysLog("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStrCount));
 
-				$query = $this->_DB->query($queryStrCount);
-				$result = $query->fetch_assoc();
-				$ret['amount'] = $result['amount'];
-			}
-		}
-		catch (Exception $e) {
-			Helper::sysLog("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
-		}
+                $query = $this->_DB->query($queryStrCount);
+                $result = $query->fetch_assoc();
+                $ret['amount'] = $result['amount'];
+            }
+        }
+        catch (Exception $e) {
+            Helper::sysLog("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
+        }
 
-		return $ret;
-	}
+        return $ret;
+    }
 
     /**
      * Prepare and set the searchvalue.
@@ -259,87 +259,87 @@ class Package {
         return true;
     }
 
-	/**
-	 * Get the usewords for given package hash
-	 *
-	 * @param string $pid Package id
-	 * @return array()
-	 */
-	private function _useflags(string $pid):array {
-		$ret = array();
+    /**
+     * Get the usewords for given package hash
+     *
+     * @param string $pid Package id
+     * @return array()
+     */
+    private function _useflags(string $pid):array {
+        $ret = array();
 
-		if(!empty($pid)) {
-			$queryStr = "SELECT pu.useword
-							FROM `".DB_PREFIX."_package_use` AS pu
-							WHERE pu.packageId = '".$this->_DB->real_escape_string($pid)."'";
-			try {
-				$query = $this->_DB->query($queryStr);
+        if(!empty($pid)) {
+            $queryStr = "SELECT pu.useword
+                            FROM `".DB_PREFIX."_package_use` AS pu
+                            WHERE pu.packageId = '".$this->_DB->real_escape_string($pid)."'";
+            try {
+                $query = $this->_DB->query($queryStr);
 
-				if($query !== false && $query->num_rows > 0) {
-					while(($result = $query->fetch_assoc()) != false) {
-						$ret[] = $result['useword'];
-					}
-				}
-			}
-			catch (Exception $e) {
-				Helper::sysLog("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
-			}
-		}
+                if($query !== false && $query->num_rows > 0) {
+                    while(($result = $query->fetch_assoc()) != false) {
+                        $ret[] = $result['useword'];
+                    }
+                }
+            }
+            catch (Exception $e) {
+                Helper::sysLog("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
+            }
+        }
 
-		return $ret;
-	}
+        return $ret;
+    }
 
-	/**
-	 * Search for packages other versions
-	 * Ignores self
-	 *
-	 * @param string $name Package name
-	 * @param string $hash Package id
-	 * @param string $catId Category id
-	 *
-	 * @return array $ret
-	 */
-	private function _otherVersionsForPackage(string $name, string $hash, string $catId): array {
-		$ret = array();
+    /**
+     * Search for packages other versions
+     * Ignores self
+     *
+     * @param string $name Package name
+     * @param string $hash Package id
+     * @param string $catId Category id
+     *
+     * @return array $ret
+     */
+    private function _otherVersionsForPackage(string $name, string $hash, string $catId): array {
+        $ret = array();
 
-		if(!empty($name) && !empty($hash) && !empty($catId)) {
-			$queryStr = "SELECT p.hash, p.name, p.version, p.arch,
-								c.name AS categoryName,
-								c.hash AS categoryId
-							FROM `".DB_PREFIX."_package` AS p
-							LEFT JOIN `".DB_PREFIX."_cat2pkg` AS c2p ON c2p.packageId = p.hash
-							LEFT JOIN `".DB_PREFIX."_category` AS c ON c.hash = c2p.categoryId
-							WHERE p.name = '".$this->_DB->real_escape_string($name)."'
-								AND p.hash <> '".$this->_DB->real_escape_string($hash)."'
-								AND c.hash = '".$this->_DB->real_escape_string($catId)."'";
-			if(QUERY_DEBUG) Helper::sysLog("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
-			try {
-				$query = $this->_DB->query($queryStr);
-				if($query !== false && $query->num_rows > 0) {
-					while(($result = $query->fetch_assoc()) != false) {
-						$ret[$result['hash']] = $result;
-					}
-				}
-			}
-			catch (Exception $e) {
-				Helper::sysLog("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
-			}
-		}
+        if(!empty($name) && !empty($hash) && !empty($catId)) {
+            $queryStr = "SELECT p.hash, p.name, p.version, p.arch,
+                                c.name AS categoryName,
+                                c.hash AS categoryId
+                            FROM `".DB_PREFIX."_package` AS p
+                            LEFT JOIN `".DB_PREFIX."_cat2pkg` AS c2p ON c2p.packageId = p.hash
+                            LEFT JOIN `".DB_PREFIX."_category` AS c ON c.hash = c2p.categoryId
+                            WHERE p.name = '".$this->_DB->real_escape_string($name)."'
+                                AND p.hash <> '".$this->_DB->real_escape_string($hash)."'
+                                AND c.hash = '".$this->_DB->real_escape_string($catId)."'";
+            if(QUERY_DEBUG) Helper::sysLog("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
+            try {
+                $query = $this->_DB->query($queryStr);
+                if($query !== false && $query->num_rows > 0) {
+                    while(($result = $query->fetch_assoc()) != false) {
+                        $ret[$result['hash']] = $result;
+                    }
+                }
+            }
+            catch (Exception $e) {
+                Helper::sysLog("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
+            }
+        }
 
-		return $ret;
-	}
+        return $ret;
+    }
 
-	/**
-	 * set some defaults by init of the class
-	 *
-	 * @return void
-	 */
-	private function _setDefaults(): void {
-		// default query options
-		$options['limit'] = 50;
-		$options['offset'] = false;
-		$options['sort'] = 'default';
-		$options['sortDirection'] = '';
-		$this->setQueryOptions($options);
-	}
+    /**
+     * set some defaults by init of the class
+     *
+     * @return void
+     */
+    private function _setDefaults(): void {
+        // default query options
+        $options['limit'] = 50;
+        $options['offset'] = false;
+        $options['sort'] = 'default';
+        $options['sortDirection'] = '';
+        $this->setQueryOptions($options);
+    }
 }

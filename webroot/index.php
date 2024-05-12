@@ -26,10 +26,10 @@ require_once 'config.php';
 ## set the error reporting
 ini_set('log_errors',true);
 if(DEBUG === true) {
-	ini_set('display_errors',true);
+    ini_set('display_errors',true);
 }
 else {
-	ini_set('display_errors',false);
+    ini_set('display_errors',false);
 }
 
 # time settings
@@ -37,6 +37,10 @@ date_default_timezone_set(TIMEZONE);
 
 # static helper class
 require_once 'lib/helper.class.php';
+
+# Loki
+require_once 'lib/lokiclient.class.php';
+$Loki = new Loki(LOKI_HOST, LOKI_PORT, array("app" => "pfl", "source" => "website"));
 
 # simple cache based on get
 $_cid = '';
@@ -47,12 +51,15 @@ if(isset($_GET['id']) && !empty($_GET['id'])) {
 $_cachekey = $_cid.'_'.md5(var_export($_GET,true));
 $cacheFile = PATH_CACHE.'/'.$_cachekey;
 if(file_exists($cacheFile) && !DEBUG) {
-	header("Pragma: public");
-	header("Cache-Control: maxage=".CACHE_LIVETIME_SEC);
-	header('Expires: '.gmdate('D, d M Y H:i:s', time()+CACHE_LIVETIME_SEC).' GMT');
-	header("Content-type: text/html; charset=UTF-8");
-	echo file_get_contents($cacheFile);
-	exit();
+    header("Pragma: public");
+    header("Cache-Control: maxage=".CACHE_LIVETIME_SEC);
+    header('Expires: '.gmdate('D, d M Y H:i:s', time()+CACHE_LIVETIME_SEC).' GMT');
+    header("Content-type: text/html; charset=UTF-8");
+    echo file_get_contents($cacheFile);
+
+    $Loki->log("cacheview", array("cachekey" => $_cachekey, "value" => $_SERVER['QUERY_STRING']));
+    $_l = $Loki->send();
+    exit();
 }
 
 # template vars
@@ -81,13 +88,13 @@ $_validPages["stats"] = "stats";
 
 $_requestMode = "home";
 if(isset($_GET['p']) && !empty($_GET['p'])) {
-	$_requestMode = trim($_GET['p']);
-	$_requestMode = Helper::validate($_requestMode,'nospace') ? $_requestMode : "home";
+    $_requestMode = trim($_GET['p']);
+    $_requestMode = Helper::validate($_requestMode,'nospace') ? $_requestMode : "home";
 
-	if(!isset($_validPages[$_requestMode])) $_requestMode = "home";
+    if(!isset($_validPages[$_requestMode])) $_requestMode = "home";
 
-	$ViewScript = 'view/'.$_requestMode.'/'.$_requestMode.'.inc.php';
-	$View = 'view/'.$_requestMode.'/'.$_requestMode.'.php';
+    $ViewScript = 'view/'.$_requestMode.'/'.$_requestMode.'.inc.php';
+    $View = 'view/'.$_requestMode.'/'.$_requestMode.'.php';
 }
 
 ## DB connection
@@ -98,13 +105,15 @@ $DB->query("SET collation_connection = 'utf8mb4_unicode_520_ci'");
 $driver = new mysqli_driver();
 $driver->report_mode = MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT;
 
+$Loki->log("visit", array("page" => $_requestMode));
+
 # "cache" the content
 ob_start();
 
 # now include the script
 # this sets information into $Data and can overwrite $View
 if(!empty($ViewScript) && file_exists($ViewScript)) {
-	require_once $ViewScript;
+    require_once $ViewScript;
 }
 
 ## now inlcude the main view
@@ -114,14 +123,17 @@ require_once 'view/main.php';
 $content = ob_get_contents();
 ob_end_clean();
 if(!DEBUG) {
-	file_put_contents($cacheFile,$content);
+    file_put_contents($cacheFile,$content);
 }
 
 if(!DEBUG) {
-	header("Pragma: public");
-	header("Cache-Control: maxage=".CACHE_LIVETIME_SEC);
-	header('Expires: ' . gmdate('D, d M Y H:i:s', time()+CACHE_LIVETIME_SEC) . ' GMT');
+    header("Pragma: public");
+    header("Cache-Control: maxage=".CACHE_LIVETIME_SEC);
+    header('Expires: ' . gmdate('D, d M Y H:i:s', time()+CACHE_LIVETIME_SEC) . ' GMT');
 }
 header("Content-type: text/html; charset=UTF-8");
 
 echo $content;
+
+$_l = $Loki->send();
+if(DEBUG) Helper::sysLog("[DEBUG] loki send ".$_l);
