@@ -178,8 +178,8 @@ if($updateCounter > 0) {
         foreach($toDelete as $k=>$v) {
             unlink($k);
         }
-        if(DEBUG) Helper::sysLog('[DEBUG] Topicality importer purged id '.count($toDelete).' files');
-        $Loki->log("import.purged", array("value" => count($toDelete)));
+        Helper::sysLog('[INFO] Topicality importer purged id '.count($toDelete).' files');
+        $Loki->log("import.purged", array("value" => strval(count($toDelete))));
     }
 }
 
