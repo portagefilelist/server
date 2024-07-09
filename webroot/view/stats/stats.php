@@ -126,7 +126,7 @@
         </table>
     </div>
     <div>
-        <h3>Most installs</h3>
+        <h3>Most seen packages</h3>
         <table class="uk-table uk-table-striped">
             <thead>
             <tr>
