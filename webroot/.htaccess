@@ -21,8 +21,8 @@
 
     RewriteRule ^index(|/.*)$ - [L,R=404]
 
-	RewriteRule ^site/query/robotFile https://www.portagefilelist.de/query.php [R=301,L,QSA]
-	RewriteRule ^site/query/file https://www.portagefilelist.de/ [R=301,L,NC,QSA]
+    RewriteRule ^site/query/robotFile https://www.portagefilelist.de/query.php [R=301,L,QSA]
+    RewriteRule ^site/query/file https://www.portagefilelist.de/ [R=301,L,NC,QSA]
     RewriteRule ^site/query/listPackage https://www.portagefilelist.de/?p=packages [R=301,L,NC,QSA]
 
     #RewriteCond %{HTTP_HOST} !^www. [NC,OR]
