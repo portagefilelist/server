@@ -16,7 +16,7 @@
     RewriteCond %{HTTP_USER_AGENT} (semalt|siclab|sindice|sistrix|sitebot|siteexplorer|sitesnagger|skygrid|smartdownload|snoopy|sosospider|spankbot|spbot|sqlmap|stackrambler|stripper|sucker|surftbot) [NC,OR]
     RewriteCond %{HTTP_USER_AGENT} (sux0r|suzukacz|suzuran|takeout|teleport|telesoft|true_robots|turingos|turnit|vampire|vikspider|voideye|webleacher|webreaper|webstripper|webvac|webviewer|webwhacker) [NC,OR]
     RewriteCond %{HTTP_USER_AGENT} (winhttp|wwwoffle|woxbot|xaldon|xxxyy|yamanalab|yioopbot|youda|zeus|zmeu|zune|zyborg) [NC,OR]
-    RewriteCond %{HTTP_USER_AGENT} (facebookexternalhit|meta-externalagent) [NC]
+    RewriteCond %{HTTP_USER_AGENT} (facebookexternalhit|meta-externalagent|meta-externalfetcher|facebookcatalog) [NC]
     RewriteRule .* - [F,L]
 
     RewriteRule ^index(|/.*)$ - [L,R=404]
