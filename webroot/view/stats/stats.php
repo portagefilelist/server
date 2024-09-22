@@ -38,8 +38,8 @@
             </thead>
             <tbody>
             <?php
-            if(!empty($TemplateData['topFSearch'])) {
-                foreach($TemplateData['topFSearch'] as $amount=>$value) {
+            if(!empty($TemplateData['f']['topsearch'])) {
+                foreach($TemplateData['f']['topsearch'] as $amount=>$value) {
                     ?>
                     <tr>
                         <td><?php echo $value; ?></a></td>
