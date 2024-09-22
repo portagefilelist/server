@@ -13,8 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.
  *
- * pre 2023 - https://github.com/tuxmainy
- * 2023 https://www.bananas-playground.net/projekt/portagefilelist/
+ * pre 2023 https://github.com/tuxmainy
+ * 2023 - 2024 https://www.bananas-playground.net/projekt/portagefilelist/
  */
 
 
@@ -28,7 +28,8 @@ $TemplateData['pageTitle'] = 'Statistics';
 
 $TemplateData['p'] = $Packages->stats();
 $TemplateData['f'] = $Files->stats();
-$TemplateData['topFSearch'] = $Files->topSearch();
-if(count($TemplateData['topFSearch']) > 10) {
-    $TemplateData['topFSearch'] = array_slice($TemplateData['topFSearch'], 0, 10, true);
+/*
+if(count($TemplateData['f']['topsearch']) > 10) {
+    $TemplateData['f']['topsearch'] = array_slice($TemplateData['f']['topsearch'], 0, 10, true);
 }
+*/

@@ -13,8 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.
  *
- * pre 2023 - https://github.com/tuxmainy
- * 2023 https://www.bananas-playground.net/projekt/portagefilelist/
+ * pre 2023 https://github.com/tuxmainy
+ * 2023 - 2024 https://www.bananas-playground.net/projekt/portagefilelist/
  */
 if(empty($TemplateData['searchresults']['results'])) {
 ?>
@@ -30,10 +30,10 @@ if(empty($TemplateData['searchresults']['results'])) {
         </p>
     </div>
     <div>
-        <?php if(!empty($TemplateData['topSearch'])) { ?>
+        <?php if(!empty($TemplateData['latestSearch'])) { ?>
             <p>
-                Latest top searches:
-                <?php foreach($TemplateData['topSearch'] as $amount=>$value) {
+                Latest searches:
+                <?php foreach($TemplateData['latestSearch'] as $k=>$value) {
                     echo $value.',&#x20;';
                 }
                 ?>

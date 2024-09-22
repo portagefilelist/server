@@ -13,8 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.
  *
- * pre 2023 - https://github.com/tuxmainy
- * 2023 https://www.bananas-playground.net/projekt/portagefilelist/
+ * pre 2023 https://github.com/tuxmainy
+ * 2023 - 2024 https://www.bananas-playground.net/projekt/portagefilelist/
  */
 
 class Files {
@@ -333,19 +333,8 @@ class Files {
             Helper::sysLog("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
         }
 
-
-        return $ret;
-    }
-
-    /**
-     * statslog entries for filesearch type and more then 2 entries
-     * Sorted and reduced to the first entry for each amount
-     *
-     * @return array
-     */
-    public function topSearch(): array {
-        $ret = array();
-
+        // top searched files
+        $tsf = array();
         $queryStr = "SELECT COUNT(sl.value) AS amount, sl.value
                     FROM `".DB_PREFIX."_statslog` AS sl
                     WHERE sl.type = 'filesearch'
@@ -360,9 +349,42 @@ class Files {
 
             if($query !== false && $query->num_rows > 0) {
                 while(($row = $query->fetch_assoc()) != false) {
-                    if(!isset($ret[$row['amount']])) {
-                        $ret[$row['amount']] = str_replace("%", "*", $row['value']);
+                    if(!isset($tsf[$row['amount']])) {
+                        $tsf[$row['amount']] = str_replace("%", "*", $row['value']);
                     }
+                }
+            }
+        }
+        catch (Exception $e) {
+            Helper::sysLog("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
+        }
+        $ret['topsearch'] = $tsf;
+
+        return $ret;
+    }
+
+    /**
+     * statslog entries for filesearch type and more then 2 entries
+     * Sorted and reduced to the first entry for each amount
+     *
+     * @return array
+     */
+    public function latestSearch(): array {
+        $ret = array();
+
+        $queryStr = "SELECT sl.value
+                    FROM `".DB_PREFIX."_statslog` AS sl
+                    WHERE sl.type = 'filesearch'
+                    ORDER BY `timestmp` DESC
+                    LIMIT 10";
+        if(QUERY_DEBUG) Helper::sysLog("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
+
+        try {
+            $query = $this->_DB->query($queryStr);
+
+            if($query !== false && $query->num_rows > 0) {
+                while(($row = $query->fetch_assoc()) != false) {
+                    $ret[] = str_replace("%", "*", $row['value']);
                 }
             }
         }
