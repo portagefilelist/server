@@ -31,6 +31,7 @@
                     </li>
                     <li class="<?php if($_requestMode == "stats") echo 'uk-active'; ?>">
                         <a href="index.php?p=stats">Stats</a>
+					</li>
                     <li class="<?php if($_requestMode == "about") echo 'uk-active'; ?>">
                         <a href="index.php?p=about">About</a>
                     </li>
