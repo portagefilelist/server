@@ -1,3 +1,123 @@
 h1, h2, h3, h4 {
     margin-top: 0;
 }
+
+
+@media (prefers-color-scheme: dark) {
+
+    :root {
+        --dark1: #222;
+        --dark2: #444444;
+        --dark3: #717171;
+        --font: whitesmoke;
+        --font2: #c5c5c5;
+        --font3: #e4e4e4;
+    }
+
+    html {
+        background-color: var(--dark1);
+        color: var(--font);
+    }
+
+    h1, h2, h3, h4, h5 {
+        color: var(--font);
+    }
+
+    :not(pre) > code, :not(pre) > kbd, :not(pre) > samp {
+        background-color: var(--dark2);
+        color: indianred;
+    }
+
+    hr {
+        border-top: 1px solid var(--dark2);
+    }
+
+    .uk-table-striped tbody tr:nth-of-type(2n+1), .uk-table-striped > tr:nth-of-type(2n+1) {
+        background: var(--dark2);
+        border-top: 1px solid var(--dark2);
+        border-bottom: 1px solid var(--dark2);
+    }
+
+    .uk-table-striped tbody tr:nth-of-type(2n):last-child, .uk-table-striped > tr:nth-of-type(2n):last-child {
+        border-bottom: 1px solid var(--dark2);
+    }
+
+    .uk-table th {
+        color: var(--font);
+    }
+
+    .uk-form-label {
+        color: var(--font);
+    }
+
+    .uk-input, .uk-select, .uk-textarea {
+        background: var(--dark2);
+        color: var(--font);
+        border: 1px solid var(--dark2);
+    }
+
+    .uk-input:focus, .uk-select:focus, .uk-textarea:focus {
+        background-color: var(--dark3);
+        color: var(--font);
+        border-color: var(--dark2);
+    }
+
+    .uk-button-primary {
+        background-color: var(--dark2);
+        color: var(--font);
+        border: 1px solid transparent;
+    }
+
+    .uk-button-primary:hover {
+        background-color: var(--dark3);
+        color: var(--font);
+    }
+
+    .uk-button-default {
+        color: var(--font);
+        border: 1px solid var(--font);
+    }
+
+    .uk-button-default:hover {
+        background-color: var(--dark3);
+        color: var(--font);
+    }
+
+    .uk-dropdown {
+        background-color: var(--dark3);
+        color: var(--font);
+    }
+
+    .uk-dropdown-nav .uk-nav-header {
+        color: var(--font2);
+    }
+
+    .uk-dropdown-nav > li.uk-active > a, .uk-dropdown-nav > li > a:hover {
+        color: var(--font);
+    }
+
+    .uk-dropdown-nav > li > a {
+        color: var(--font3);
+    }
+
+    mark {
+        background: #393636;
+        color: var(--font);
+    }
+
+    .uk-navbar-container:not(.uk-navbar-transparent) {
+        background: var(--dark3);
+    }
+
+    .uk-navbar-nav > li > a {
+        color: var(--font);
+    }
+
+    .uk-navbar-nav > li:hover > a, .uk-navbar-nav > li > a[aria-expanded="true"] {
+        color: var(--font2);
+    }
+
+    .uk-alert {
+        background: var(--dark2);
+    }
+}
