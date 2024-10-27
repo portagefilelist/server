@@ -25,7 +25,7 @@ h1, h2, h3, h4 {
 
     :not(pre) > code, :not(pre) > kbd, :not(pre) > samp {
         background-color: var(--dark2);
-        color: indianred;
+        color: #fff;
     }
 
     hr {
