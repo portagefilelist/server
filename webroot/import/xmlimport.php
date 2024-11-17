@@ -142,15 +142,18 @@ foreach ($inboxFiles as $fileToImport) {
     $_unpackCounter = 1024; // default value for read bytes at bzread
     $_unpackSizeMark = false;
 
-    $filetoWrite = $fileToImport.'.xml';
-    if (!$fhWrite = fopen($filetoWrite, 'a')) {
+    $fileToWrite = $fileToImport.'.xml';
+    if (!$fhWrite = fopen($fileToWrite, 'a')) {
         bzclose($fhRead);
 
-        Helper::sysLog('[WARNING] Can not open file: '.Helper::cleanForLog($filetoWrite));
+        Helper::sysLog('[WARNING] Can not open file: '.Helper::cleanForLog($fileToWrite));
         $Loki->log("import.error", array("type" => "open"));
 
         continue;
     }
+
+    // handle a decompress error only as a warning and continue
+    $_decompressError = false;
 
     while(!feof($fhRead)) {
         $buffer = bzread($fhRead);
@@ -158,39 +161,39 @@ foreach ($inboxFiles as $fileToImport) {
             bzclose($fhRead);
             fclose($fhWrite);
 
-            Helper::sysLog('[ERROR] Decompress read problem: '.Helper::cleanForLog($fileToImport));
-            Helper::notify('[ERROR] Decompress read problem');
+            Helper::sysLog('[WARNING] Decompress read problem: '.Helper::cleanForLog($fileToImport));
+            Helper::notify('[WARNING] Decompress read problem');
             $Loki->log("import.error", array("type" => "decompress"));
             $Loki->send();
 
-            unlink($fileToImport);
-            unlink($filetoWrite);
-            exit();
+            rename($fileToImport, PATH_INBOX.'/invalidDecompressRead-'.time());
+            unlink($fileToWrite);
+            $_decompressError = true;
+            break;
         }
         if(bzerrno($fhRead) !== 0) {
             bzclose($fhRead);
             fclose($fhWrite);
 
-            Helper::sysLog('[ERROR] Decompress problem: '.Helper::cleanForLog($fileToImport));
-            Helper::notify('[ERROR] Decompress problem');
+            Helper::sysLog('[WARNING] Decompress problem: '.Helper::cleanForLog($fileToImport));
+            Helper::notify('[WARNING] Decompress problem');
             $Loki->log("import.error", array("type" => "decompress"));
             $Loki->send();
 
-            unlink($fileToImport);
-            unlink($filetoWrite);
-
-            exit();
+            rename($fileToImport, PATH_INBOX.'/invalidDecompress-'.time());
+            unlink($fileToWrite);
+            break;
         }
         if (fwrite($fhWrite, $buffer) === false) {
             bzclose($fhRead);
             fclose($fhWrite);
 
-            Helper::sysLog('[ERROR] Can not write to file : '.Helper::cleanForLog($filetoWrite));
+            Helper::sysLog('[ERROR] Can not write to file : '.Helper::cleanForLog($fileToWrite));
             Helper::notify('[ERROR] Can not write to file');
             $Loki->log("import.error", array("type" => "write"));
             $Loki->send();
 
-            unlink($filetoWrite);
+            unlink($fileToWrite);
             exit();
         }
         $_unpackCounter += 1024;
@@ -199,12 +202,18 @@ foreach ($inboxFiles as $fileToImport) {
             break;
         }
     }
+
+    // decompress problem. Continue to next file. Rename is already done.
+    if($_decompressError) {
+        continue;
+    }
+
     bzclose($fhRead);
     fclose($fhWrite);
 
     if($_unpackSizeMark) {
         rename($fileToImport, PATH_INBOX.'/invalidSize-'.time());
-        unlink($filetoWrite);
+        unlink($fileToWrite);
 
         Helper::sysLog('[WARNING] Max unpack filesize reached: '.Helper::cleanForLog($fileToImport));
         Helper::notify("Max unpack filesize reached");
