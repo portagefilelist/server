@@ -98,6 +98,7 @@
                 <?php echo $TemplateData['package']['repository'] ?? ''; ?> :: <?php echo $TemplateData['package']['categoryName'] ?? ''; ?>/<?php echo $TemplateData['package']['name'] ?? ''; ?>
             <?php } ?>
         </td>
+	</tr>	
 </table>
 
 <h2 id="panchor">Package files</h2>
