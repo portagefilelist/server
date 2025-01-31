@@ -207,6 +207,24 @@ try {
 }
 Helper::sysLog('[INFO] Cleanup statslog done');
 
+// reclaim table space after cleanups
+// effect may be minimal when used regulary
+Helper::sysLog('[INFO] Cleanup reclaim table space');
+try {
+    $DB->query("ALTER TABLE `".DB_PREFIX."_statslog` ENGINE=InnoDB");
+    $DB->query("ALTER TABLE `".DB_PREFIX."_package` ENGINE=InnoDB");
+    $DB->query("ALTER TABLE `".DB_PREFIX."_pkg2file` ENGINE=InnoDB");
+    $DB->query("ALTER TABLE `".DB_PREFIX."_file` ENGINE=InnoDB");
+    $DB->query("ALTER TABLE `".DB_PREFIX."_cat2pkg` ENGINE=InnoDB");
+    $DB->query("ALTER TABLE `".DB_PREFIX."_package_use` ENGINE=InnoDB");
+} catch (Exception $e) {
+    Helper::sysLog("[ERROR] Cleanup alter query catch: ".$e->getMessage());
+    $Loki->log("import.error", array("type" => "query"));
+    $Loki->send();
+    exit();
+}
+Helper::sysLog('[INFO] Cleanup reclaim table space done');
+
 Helper::sysLog('[INFO] Cleanup done');
 
 $_l = $Loki->send();
