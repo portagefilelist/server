@@ -28,8 +28,3 @@ $TemplateData['pageTitle'] = 'Statistics';
 
 $TemplateData['p'] = $Packages->stats();
 $TemplateData['f'] = $Files->stats();
-/*
-if(count($TemplateData['f']['topsearch']) > 10) {
-    $TemplateData['f']['topsearch'] = array_slice($TemplateData['f']['topsearch'], 0, 10, true);
-}
-*/

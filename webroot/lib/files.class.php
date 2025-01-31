@@ -150,11 +150,14 @@ class Files {
      * @return bool
      */
     public function prepareSearchValue(string $searchValue): bool {
-        //Helper::sysLog("[INFO] ".__METHOD__." wanted searchvalue: ".Helper::cleanForLog($searchValue));
+        Helper::sysLog("[INFO] ".__METHOD__." wanted searchvalue: ".Helper::cleanForLog($searchValue));
 
         if(str_contains($searchValue,'*')) {
             $this->_wildcardsearch = true;
-            $searchValue = preg_replace('/\*+/', '%', $searchValue);
+            //$searchValue = preg_replace('/\*+/', '%', $searchValue);
+            // no *str* search for now in files
+            $searchValue = str_replace("*", "",$searchValue);
+            $searchValue = $searchValue."%";
 
             if(strlen($searchValue) < 3) {
                 return false;

@@ -124,7 +124,7 @@ class Packages {
 
         if(str_contains($searchValue,'*')) {
             $this->_wildcardsearch = true;
-            $searchValue = preg_replace('/\*{1,}/', '%', $searchValue);
+            $searchValue = preg_replace('/\*+/', '%', $searchValue);
 
             if(strlen($searchValue) < 3) {
                 return false;
