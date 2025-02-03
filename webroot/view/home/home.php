@@ -19,38 +19,13 @@
 if(empty($TemplateData['searchresults']['results'])) {
 ?>
 <h1>Portagefilelist</h1>
-<div class="uk-grid uk-child-width-1-2 uk-visible@s">
-    <div>
-        <p>
-            Portage File List collects which files are installed by which <a href="https://www.gentoo.org/" target="_blank">Gentoo</a>
-            ebuild on users machines.<br />
-            It shares this data publicly for searching/browsing. It allows user to search for files that are not
-            installed on their system and figure out which ebuild they need to install in order to obtain it.<br />
-            A more detailed description what this site is about, can be <a href="index.php?p=about">read here</a>.
-        </p>
-    </div>
-    <div>
-        <?php if(!empty($TemplateData['latestSearch'])) { ?>
-            <p>
-                Latest searches:
-                <?php foreach($TemplateData['latestSearch'] as $k=>$value) {
-                    echo $value.',&#x20;';
-                }
-                ?>
-            </p>
-        <?php } ?>
-
-        <?php if(!empty($TemplateData['latestPackages'])) { ?>
-            <p>
-                Latest packages:
-                <?php foreach($TemplateData['latestPackages'] as $key=>$entry) {
-                    echo '<span class="chip"><a href="index.php?p=package&id='.$entry['hash'].'">'.$entry['name'].'</a></span>&#x20;';
-                }
-                ?>
-            </p>
-        <?php } ?>
-    </div>
-</div>
+<p>
+	Portage File List collects which files are installed by which <a href="https://www.gentoo.org/" target="_blank">Gentoo</a>
+	ebuild on users machines.<br />
+	It shares this data publicly for searching/browsing. It allows user to search for files that are not
+	installed on their system and figure out which ebuild they need to install in order to obtain it.<br />
+	A more detailed description what this site is about, can be <a href="index.php?p=about">read here</a>.
+</p>
 
 <?php } ?>
 <p>&#x20;</p>

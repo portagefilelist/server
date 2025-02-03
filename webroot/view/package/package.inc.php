@@ -132,7 +132,7 @@ if(!empty($TemplateData['files']['amount'])) {
     $TemplateData['pagination']['currentGetParameters']['rpp'] = $_rpp;
     $TemplateData['pagination']['sortOptions'] = $Package->getSortOptions();
 
-    $Loki->log("search.result", array("page" => "package", "value" => $searchValue, "amount" => $TemplateData['searchresults']['amount']));
+    $Loki->log("search.result", array("page" => "package", "value" => $searchValue, "amount" => $TemplateData['files']['amount']));
 }
 
 if($TemplateData['pagination']['pages'] > 11) {
