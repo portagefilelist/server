@@ -62,6 +62,8 @@ if($_check !== IMPORTER_SECRET) {
 require_once '../lib/lokiclient.class.php';
 $Loki = new Loki(LOKI_HOST, LOKI_PORT, array("app" => "pfl", "source" => "import"));
 
+Helper::sysLog('[INFO] Importer starting.');
+
 // get available files from inbox
 $inboxFiles = glob(PATH_INBOX.'/pfl*');
 if(DEBUG) Helper::sysLog('[DEBUG] Found files: '.Helper::cleanForLog($inboxFiles));
@@ -77,7 +79,6 @@ if($_fileCounter < 5) {
     exit();
 }
 
-if(DEBUG) Helper::sysLog('[DEBUG] Importer starting.');
 
 // DB connection
 $DB = new mysqli(DB_HOST, DB_USERNAME,DB_PASSWORD, DB_NAME);
