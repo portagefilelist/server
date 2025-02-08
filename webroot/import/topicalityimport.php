@@ -63,7 +63,7 @@ if($_check !== IMPORTER_SECRET) {
 require_once '../lib/lokiclient.class.php';
 $Loki = new Loki(LOKI_HOST, LOKI_PORT, array("app" => "pfl", "source" => "topicality"));
 
-if(DEBUG) Helper::sysLog('[DEBUG] Topicality importer starting.');
+Helper::sysLog('[INFO] Topicality importer starting.');
 
 ## DB connection
 $DB = new mysqli(DB_HOST, DB_USERNAME,DB_PASSWORD, DB_NAME);

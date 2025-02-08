@@ -62,6 +62,8 @@ if($_check !== IMPORTER_SECRET) {
 require_once '../lib/lokiclient.class.php';
 $Loki = new Loki(LOKI_HOST, LOKI_PORT, array("app" => "pfl", "source" => "import"));
 
+Helper::sysLog('[INFO] Importer starting.');
+
 // get available files from inbox
 $inboxFiles = glob(PATH_INBOX.'/pfl*');
 if(DEBUG) Helper::sysLog('[DEBUG] Found files: '.Helper::cleanForLog($inboxFiles));
@@ -77,7 +79,6 @@ if($_fileCounter < 5) {
     exit();
 }
 
-if(DEBUG) Helper::sysLog('[DEBUG] Importer starting.');
 
 // DB connection
 $DB = new mysqli(DB_HOST, DB_USERNAME,DB_PASSWORD, DB_NAME);
@@ -279,10 +280,9 @@ foreach ($inboxFiles as $fileToImport) {
 
                 // the category insert query
                 $_catID = md5($_cat);
-                $queryCat = "INSERT INTO `".DB_PREFIX."_category` SET
+                $queryCat = "INSERT IGNORE INTO `".DB_PREFIX."_category` SET
                                 `name` = '".$DB->real_escape_string($_cat)."',
-                                `hash` = '".$DB->real_escape_string($_catID)."'
-                                ON DUPLICATE KEY UPDATE `lastmodified` = NOW()";
+                                `hash` = '".$DB->real_escape_string($_catID)."'";
                 if(QUERY_DEBUG) Helper::sysLog('[QUERY] Category insert: '.Helper::cleanForLog($queryCat));
 
                 // the package insert query
@@ -391,11 +391,10 @@ foreach ($inboxFiles as $fileToImport) {
                                 switch((string) $file['type']) {
                                     case 'sym':
                                     case 'obj':
-                                        $queryFile = "INSERT INTO `".DB_PREFIX."_file` SET
+                                        $queryFile = "INSERT IGNORE INTO `".DB_PREFIX."_file` SET
                                             `name` = '".$DB->real_escape_string($filename)."',
                                             `path` = '".$DB->real_escape_string($path)."',
-                                            `hash` = '".$DB->real_escape_string($hash)."'
-                                            ON DUPLICATE KEY UPDATE `lastmodified` = NOW()";
+                                            `hash` = '".$DB->real_escape_string($hash)."'";
                                     break;
 
                                     case 'dir':

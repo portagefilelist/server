@@ -290,33 +290,13 @@ class Files {
     /**
      * Return some general stats about files table
      *
-     * @return array('latest' => array(), 'amount' => '')
+     * @return array('topsearch' => array(), 'amount' => '')
      */
     public function stats():array {
         $ret = array(
-            'latest' => array(),
-            'amount' => ''
+            'amount' => '',
+            'topsearch' => array()
         );
-
-        // latest updated
-        $queryStr = "SELECT f.name, f.path
-                    FROM `".DB_PREFIX."_file` AS f
-                    ORDER BY f.lastmodified DESC
-                    LIMIT 10";
-        if(QUERY_DEBUG) Helper::sysLog("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
-
-        try {
-            $query = $this->_DB->query($queryStr);
-
-            if($query !== false && $query->num_rows > 0) {
-                while(($result = $query->fetch_assoc()) != false) {
-                    $ret['latest'][] = $result;
-                }
-            }
-        }
-        catch (Exception $e) {
-            Helper::sysLog("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
-        }
 
         // Amount of files
         $queryStr = "SELECT COUNT(f.hash) AS amount
@@ -362,38 +342,6 @@ class Files {
             Helper::sysLog("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
         }
         $ret['topsearch'] = $tsf;
-
-        return $ret;
-    }
-
-    /**
-     * statslog entries for filesearch type and more then 2 entries
-     * Sorted and reduced to the first entry for each amount
-     *
-     * @return array
-     */
-    public function latestSearch(): array {
-        $ret = array();
-
-        $queryStr = "SELECT sl.value
-                    FROM `".DB_PREFIX."_statslog` AS sl
-                    WHERE sl.type = 'filesearch'
-                    ORDER BY `timestmp` DESC
-                    LIMIT 10";
-        if(QUERY_DEBUG) Helper::sysLog("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
-
-        try {
-            $query = $this->_DB->query($queryStr);
-
-            if($query !== false && $query->num_rows > 0) {
-                while(($row = $query->fetch_assoc()) != false) {
-                    $ret[] = str_replace("%", "*", $row['value']);
-                }
-            }
-        }
-        catch (Exception $e) {
-            Helper::sysLog("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
-        }
 
         return $ret;
     }
