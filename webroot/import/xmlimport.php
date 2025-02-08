@@ -391,11 +391,10 @@ foreach ($inboxFiles as $fileToImport) {
                                 switch((string) $file['type']) {
                                     case 'sym':
                                     case 'obj':
-                                        $queryFile = "INSERT INTO `".DB_PREFIX."_file` SET
+                                        $queryFile = "INSERT IGNORE INTO `".DB_PREFIX."_file` SET
                                             `name` = '".$DB->real_escape_string($filename)."',
                                             `path` = '".$DB->real_escape_string($path)."',
-                                            `hash` = '".$DB->real_escape_string($hash)."'
-                                            ON DUPLICATE KEY UPDATE `lastmodified` = NOW()";
+                                            `hash` = '".$DB->real_escape_string($hash)."'";
                                     break;
 
                                     case 'dir':

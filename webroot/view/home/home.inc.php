@@ -63,8 +63,6 @@ $TemplateData['pageTitle'] = 'Find where does a file come from';
 $TemplateData['searchresults'] = array();
 $TemplateData['searchInput'] = '';
 $TemplateData['searchUnique'] = '';
-//$TemplateData['latestSearch'] = $Files->latestSearch();
-//$TemplateData['latestPackages'] = $Packages->latestUpdated();
 
 ## search
 if(isset($_GET['fs'])) {

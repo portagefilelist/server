@@ -40,8 +40,7 @@ DROP TABLE IF EXISTS `pflv3_file`;
 CREATE TABLE `pflv3_file` (
   `hash` char(32) NOT NULL,
   `name` varchar(255) NOT NULL,
-  `path` varchar(255) NOT NULL,
-  `lastmodified` datetime NOT NULL DEFAULT current_timestamp()
+  `path` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
 -- --------------------------------------------------------
@@ -125,7 +124,6 @@ ALTER TABLE `pflv3_category`
 ALTER TABLE `pflv3_file`
   ADD PRIMARY KEY (`hash`),
   ADD KEY `name` (`name`),
-  ADD KEY `lastmodified` (`lastmodified`),
   ADD KEY `path` (`path`);
 
 --

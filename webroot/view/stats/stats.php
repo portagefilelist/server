@@ -78,29 +78,6 @@
         </table>
     </div>
     <div>
-        <h3>Latest updated files</h3>
-        <table class="uk-table uk-table-striped">
-            <thead>
-                <tr>
-                    <th role="columnheader">File</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php
-                if(!empty($TemplateData['f']['latest'])) {
-                    foreach($TemplateData['f']['latest'] as $key=>$entry) {
-                        ?>
-                        <tr>
-                            <td><a href="index.php?fs=<?php echo urlencode($entry['path']); ?>"><?php echo $entry['name']; ?></a></td>
-                        </tr>
-                        <?php
-                    }
-                }
-                ?>
-            </tbody>
-        </table>
-    </div>
-    <div>
         <h3>USE flag top 10</h3>
         <table class="uk-table uk-table-striped">
             <thead>
