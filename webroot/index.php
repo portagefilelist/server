@@ -13,8 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.
  *
- * pre 2023 - https://github.com/tuxmainy
- * 2023 https://www.bananas-playground.net/projekt/portagefilelist/
+ * pre 2023 https://github.com/tuxmainy
+ * 2023 - 2025 https://www.bananas-playground.net/projekt/portagefilelist/
  */
 
 mb_http_output('UTF-8');
@@ -122,16 +122,23 @@ require_once 'view/main.php';
 # output the content
 $content = ob_get_contents();
 ob_end_clean();
-if(!DEBUG) {
-    file_put_contents($cacheFile,$content);
+
+$_tocache = true;
+if((isset($messageData['status']) && ($messageData['status'] == "danger" || $messageData['status'] == "warning")) || DEBUG) {
+    $_tocache = false;
 }
 
-if(!DEBUG) {
+if($_tocache) {
+    file_put_contents($cacheFile,$content);
     header("Pragma: public");
     header("Cache-Control: maxage=".CACHE_LIVETIME_SEC);
     header('Expires: ' . gmdate('D, d M Y H:i:s', time()+CACHE_LIVETIME_SEC) . ' GMT');
 }
 header("Content-type: text/html; charset=UTF-8");
+
+if(isset($messageData['statusCode'])) {
+    http_response_code($messageData['statusCode']);
+}
 
 echo $content;
 

@@ -13,8 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.
  *
- * pre 2023 - https://github.com/tuxmainy
- * 2023 https://www.bananas-playground.net/projekt/portagefilelist/
+ * pre 2023 https://github.com/tuxmainy
+ * 2023 - 2025 https://www.bananas-playground.net/projekt/portagefilelist/
  */
 
 require_once 'lib/package.class.php';
@@ -91,6 +91,7 @@ if(!empty($_id)) {
                     if(empty($TemplateData['files'])) {
                         $messageData['status'] = "warning";
                         $messageData['message'] = "Nothing found for this criteria term or the data is not known yet.";
+                        $messageData['statusCode'] = 404;
 
                         $Loki->log("search.empty", array("page" => "package", "value" => $searchValue));
                     }
@@ -100,12 +101,14 @@ if(!empty($_id)) {
                 } else {
                     $messageData['status'] = "danger";
                     $messageData['message'] = "Invalid search criteria. At least two (without wildcard) chars.";
+                    $messageData['statusCode'] = 404;
 
                     $Loki->log("search.invalid.length", array("page" => "package", "value" => $searchValue));
                 }
             } else {
                 $messageData['status'] = "danger";
                 $messageData['message'] = "Invalid search criteria.";
+                $messageData['statusCode'] = 404;
 
                 $Loki->log("search.invalid", array("page" => "package", "value" => $searchValue));
             }
@@ -116,8 +119,9 @@ if(!empty($_id)) {
         $TemplateData['pageTitle'] = $package['categoryName'].'/'.$package['name'].' '.$package['version'].' '.$package['arch'];
         $TemplateData['pagination']['currentGetParameters']['id'] = $_id;
     } else {
-        $messageData['status'] = "error";
+        $messageData['status'] = "danger";
         $messageData['message'] = "Invalid package id";
+        $messageData['statusCode'] = 404;
     }
 }
 

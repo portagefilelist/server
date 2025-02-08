@@ -14,7 +14,7 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.
  *
  * pre 2023 https://github.com/tuxmainy
- * 2023 - 2024 https://www.bananas-playground.net/projekt/portagefilelist/
+ * 2023 - 2025 https://www.bananas-playground.net/projekt/portagefilelist/
  */
 
 require_once 'lib/categories.class.php';
@@ -75,6 +75,7 @@ if(isset($_GET['cs'])) {
             if(empty($TemplateData['searchresults'])) {
                 $messageData['status'] = "warning";
                 $messageData['message'] = "Nothing found for this search criteria or the data is not known yet.";
+                $messageData['statusCode'] = 404;
 
                 $Loki->log("search.empty", array("page" => "categories", "value" => $searchValue));
             }
@@ -84,12 +85,14 @@ if(isset($_GET['cs'])) {
         } else {
             $messageData['status'] = "danger";
             $messageData['message'] = "Invalid search criteria. At least two (without wildcard) chars.";
+            $messageData['statusCode'] = 404;
 
             $Loki->log("search.invalid.length", array("page" => "categories", "value" => $searchValue));
         }
     } else {
         $messageData['status'] = "danger";
         $messageData['message'] = "Invalid search criteria.";
+        $messageData['statusCode'] = 404;
 
         $Loki->log("search.invalid", array("page" => "categories", "value" => $searchValue));
     }

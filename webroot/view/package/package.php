@@ -14,8 +14,11 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.
  *
  * pre 2023 https://github.com/tuxmainy
- * 2023 - 2024 https://www.bananas-playground.net/projekt/portagefilelist/
+ * 2023 - 2025 https://www.bananas-playground.net/projekt/portagefilelist/
  */
+if(empty($TemplateData['package'])) {
+	return;
+}
 ?>
 <h1>Package: <?php echo $TemplateData['package']['categoryName'] ?? ''; ?>/<?php echo $TemplateData['package']['name'] ?? ''; ?></h1>
 <table class="uk-table uk-table-striped">
@@ -98,7 +101,7 @@
                 <?php echo $TemplateData['package']['repository'] ?? ''; ?> :: <?php echo $TemplateData['package']['categoryName'] ?? ''; ?>/<?php echo $TemplateData['package']['name'] ?? ''; ?>
             <?php } ?>
         </td>
-	</tr>	
+	</tr>
 </table>
 
 <h2 id="panchor">Package files</h2>
