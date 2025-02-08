@@ -1,7 +1,3 @@
-xmlimport
-last modified in category is not really needed and can be done with 
-insert ignore
-
 do files need last modified? Package alone should be enough
 
 Classes could be refactored and simplified.

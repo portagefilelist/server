@@ -18,7 +18,9 @@
  */
 
 /**
- * Do some cleanups. Remove packages which are not in portage anymore.
+ * Do some cleanups.
+ * Remove packages which are not in portage anymore.
+ * Reclaim table space
  */
 
 mb_http_output('UTF-8');
@@ -56,10 +58,6 @@ if($_check !== IMPORTER_SECRET) {
     exit();
 }
 
-# Loki
-require_once '../lib/lokiclient.class.php';
-$Loki = new Loki(LOKI_HOST, LOKI_PORT, array("app" => "pfl", "source" => "cleanup"));
-
 Helper::sysLog('[INFO] Cleanup starting.');
 
 ## DB connection
@@ -73,7 +71,7 @@ $driver->report_mode = MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT;
 // get the packages to be removed since topicality is out of date, which tells us they are not in portage anymore
 $pidToRemove = array();
 try {
-    $queryStr = "SELECT `hash` FROM `".DB_PREFIX."_package` WHERE topicality IS NULL LIMIT 500";
+    $queryStr = "SELECT `hash` FROM `".DB_PREFIX."_package` WHERE topicality IS NULL";
     if(QUERY_DEBUG) Helper::sysLog('[QUERY] Cleanup package query: '.Helper::cleanForLog($queryStr));
     $query = $DB->query($queryStr);
     if($query !== false && $query->num_rows > 0) {
@@ -83,8 +81,6 @@ try {
     }
 } catch (Exception $e) {
     Helper::sysLog("[ERROR] Cleanup package query catch: ".$e->getMessage());
-    $Loki->log("import.error", array("type" => "query"));
-    $Loki->send();
     exit();
 }
 
@@ -94,7 +90,6 @@ if(empty($pidToRemove)) {
 }
 
 Helper::sysLog('[INFO] Cleanup '.count($pidToRemove).' packages');
-$Loki->log("import.cleanupPackages", array("value" => count($pidToRemove)));
 
 Helper::sysLog('[INFO] Cleanup package_use');
 foreach($pidToRemove as $k=>$v) {
@@ -104,8 +99,6 @@ foreach($pidToRemove as $k=>$v) {
         $DB->query($queryStr);
     } catch (Exception $e) {
         Helper::sysLog("[ERROR] Cleanup _package_use query catch: ".$e->getMessage());
-        $Loki->log("import.error", array("type" => "query"));
-        $Loki->send();
         exit();
     }
 }
@@ -119,8 +112,6 @@ foreach($pidToRemove as $k=>$v) {
         $DB->query($queryStr);
     } catch (Exception $e) {
         Helper::sysLog("[ERROR] Cleanup cat2pkg query catch: ".$e->getMessage());
-        $Loki->log("import.error", array("type" => "query"));
-        $Loki->send();
         exit();
     }
 }
@@ -139,14 +130,11 @@ foreach($pidToRemove as $k=>$v) {
         }
     } catch (Exception $e) {
         Helper::sysLog("[ERROR] Cleanup pkg2file query catch: ".$e->getMessage());
-        $Loki->log("import.error", array("type" => "query"));
-        $Loki->send();
         exit();
     }
 }
 
 Helper::sysLog('[INFO] Cleanup '.count($fileToRemove).' files');
-$Loki->log("import.cleanupfiles", array("value" => count($fileToRemove)));
 
 Helper::sysLog('[INFO] Cleanup file');
 foreach($fileToRemove as $k=>$v) {
@@ -156,8 +144,6 @@ foreach($fileToRemove as $k=>$v) {
         $DB->query($queryStr);
     } catch (Exception $e) {
         Helper::sysLog("[ERROR] Cleanup file query catch: ".$e->getMessage());
-        $Loki->log("import.error", array("type" => "query"));
-        $Loki->send();
         exit();
     }
 }
@@ -171,8 +157,6 @@ foreach($pidToRemove as $k=>$v) {
         $DB->query($queryStr);
     } catch (Exception $e) {
         Helper::sysLog("[ERROR] Cleanup pkg2file query catch: ".$e->getMessage());
-        $Loki->log("import.error", array("type" => "query"));
-        $Loki->send();
         exit();
     }
 }
@@ -186,8 +170,6 @@ foreach($pidToRemove as $k=>$v) {
         $DB->query($queryStr);
     } catch (Exception $e) {
         Helper::sysLog("[ERROR] Cleanup package query catch: ".$e->getMessage());
-        $Loki->log("import.error", array("type" => "query"));
-        $Loki->send();
         exit();
     }
 }
@@ -201,8 +183,6 @@ try {
     $DB->query($queryStr);
 } catch (Exception $e) {
     Helper::sysLog("[ERROR] Cleanup statslog query catch: ".$e->getMessage());
-    $Loki->log("import.error", array("type" => "query"));
-    $Loki->send();
     exit();
 }
 Helper::sysLog('[INFO] Cleanup statslog done');
@@ -219,13 +199,8 @@ try {
     $DB->query("ALTER TABLE `".DB_PREFIX."_package_use` ENGINE=InnoDB");
 } catch (Exception $e) {
     Helper::sysLog("[ERROR] Cleanup alter query catch: ".$e->getMessage());
-    $Loki->log("import.error", array("type" => "query"));
-    $Loki->send();
     exit();
 }
 Helper::sysLog('[INFO] Cleanup reclaim table space done');
 
 Helper::sysLog('[INFO] Cleanup done');
-
-$_l = $Loki->send();
-if(DEBUG) Helper::sysLog("[DEBUG] loki send ".$_l);

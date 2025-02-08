@@ -280,10 +280,9 @@ foreach ($inboxFiles as $fileToImport) {
 
                 // the category insert query
                 $_catID = md5($_cat);
-                $queryCat = "INSERT INTO `".DB_PREFIX."_category` SET
+                $queryCat = "INSERT IGNORE INTO `".DB_PREFIX."_category` SET
                                 `name` = '".$DB->real_escape_string($_cat)."',
-                                `hash` = '".$DB->real_escape_string($_catID)."'
-                                ON DUPLICATE KEY UPDATE `lastmodified` = NOW()";
+                                `hash` = '".$DB->real_escape_string($_catID)."'";
                 if(QUERY_DEBUG) Helper::sysLog('[QUERY] Category insert: '.Helper::cleanForLog($queryCat));
 
                 // the package insert query

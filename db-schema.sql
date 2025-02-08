@@ -27,8 +27,7 @@ CREATE TABLE `pflv3_cat2pkg` (
 DROP TABLE IF EXISTS `pflv3_category`;
 CREATE TABLE `pflv3_category` (
   `hash` char(32) NOT NULL,
-  `name` varchar(32) NOT NULL,
-  `lastmodified` datetime NOT NULL DEFAULT current_timestamp()
+  `name` varchar(32) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
 -- --------------------------------------------------------
