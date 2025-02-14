@@ -59,6 +59,22 @@ if(isset($_GET['file']) && !empty($_GET['file'])) {
         Helper::sysLog("[WARN] Invalid query GET : ".Helper::cleanForLog($_GET['file']));
     }
 }
+
+$_cachekey = 'q_'.md5(var_export($_GET,true));
+$cacheFile = PATH_CACHE.'/'.$_cachekey;
+if(file_exists($cacheFile) && !DEBUG) {
+    header("Pragma: public");
+    header("Cache-Control: maxage=".CACHE_LIVETIME_SEC);
+    header('Expires: '.gmdate('D, d M Y H:i:s', time()+CACHE_LIVETIME_SEC).' GMT');
+    header('Access-Control-Allow-Origin: *');
+    header('Content-Type: application/json');
+    echo file_get_contents($cacheFile);
+
+    $Loki->log("cacheview", array("cachekey" => $_cachekey, "value" => $_SERVER['QUERY_STRING']));
+    $_l = $Loki->send();
+    exit();
+}
+
 // still empty
 if(empty($_search)) {
     $returnData['error']['code'] = 'NO_SEARCH_CRITERIA';
@@ -141,9 +157,25 @@ if(isset($result['results'])) {
     }
 }
 
+# "cache" the content
+ob_start();
+
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 echo json_encode($returnData);
+
+# output the content
+$content = ob_get_contents();
+ob_end_clean();
+
+if(!DEBUG) {
+    file_put_contents($cacheFile,$content);
+    header("Pragma: public");
+    header("Cache-Control: maxage=".CACHE_LIVETIME_SEC);
+    header('Expires: ' . gmdate('D, d M Y H:i:s', time()+CACHE_LIVETIME_SEC) . ' GMT');
+}
+
+echo $content;
 
 $Loki->log("query.success");
 $Loki->send();
