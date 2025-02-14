@@ -103,7 +103,7 @@ foreach($pidToRemove as $k=>$v) {
         if(DEBUG) Helper::sysLog("[DEBUG] Cleanup writing file: ".Helper::cleanForLog($_fileToWrite));
 
         if(!is_dir(ARCHIVE.'/'.$package['categoryName'])) {
-            mkdir(ARCHIVE.'/'.$package['categoryName'], 0700);
+            mkdir(ARCHIVE.'/'.$package['categoryName'], 0755);
         }
 
         if (!$fp = fopen($_fileToWrite, 'w')) {
