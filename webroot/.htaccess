@@ -102,3 +102,4 @@
 php_value post_max_size 60M
 php_value upload_max_filesize 50M
 ErrorDocument 404 /404.php
+ErrorDocument 403 /403.php
