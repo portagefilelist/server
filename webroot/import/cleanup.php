@@ -91,6 +91,14 @@ if(empty($pidToRemove)) {
 
 Helper::sysLog('[INFO] Cleanup '.count($pidToRemove).' packages');
 
+
+require_once '../lib/package.class.php';
+$Package = new Package($DB);
+foreach($pidToRemove as $k=>$v) {
+    $package = $Package->getPackage($v);
+}
+
+
 Helper::sysLog('[INFO] Cleanup package_use');
 foreach($pidToRemove as $k=>$v) {
     try {

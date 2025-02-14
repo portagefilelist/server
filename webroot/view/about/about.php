@@ -17,7 +17,7 @@
  * 2023 - 2024 https://www.bananas-playground.net/projekt/portagefilelist/
  */
 ?>
-<img src="view/asset/pfl-logo.png" width="135px" class="uk-float-right"/>
+<img src="asset/pfl-logo.png" width="135px" class="uk-float-right"/>
 <h1>About</h1>
 <h2>What is Portage File List?</h2>
 <p>

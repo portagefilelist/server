@@ -91,7 +91,10 @@ if(isset($_GET['p']) && !empty($_GET['p'])) {
     $_requestMode = trim($_GET['p']);
     $_requestMode = Helper::validate($_requestMode,'nospace') ? $_requestMode : "home";
 
-    if(!isset($_validPages[$_requestMode])) $_requestMode = "home";
+    if(!isset($_validPages[$_requestMode])) {
+        header("Location: 404.php");
+        exit();
+    }
 
     $ViewScript = 'view/'.$_requestMode.'/'.$_requestMode.'.inc.php';
     $View = 'view/'.$_requestMode.'/'.$_requestMode.'.php';

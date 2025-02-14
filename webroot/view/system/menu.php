@@ -21,7 +21,7 @@
     <div class="uk-container">
         <div class="uk-navbar">
             <div class="uk-navbar-left">
-                <a class="uk-navbar-item uk-logo" href="index.php" aria-label="Back to Home"><img src="view/asset/pfl-logo.png" width="50px" height="50px" alt="PFL Logo" /></a>
+                <a class="uk-navbar-item uk-logo" href="index.php" aria-label="Back to Home"><img src="asset/pfl-logo.png" width="50px" height="50px" alt="PFL Logo" /></a>
                 <ul class="uk-navbar-nav">
                     <li class="<?php if($_requestMode == "packages") echo 'uk-active'; ?>">
                         <a href="index.php?p=packages">Packages</a>
