@@ -91,12 +91,45 @@ if(empty($pidToRemove)) {
 
 Helper::sysLog('[INFO] Cleanup '.count($pidToRemove).' packages');
 
-
+Helper::sysLog('[INFO] Cleanup create historical packages');
 require_once '../lib/package.class.php';
 $Package = new Package($DB);
 foreach($pidToRemove as $k=>$v) {
     $package = $Package->getPackage($v);
+    if(!empty($package)) {
+        $_fileToWrite = ARCHIVE.'/'.$package['categoryName'].'/'.$package['name'].'-'.$package['version'].'.txt';
+        if(file_exists($_fileToWrite)) continue;
+
+        if(DEBUG) Helper::sysLog("[DEBUG] Cleanup writing file: ".Helper::cleanForLog($_fileToWrite));
+
+        if(!is_dir(ARCHIVE.'/'.$package['categoryName'])) {
+            mkdir(ARCHIVE.'/'.$package['categoryName'], 0700);
+        }
+
+        if (!$fp = fopen($_fileToWrite, 'w')) {
+            Helper::sysLog("[ERROR] Cleanup can not create historical file: ".Helper::cleanForLog($_fileToWrite));
+            exit;
+        }
+
+        $_pf = $Package->getPackageFiles($v);
+
+        fwrite($fp, "Name: {$package['name']}\n");
+        fwrite($fp, "Category: {$package['categoryName']}\n");
+        fwrite($fp, "Version: {$package['version']}\n");
+        fwrite($fp, "Repository: {$package['repository']}\n");
+        fwrite($fp, "Files:\n");
+
+        if(isset($_pf['results'])) {
+            foreach($_pf['results'] as $key=>$entry) {
+                fwrite($fp, "{$entry['path']}\n");
+            }
+        }
+
+        fclose($fp);
+    }
+    unset($package);
 }
+Helper::sysLog('[INFO] Cleanup create historical packages done');
 
 
 Helper::sysLog('[INFO] Cleanup package_use');
@@ -195,6 +228,7 @@ try {
 }
 Helper::sysLog('[INFO] Cleanup statslog done');
 
+/*
 // reclaim table space after cleanups
 // effect may be minimal when used regulary
 Helper::sysLog('[INFO] Cleanup reclaim table space');
@@ -210,5 +244,5 @@ try {
     exit();
 }
 Helper::sysLog('[INFO] Cleanup reclaim table space done');
-
+*/
 Helper::sysLog('[INFO] Cleanup done');

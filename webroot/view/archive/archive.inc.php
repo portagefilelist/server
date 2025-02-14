@@ -16,15 +16,5 @@
  * pre 2023 https://github.com/tuxmainy
  * 2023 - 2025 https://www.bananas-playground.net/projekt/portagefilelist/
  */
-
-
-require_once 'lib/packages.class.php';
-$Packages = new Packages($DB);
-
-require_once 'lib/files.class.php';
-$Files = new Files($DB);
-
-$TemplateData['pageTitle'] = 'Statistics';
-
-$TemplateData['p'] = $Packages->stats();
-$TemplateData['f'] = $Files->stats();
+header("Location: /archive/");
+exit();

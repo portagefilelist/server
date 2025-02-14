@@ -14,7 +14,7 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.
  *
  * pre 2023 - https://github.com/tuxmainy
- * 2023 - 2024 https://www.bananas-playground.net/projekt/portagefilelist/
+ * 2023 - 2025 https://www.bananas-playground.net/projekt/portagefilelist/
  */
 ?>
 <nav class="uk-navbar-container">
@@ -35,6 +35,9 @@
                     <li class="<?php if($_requestMode == "about") echo 'uk-active'; ?>">
                         <a href="index.php?p=about">About</a>
                     </li>
+	                <li class="<?php if($_requestMode == "archive") echo 'uk-active'; ?>">
+		                <a href="index.php?p=archive">Archive</a>
+	                </li>
                 </ul>
             </div>
         </div>

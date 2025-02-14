@@ -85,6 +85,7 @@ $_validPages["category"] = "category";
 $_validPages["packages"] = "packages";
 $_validPages["categories"] = "categories";
 $_validPages["stats"] = "stats";
+$_validPages["archive"] = "archive";
 
 $_requestMode = "home";
 if(isset($_GET['p']) && !empty($_GET['p'])) {

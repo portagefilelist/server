@@ -31,6 +31,7 @@ const PATH_SYSTEMOUT = PATH_ABSOLUTE.'/log';
 const PATH_INBOX = PATH_ABSOLUTE.'/inbox';
 const PATH_CACHE = PATH_ABSOLUTE.'/cache';
 const LOGFILE = PATH_SYSTEMOUT.'/syslog.log';
+const ARCHIVE = PATH_ABSOLUTE.'/archive';
 
 # db settings
 const DB_HOST = '127.0.0.1';
