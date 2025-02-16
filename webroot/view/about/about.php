@@ -13,11 +13,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.
  *
- * pre 2023 - https://github.com/tuxmainy
+ * pre 2023 https://github.com/tuxmainy
  * 2023 - 2024 https://www.bananas-playground.net/projekt/portagefilelist/
  */
 ?>
-<img src="view/asset/pfl-logo.png" width="135px" class="uk-float-right"/>
+<img src="asset/pfl-logo.png" width="135px" class="uk-float-right"/>
 <h1>About</h1>
 <h2>What is Portage File List?</h2>
 <p>
@@ -72,6 +72,10 @@
     <li>Files with <i>/usr/src/linux</i>, <i>-gentoo-dist/</i>, <i>*__*</i> will be ignored. The package itself will still be added.</li>
     <li>Only files or symlinks are indexed.</li>
     <li>The search will consider the <a href="https://wiki.gentoo.org/wiki/Merge-usr" target=_blank>merge-usr</a> cases</li>
+    <li>
+        Packages which are not in any of the repositories anymore, will be <a href="https://www.portagefilelist.de/index.php?p=archive">archived</a>.
+        The result are textfiles per package, listing their details and filenames.
+    </li>
 </ul>
 
 <h2>History</h2>

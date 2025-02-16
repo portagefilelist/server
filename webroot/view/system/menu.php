@@ -13,15 +13,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.
  *
- * pre 2023 - https://github.com/tuxmainy
- * 2023 - 2024 https://www.bananas-playground.net/projekt/portagefilelist/
+ * pre 2023 https://github.com/tuxmainy
+ * 2023 - 2025 https://www.bananas-playground.net/projekt/portagefilelist/
  */
 ?>
 <nav class="uk-navbar-container">
     <div class="uk-container">
         <div class="uk-navbar">
             <div class="uk-navbar-left">
-                <a class="uk-navbar-item uk-logo" href="index.php" aria-label="Back to Home"><img src="view/asset/pfl-logo.png" width="50px" height="50px" alt="PFL Logo" /></a>
+                <a class="uk-navbar-item uk-logo" href="index.php" aria-label="Back to Home"><img src="asset/pfl-logo.png" width="50px" height="50px" alt="PFL Logo" /></a>
                 <ul class="uk-navbar-nav">
                     <li class="<?php if($_requestMode == "packages") echo 'uk-active'; ?>">
                         <a href="index.php?p=packages">Packages</a>
@@ -35,6 +35,9 @@
                     <li class="<?php if($_requestMode == "about") echo 'uk-active'; ?>">
                         <a href="index.php?p=about">About</a>
                     </li>
+	                <li class="<?php if($_requestMode == "archive") echo 'uk-active'; ?>">
+		                <a href="index.php?p=archive">Archive</a>
+	                </li>
                 </ul>
             </div>
         </div>

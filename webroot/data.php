@@ -13,8 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.
  *
- * pre 2023 - https://github.com/tuxmainy
- * 2023 - 2024 https://www.bananas-playground.net/projekt/portagefilelist/
+ * pre 2023 https://github.com/tuxmainy
+ * 2023 - 2025 https://www.bananas-playground.net/projekt/portagefilelist/
  */
 
 mb_http_output('UTF-8');
@@ -50,15 +50,10 @@ if(Helper::folderSize(PATH_INBOX) > 1000000000) {
     exit();
 }
 
-# Loki
-require_once 'lib/lokiclient.class.php';
-$Loki = new Loki(LOKI_HOST, LOKI_PORT, array("app" => "pfl", "source" => "data"));
-
 if(isset($_FILES['foo'])) {
     $_uploadFile = $_FILES['foo'];
 
     if(DEBUG) Helper::sysLog("INFO Upload starting upload with FILES: ".Helper::cleanForLog($_FILES));
-    $Loki->log("data.starting");
 
     if(isset($_uploadFile['name'])
         && isset($_uploadFile['type'])
@@ -74,22 +69,17 @@ if(isset($_FILES['foo'])) {
             Helper::sysLog("ERROR Upload invalid mime type: ".Helper::cleanForLog($mime));
             http_response_code(400);
             echo "Invalid mime type.";
-            $Loki->log("data.error", array("type" => "mimetype"));
-            $Loki->send();
             exit();
         }
 
         $_uploadTarget = tempnam(PATH_INBOX.'/','pfl');
         if(move_uploaded_file($_uploadFile['tmp_name'], $_uploadTarget)) {
             Helper::sysLog("INFO Upload success. Target : ".Helper::cleanForLog($_uploadTarget));
-            $Loki->log("data.uploaded");
         }
         else {
             Helper::sysLog("ERROR Upload error while upload move: ".Helper::cleanForLog($_FILES));
             http_response_code(500);
             echo "Something went wrong.";
-            $Loki->log("data.error", array("type" => "move"));
-            $Loki->send();
             exit();
         }
 
@@ -97,11 +87,7 @@ if(isset($_FILES['foo'])) {
         Helper::sysLog("ERROR Upload incomplete FILES: ".Helper::cleanForLog($_FILES));
         http_response_code(500);
         echo "Upload incomplete.";
-        $Loki->log("data.error", array("type" => "incomplete"));
     }
 }
 http_response_code(200);
 echo "Thank you.";
-
-$_l = $Loki->send();
-if(DEBUG) Helper::sysLog("[DEBUG] loki send ".$_l);

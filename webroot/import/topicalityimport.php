@@ -13,8 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.
  *
- * pre 2023 - https://github.com/tuxmainy
- * 2023 - 2024 https://www.bananas-playground.net/projekt/portagefilelist/
+ * pre 2023 https://github.com/tuxmainy
+ * 2023 - 2025 https://www.bananas-playground.net/projekt/portagefilelist/
  */
 
 /**
@@ -58,10 +58,6 @@ if(isset($argOptions['s']) && !empty($argOptions['s'])) {
 if($_check !== IMPORTER_SECRET) {
     exit();
 }
-
-# Loki
-require_once '../lib/lokiclient.class.php';
-$Loki = new Loki(LOKI_HOST, LOKI_PORT, array("app" => "pfl", "source" => "topicality"));
 
 Helper::sysLog('[INFO] Topicality importer starting.');
 
@@ -130,8 +126,6 @@ foreach($ebuildFiles as $repo=>$info) {
                     }
                 } catch (Exception $e) {
                     Helper::sysLog("[ERROR] Topicality update catch: ".$e->getMessage());
-                    $Loki->log("import.error", array("type" => "query"));
-                    $Loki->send();
                     exit();
                 }
             }
@@ -159,8 +153,6 @@ if($updateCounter > 0) {
     } catch (Exception $e) {
         $DB->rollback();
         Helper::sysLog("[ERROR] Topicality update catch: ".$e->getMessage());
-        $Loki->log("import.error", array("type" => "query"));
-        $Loki->send();
         exit();
     }
 
@@ -179,16 +171,8 @@ if($updateCounter > 0) {
             unlink($k);
         }
         Helper::sysLog('[INFO] Topicality importer purged id '.count($toDelete).' files');
-        $Loki->log("import.purged", array("value" => strval(count($toDelete))));
     }
 }
 
 Helper::sysLog('[INFO] Topicality importer updated: '.$updateCounter);
 Helper::sysLog('[INFO] Topicality importer ended.');
-$Loki->log("import.updated", array("value" => strval($updateCounter)));
-
-$cacheFilesI = new FilesystemIterator(PATH_CACHE, FilesystemIterator::SKIP_DOTS);
-$Loki->log("import.cachefiles", array("amount" => strval(iterator_count($cacheFilesI))));
-
-$_l = $Loki->send();
-if(DEBUG) Helper::sysLog("[DEBUG] loki send ".$_l);

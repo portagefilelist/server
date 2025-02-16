@@ -38,10 +38,6 @@ date_default_timezone_set(TIMEZONE);
 # static helper class
 require_once 'lib/helper.class.php';
 
-# Loki
-require_once 'lib/lokiclient.class.php';
-$Loki = new Loki(LOKI_HOST, LOKI_PORT, array("app" => "pfl", "source" => "website"));
-
 # simple cache based on get
 $_cid = '';
 if(isset($_GET['id']) && !empty($_GET['id'])) {
@@ -57,8 +53,6 @@ if(file_exists($cacheFile) && !DEBUG) {
     header("Content-type: text/html; charset=UTF-8");
     echo file_get_contents($cacheFile);
 
-    $Loki->log("cacheview", array("cachekey" => $_cachekey, "value" => $_SERVER['QUERY_STRING']));
-    $_l = $Loki->send();
     exit();
 }
 
@@ -85,13 +79,17 @@ $_validPages["category"] = "category";
 $_validPages["packages"] = "packages";
 $_validPages["categories"] = "categories";
 $_validPages["stats"] = "stats";
+$_validPages["archive"] = "archive";
 
 $_requestMode = "home";
 if(isset($_GET['p']) && !empty($_GET['p'])) {
     $_requestMode = trim($_GET['p']);
     $_requestMode = Helper::validate($_requestMode,'nospace') ? $_requestMode : "home";
 
-    if(!isset($_validPages[$_requestMode])) $_requestMode = "home";
+    if(!isset($_validPages[$_requestMode])) {
+        header("Location: 404.php");
+        exit();
+    }
 
     $ViewScript = 'view/'.$_requestMode.'/'.$_requestMode.'.inc.php';
     $View = 'view/'.$_requestMode.'/'.$_requestMode.'.php';
@@ -104,8 +102,6 @@ $DB->set_charset("utf8mb4");
 $DB->query("SET collation_connection = 'utf8mb4_unicode_520_ci'");
 $driver = new mysqli_driver();
 $driver->report_mode = MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT;
-
-$Loki->log("visit", array("page" => $_requestMode));
 
 # "cache" the content
 ob_start();
@@ -141,6 +137,3 @@ if(isset($messageData['statusCode'])) {
 }
 
 echo $content;
-
-$_l = $Loki->send();
-if(DEBUG) Helper::sysLog("[DEBUG] loki send ".$_l);

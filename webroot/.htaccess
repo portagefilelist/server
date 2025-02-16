@@ -73,6 +73,8 @@
     RewriteRule ^site/query/file https://www.portagefilelist.de/ [R=301,L,NC,QSA]
     RewriteRule ^site/query/listPackage https://www.portagefilelist.de/?p=packages [R=301,L,NC,QSA]
 
+    RewriteRule ^\.well-known/traffic-advice$ - [T=application/trafficadvice+json,END]
+
     #RewriteCond %{HTTP_HOST} !^www. [NC,OR]
     #RewriteCond %{HTTPS} off
     #RewriteRule (.*) https://www.portagefilelist.de%{REQUEST_URI} [R=301,L]
@@ -99,3 +101,5 @@
 
 php_value post_max_size 60M
 php_value upload_max_filesize 50M
+ErrorDocument 404 /404.php
+ErrorDocument 403 /403.php

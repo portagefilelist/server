@@ -13,8 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.
  *
- * pre 2023 - https://github.com/tuxmainy
- * 2023 - 2024 https://www.bananas-playground.net/projekt/portagefilelist/
+ * pre 2023 https://github.com/tuxmainy
+ * 2023 - 2025 https://www.bananas-playground.net/projekt/portagefilelist/
  */
 
 /**
@@ -43,10 +43,6 @@ date_default_timezone_set(TIMEZONE);
 # static helper class
 require_once 'lib/helper.class.php';
 
-# Loki
-require_once 'lib/lokiclient.class.php';
-$Loki = new Loki(LOKI_HOST, LOKI_PORT, array("app" => "pfl", "source" => "query"));
-
 $returnData = array();
 
 $_search = '';
@@ -59,6 +55,19 @@ if(isset($_GET['file']) && !empty($_GET['file'])) {
         Helper::sysLog("[WARN] Invalid query GET : ".Helper::cleanForLog($_GET['file']));
     }
 }
+
+$_cachekey = 'q_'.md5(var_export($_GET,true));
+$cacheFile = PATH_CACHE.'/'.$_cachekey;
+if(file_exists($cacheFile) && !DEBUG) {
+    header("Pragma: public");
+    header("Cache-Control: maxage=".CACHE_LIVETIME_SEC);
+    header('Expires: '.gmdate('D, d M Y H:i:s', time()+CACHE_LIVETIME_SEC).' GMT');
+    header('Access-Control-Allow-Origin: *');
+    header('Content-Type: application/json');
+    echo file_get_contents($cacheFile);
+    exit();
+}
+
 // still empty
 if(empty($_search)) {
     $returnData['error']['code'] = 'NO_SEARCH_CRITERIA';
@@ -67,8 +76,6 @@ if(empty($_search)) {
     header('Access-Control-Allow-Origin: *');
     header('Content-Type: application/json');
     echo json_encode($returnData);
-    $Loki->log("query.error", array("type" => "invalid"));
-    $Loki->send();
     exit();
 }
 
@@ -97,8 +104,6 @@ if(!$Files->prepareSearchValue($_search)) {
     header('Access-Control-Allow-Origin: *');
     header('Content-Type: application/json');
     echo json_encode($returnData);
-    $Loki->log("query.error", array("type" => "invalid"));
-    $Loki->send();
     exit();
 }
 $result = $Files->getFiles();
@@ -111,8 +116,6 @@ if(empty($result)) {
     header('Access-Control-Allow-Origin: *');
     header('Content-Type: application/json');
     echo json_encode($returnData);
-    $Loki->log("query.error", array("type" => "empty"));
-    $Loki->send();
     exit();
 }
 
@@ -141,11 +144,23 @@ if(isset($result['results'])) {
     }
 }
 
+# "cache" the content
+ob_start();
+
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 echo json_encode($returnData);
 
-$Loki->log("query.success");
-$Loki->send();
+# output the content
+$content = ob_get_contents();
+ob_end_clean();
 
+if(!DEBUG) {
+    file_put_contents($cacheFile,$content);
+    header("Pragma: public");
+    header("Cache-Control: maxage=".CACHE_LIVETIME_SEC);
+    header('Expires: ' . gmdate('D, d M Y H:i:s', time()+CACHE_LIVETIME_SEC) . ' GMT');
+}
+
+echo $content;
 exit();

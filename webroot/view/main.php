@@ -13,8 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.
  *
- * pre 2023 - https://github.com/tuxmainy
- * 2023 - 2024 https://www.bananas-playground.net/projekt/portagefilelist/
+ * pre 2023 https://github.com/tuxmainy
+ * 2023 - 2025 https://www.bananas-playground.net/projekt/portagefilelist/
  */
 ?>
 <!DOCTYPE html>
@@ -24,10 +24,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'">
 
-    <link rel="stylesheet" href="view/asset/uikit/uikit.min.css">
-    <link rel="stylesheet" href="view/asset/style.css">
-    <script src="view/asset/uikit/uikit.min.js"></script>
-    <script src="view/asset/uikit/uikit-icons.min.js"></script>
+    <link rel="stylesheet" href="asset/uikit/uikit.min.css">
+    <link rel="stylesheet" href="asset/style.css">
+    <script src="asset/uikit/uikit.min.js"></script>
+    <script src="asset/uikit/uikit-icons.min.js"></script>
 
     <meta name="author" content="https://www.bananas-playground.net/" />
     <title><?php echo $TemplateData['pageTitle']; ?> / PFL - Portagefilelist.de</title>
