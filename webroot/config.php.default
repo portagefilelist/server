@@ -51,11 +51,3 @@ const RESULTS_PER_PAGE = 10;
 
 # how long a client should keep the result in cache
 const CACHE_LIVETIME_SEC = 60*60*3; // three hours
-
-# Loki
-const LOKI_ENABLE = true;
-const LOKI_HOST = "localhost";
-const LOKI_PORT = 3100;
-const LOKI_PUSH_API = "/loki/api/v1/push";
-const LOKI_USER = "name";
-const LOKI_USER_PW = "pass";
