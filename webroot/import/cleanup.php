@@ -94,6 +94,7 @@ Helper::sysLog('[INFO] Cleanup '.count($pidToRemove).' packages');
 Helper::sysLog('[INFO] Cleanup create historical packages');
 require_once '../lib/package.class.php';
 $Package = new Package($DB);
+$_hisCount = 0;
 foreach($pidToRemove as $k=>$v) {
     $package = $Package->getPackage($v);
     if(!empty($package)) {
@@ -126,10 +127,11 @@ foreach($pidToRemove as $k=>$v) {
         }
 
         fclose($fp);
+        $_hisCount++;
     }
     unset($package);
 }
-Helper::sysLog('[INFO] Cleanup create historical packages done');
+Helper::sysLog('[INFO] Cleanup create '.$_hisCount.' historical packages done');
 
 
 Helper::sysLog('[INFO] Cleanup package_use');

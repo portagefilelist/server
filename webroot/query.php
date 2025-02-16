@@ -14,7 +14,7 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.
  *
  * pre 2023 https://github.com/tuxmainy
- * 2023 - 2024 https://www.bananas-playground.net/projekt/portagefilelist/
+ * 2023 - 2025 https://www.bananas-playground.net/projekt/portagefilelist/
  */
 
 /**
@@ -43,10 +43,6 @@ date_default_timezone_set(TIMEZONE);
 # static helper class
 require_once 'lib/helper.class.php';
 
-# Loki
-require_once 'lib/lokiclient.class.php';
-$Loki = new Loki(LOKI_HOST, LOKI_PORT, array("app" => "pfl", "source" => "query"));
-
 $returnData = array();
 
 $_search = '';
@@ -69,9 +65,6 @@ if(file_exists($cacheFile) && !DEBUG) {
     header('Access-Control-Allow-Origin: *');
     header('Content-Type: application/json');
     echo file_get_contents($cacheFile);
-
-    $Loki->log("cacheview", array("cachekey" => $_cachekey, "value" => $_SERVER['QUERY_STRING']));
-    $_l = $Loki->send();
     exit();
 }
 
@@ -83,8 +76,6 @@ if(empty($_search)) {
     header('Access-Control-Allow-Origin: *');
     header('Content-Type: application/json');
     echo json_encode($returnData);
-    $Loki->log("query.error", array("type" => "invalid"));
-    $Loki->send();
     exit();
 }
 
@@ -113,8 +104,6 @@ if(!$Files->prepareSearchValue($_search)) {
     header('Access-Control-Allow-Origin: *');
     header('Content-Type: application/json');
     echo json_encode($returnData);
-    $Loki->log("query.error", array("type" => "invalid"));
-    $Loki->send();
     exit();
 }
 $result = $Files->getFiles();
@@ -127,8 +116,6 @@ if(empty($result)) {
     header('Access-Control-Allow-Origin: *');
     header('Content-Type: application/json');
     echo json_encode($returnData);
-    $Loki->log("query.error", array("type" => "empty"));
-    $Loki->send();
     exit();
 }
 
@@ -176,8 +163,4 @@ if(!DEBUG) {
 }
 
 echo $content;
-
-$Loki->log("query.success");
-$Loki->send();
-
 exit();
