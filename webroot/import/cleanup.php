@@ -69,6 +69,7 @@ $driver = new mysqli_driver();
 $driver->report_mode = MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT;
 
 // get the packages to be removed since topicality is out of date, which tells us they are not in portage anymore
+// later chunked to reduce query load
 $pidToRemove = array();
 try {
     $queryStr = "SELECT `hash` FROM `".DB_PREFIX."_package` WHERE topicality IS NULL";
@@ -133,11 +134,14 @@ foreach($pidToRemove as $k=>$v) {
 }
 Helper::sysLog('[INFO] Cleanup create '.$_hisCount.' historical packages done');
 
+$pidChunks = array_chunk($pidToRemove, 1000, true);
 
 Helper::sysLog('[INFO] Cleanup package_use');
-foreach($pidToRemove as $k=>$v) {
+foreach($pidChunks as $c) {
+    $_ids = implode("','", $c);
+    Helper::sysLog('[INFO] Cleanup package_use chunk...');
     try {
-        $queryStr = "DELETE FROM `".DB_PREFIX."_package_use` WHERE `packageId` = '".$DB->real_escape_string($v)."'";
+        $queryStr = "DELETE FROM `".DB_PREFIX."_package_use` WHERE `packageId` IN ('".$_ids."')";
         if(QUERY_DEBUG) Helper::sysLog('[QUERY] Cleanup _package_use query: '.Helper::cleanForLog($queryStr));
         $DB->query($queryStr);
     } catch (Exception $e) {
@@ -148,9 +152,11 @@ foreach($pidToRemove as $k=>$v) {
 Helper::sysLog('[INFO] Cleanup package_use done');
 
 Helper::sysLog('[INFO] Cleanup cat2pkg');
-foreach($pidToRemove as $k=>$v) {
+foreach($pidChunks as $c) {
+    $_ids = implode("','", $c);
+    Helper::sysLog('[INFO] Cleanup cat2pkg chunk...');
     try {
-        $queryStr = "DELETE FROM `".DB_PREFIX."_cat2pkg` WHERE `packageId` = '".$DB->real_escape_string($v)."'";
+        $queryStr = "DELETE FROM `".DB_PREFIX."_cat2pkg` WHERE `packageId` IN ('".$_ids."')";
         if(QUERY_DEBUG) Helper::sysLog('[QUERY] Cleanup cat2pkg query: '.Helper::cleanForLog($queryStr));
         $DB->query($queryStr);
     } catch (Exception $e) {
@@ -179,10 +185,14 @@ foreach($pidToRemove as $k=>$v) {
 
 Helper::sysLog('[INFO] Cleanup '.count($fileToRemove).' files');
 
+$fileChunks = array_chunk($fileToRemove, 1000, true);
+
 Helper::sysLog('[INFO] Cleanup file');
-foreach($fileToRemove as $k=>$v) {
+foreach($fileChunks as $c) {
+    $_ids = implode("','", $c);
+    Helper::sysLog('[INFO] Cleanup file chunk...');
     try {
-        $queryStr = "DELETE FROM `".DB_PREFIX."_file` WHERE `hash` = '".$DB->real_escape_string($v)."'";
+        $queryStr = "DELETE FROM `".DB_PREFIX."_file` WHERE `hash` IN ('".$_ids."')";
         if(QUERY_DEBUG) Helper::sysLog('[QUERY] Cleanup file query: '.Helper::cleanForLog($queryStr));
         $DB->query($queryStr);
     } catch (Exception $e) {
@@ -193,9 +203,11 @@ foreach($fileToRemove as $k=>$v) {
 Helper::sysLog('[INFO] Cleanup file done');
 
 Helper::sysLog('[INFO] Cleanup pkg2file');
-foreach($pidToRemove as $k=>$v) {
+foreach($pidChunks as $c) {
+    $_ids = implode("','", $c);
+    Helper::sysLog('[INFO] Cleanup pkg2file chunk...');
     try {
-        $queryStr = "DELETE FROM `".DB_PREFIX."_pkg2file` WHERE `packageId` = '".$DB->real_escape_string($v)."'";
+        $queryStr = "DELETE FROM `".DB_PREFIX."_pkg2file` WHERE `packageId` IN ('".$_ids."')";
         if(QUERY_DEBUG) Helper::sysLog('[QUERY] Cleanup pkg2file query: '.Helper::cleanForLog($queryStr));
         $DB->query($queryStr);
     } catch (Exception $e) {
@@ -206,9 +218,11 @@ foreach($pidToRemove as $k=>$v) {
 Helper::sysLog('[INFO] Cleanup pkg2file done');
 
 Helper::sysLog('[INFO] Cleanup package');
-foreach($pidToRemove as $k=>$v) {
+foreach($pidChunks as $c) {
+    $_ids = implode("','", $c);
+    Helper::sysLog('[INFO] Cleanup package chunk...');
     try {
-        $queryStr = "DELETE FROM `".DB_PREFIX."_package` WHERE `hash` = '".$DB->real_escape_string($v)."'";
+        $queryStr = "DELETE FROM `".DB_PREFIX."_package` WHERE `hash` IN ('".$_ids."')";
         if(QUERY_DEBUG) Helper::sysLog('[QUERY] Cleanup package query: '.Helper::cleanForLog($queryStr));
         $DB->query($queryStr);
     } catch (Exception $e) {
