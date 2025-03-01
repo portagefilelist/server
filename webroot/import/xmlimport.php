@@ -92,6 +92,9 @@ set_time_limit(300);
 // and then used in cache clean
 $_upId = array();
 
+// how many packages are ignore because they do already exists
+$_pkgIgnoreCount = 0;
+
 foreach ($inboxFiles as $fileToImport) {
 
     // check mimetype
@@ -299,8 +302,9 @@ foreach ($inboxFiles as $fileToImport) {
                 try {
                     $queryExsits = $DB->query($queryStrExsits);
                     if($queryExsits !== false && $queryExsits->num_rows > 0) {
-                        Helper::sysLog("[INFO] Package exists '$_packID'");
+                        if(DEBUG) Helper::sysLog("[DEBUG] Package exists '$_packID'");
                         $_packExists = true;
+                        $_pkgIgnoreCount++;
                     }
                 } catch (Exception $e) {
                     Helper::sysLog("[ERROR] Package exist mysql catch: ".$e->getMessage());
@@ -464,6 +468,7 @@ foreach ($inboxFiles as $fileToImport) {
     unset($_packID);
     unset($_packXML);
     unset($_packageName);
+    $_pkgIgnoreCount = 0;
 
     // could be already moved due an error
     if(file_exists($fileToWorkWith)) {
@@ -523,5 +528,6 @@ if(!empty($toDelete)) {
     if(DEBUG) Helper::sysLog('[DEBUG] Importer purged id '.count($toDelete).' files');
 }
 
+Helper::sysLog('[INFO] Importer existing '.$_pkgIgnoreCount.' packages');
 Helper::sysLog('[INFO] Importer imported '.$_fileCounter.' files');
 Helper::sysLog('[INFO] Importer ended.');
