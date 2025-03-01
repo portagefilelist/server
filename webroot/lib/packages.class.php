@@ -251,7 +251,7 @@ class Packages {
 
         // Amount of packages
         $queryStr = "SELECT COUNT(p.hash) AS amount
-                    FROM `".DB_PREFIX."_package` AS p WHERE p.hash IS NOT NULL";
+                    FROM `".DB_PREFIX."_package` AS p";
         if(QUERY_DEBUG) Helper::sysLog("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
 
         try {
@@ -301,32 +301,6 @@ class Packages {
             if($query !== false && $query->num_rows > 0) {
                 while(($result = $query->fetch_assoc()) != false) {
                     $ret['use'][] = $result;
-                }
-            }
-        }
-        catch (Exception $e) {
-            Helper::sysLog("[ERROR] ".__METHOD__." mysql catch: ".$e->getMessage());
-        }
-
-        // installs
-        $queryStr = "SELECT p.hash,
-                        p.name,
-                        p.lastmodified,
-                        p.importcount,
-                        c.name AS categoryName
-                    FROM `".DB_PREFIX."_package` AS p
-                    LEFT JOIN `".DB_PREFIX."_cat2pkg` AS c2p ON p.hash = c2p.packageId
-                    LEFT JOIN `".DB_PREFIX."_category` AS c ON c.hash = c2p.categoryId
-                    ORDER BY p.importcount DESC
-                    LIMIT 10";
-        if(QUERY_DEBUG) Helper::sysLog("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
-
-        try {
-            $query = $this->_DB->query($queryStr);
-
-            if($query !== false && $query->num_rows > 0) {
-                while(($result = $query->fetch_assoc()) != false) {
-                    $ret['install'][] = $result;
                 }
             }
         }

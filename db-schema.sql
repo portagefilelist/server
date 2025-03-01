@@ -57,7 +57,6 @@ CREATE TABLE `pflv3_package` (
   `arch` varchar(10) DEFAULT NULL,
   `repository` varchar(16) DEFAULT NULL,
   `lastmodified` datetime NOT NULL DEFAULT current_timestamp(),
-  `importcount` int(11) NOT NULL DEFAULT 1,
   `topicality` date DEFAULT NULL,
   `topicalityLastSeen` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;

@@ -66,10 +66,6 @@ if(empty($TemplateData['package'])) {
         </td>
     </tr>
     <tr>
-        <td>Seen installs <small>very rough number</small></td>
-        <td><?php echo $TemplateData['package']['importcount'] ?? ''; ?></td>
-    </tr>
-    <tr>
         <td>Other Version/arch</td>
         <td>
             <?php

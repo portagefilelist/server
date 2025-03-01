@@ -317,7 +317,7 @@ foreach ($inboxFiles as $fileToImport) {
                                 `version` = '".$DB->real_escape_string((string)$_packXML['version'])."',
                                 `arch` = '".$DB->real_escape_string((string)$_packXML['arch'])."',
                                 `repository` = '".$DB->real_escape_string($_repo)."'
-                                ON DUPLICATE KEY UPDATE `lastmodified` = NOW(), `importcount` = `importcount` + 1";
+                                ON DUPLICATE KEY UPDATE `lastmodified` = NOW()";
                 if(QUERY_DEBUG) Helper::sysLog('[QUERY] Package insert: '.Helper::cleanForLog($queryPackage));
 
                 // packageId does contain the category and not only the package name
