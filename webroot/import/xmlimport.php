@@ -468,7 +468,6 @@ foreach ($inboxFiles as $fileToImport) {
     unset($_packID);
     unset($_packXML);
     unset($_packageName);
-    $_pkgIgnoreCount = 0;
 
     // could be already moved due an error
     if(file_exists($fileToWorkWith)) {
