@@ -56,7 +56,7 @@ if(isset($_GET['file']) && !empty($_GET['file'])) {
     }
 }
 
-$_cachekey = 'q_'.md5(var_export($_GET,true));
+$_cachekey = '_q_'.md5(var_export($_GET,true));
 $cacheFile = PATH_CACHE.'/'.$_cachekey;
 if(file_exists($cacheFile) && !DEBUG) {
     header("Pragma: public");

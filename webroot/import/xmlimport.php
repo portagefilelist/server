@@ -247,6 +247,12 @@ foreach ($inboxFiles as $fileToImport) {
 
         // only on element start
         if ($xmlReader->nodeType == XMLReader::ELEMENT) {
+            // Could be better.
+            // Only recognize category and package start element, otherwise continue in main loop.
+            // The package itself has its own loop futher down.
+            // The $xmlReader->next("package") does work but then it is not at the package element, but its first child
+            // and thus loosing information about the package...
+            $_skip = false;
             switch ($xmlReader->name) {
                 case 'category':
                     $_cat = $xmlReader->getAttribute('name');
@@ -255,7 +261,12 @@ foreach ($inboxFiles as $fileToImport) {
                 case 'package':
                     $_pack = $xmlReader->readOuterXml();;
                 break;
+                default:
+                    $_skip = true;
             }
+
+            // skip main while loop
+            if($_skip) continue;
 
             // take only action if there is a category and a package
             // make sure to jump to the next category at the end
@@ -268,7 +279,7 @@ foreach ($inboxFiles as $fileToImport) {
                                 `hash` = '".$DB->real_escape_string($_catID)."'";
                 if(QUERY_DEBUG) Helper::sysLog('[QUERY] Category insert: '.Helper::cleanForLog($queryCat));
 
-                // the package insert query
+                // the package as its own xml
                 $_packXML = new SimpleXMLElement($_pack);
 
                 $_repo = 'gentoo';
@@ -280,6 +291,21 @@ foreach ($inboxFiles as $fileToImport) {
                 if($_repo == "gentoo") {
                     $_packID = md5($_cat.(string)$_packXML['name'].(string)$_packXML['version'].(string)$_packXML['arch']);
                 }
+
+                // check if already known.
+                $_packExists = false;
+                $queryStrExsits = "SELECT `hash` FROM `".DB_PREFIX."_package` WHERE `hash` = '".$DB->real_escape_string($_packID)."'";
+                if(QUERY_DEBUG) Helper::sysLog('[QUERY] Package exist: '.Helper::cleanForLog($queryStrExsits));
+                try {
+                    $queryExsits = $DB->query($queryStrExsits);
+                    if($queryExsits !== false && $queryExsits->num_rows > 0) {
+                        Helper::sysLog("[INFO] Package exists '$_packID'");
+                        $_packExists = true;
+                    }
+                } catch (Exception $e) {
+                    Helper::sysLog("[ERROR] Package exist mysql catch: ".$e->getMessage());
+                }
+
                 $_packageName = (string)$_packXML['name'];
                 $queryPackage = "INSERT INTO `".DB_PREFIX."_package` SET
                                 `hash` = '".$DB->real_escape_string($_packID)."',
@@ -318,92 +344,94 @@ foreach ($inboxFiles as $fileToImport) {
                 }
 
                 // now the package content
-                foreach($_packXML->children() as $child) {
-                    switch ($child->getName()) {
-                        case 'uses':
-                            foreach($child->children() as $use) {
-                                $_useWord = (string)$use;
+                if(!$_packExists) {
+                    foreach($_packXML->children() as $child) {
+                        switch ($child->getName()) {
+                            case 'uses':
+                                foreach($child->children() as $use) {
+                                    $_useWord = (string)$use;
 
-                                // ignores
-                                // use expands
-                                if(strstr($_useWord,'_')) {
-                                    continue;
-                                }
+                                    // ignores
+                                    // use expands
+                                    if(str_contains($_useWord, '_')) {
+                                        continue;
+                                    }
 
-                                if(!empty($_useWord) && !empty($_packID)) {
-                                    $queryUses = "INSERT IGNORE INTO `".DB_PREFIX."_package_use` SET
-                                                `useword` = '".$DB->real_escape_string($_useWord)."',
-                                                `packageId` = '".$DB->real_escape_string($_packID)."'";
-                                    if(QUERY_DEBUG) Helper::sysLog('[QUERY] Use insert: '.Helper::cleanForLog($queryUses));
-                                    try {
-                                        $DB->query($queryUses);
-                                    } catch (Exception $e) {
-                                        $DB->rollback();
+                                    if(!empty($_useWord) && !empty($_packID)) {
+                                        $queryUses = "INSERT IGNORE INTO `".DB_PREFIX."_package_use` SET
+                                                    `useword` = '".$DB->real_escape_string($_useWord)."',
+                                                    `packageId` = '".$DB->real_escape_string($_packID)."'";
+                                        if(QUERY_DEBUG) Helper::sysLog('[QUERY] Use insert: '.Helper::cleanForLog($queryUses));
+                                        try {
+                                            $DB->query($queryUses);
+                                        } catch (Exception $e) {
+                                            $DB->rollback();
 
-                                        Helper::sysLog("[ERROR] Use insert mysql catch: ".$e->getMessage());
+                                            Helper::sysLog("[ERROR] Use insert mysql catch: ".$e->getMessage());
 
-                                        exit();
+                                            exit();
+                                        }
                                     }
                                 }
-                            }
-                        break;
+                            break;
 
-                        case 'files':
-                            foreach($child->children() as $file) {
-                                $queryFile = "";
-                                $fileinfo = pathinfo((string)$file);
-                                $filename = $fileinfo['basename'];
-                                $path = (string)$file;
+                            case 'files':
+                                foreach($child->children() as $file) {
+                                    $queryFile = "";
+                                    $fileinfo = pathinfo((string)$file);
+                                    $filename = $fileinfo['basename'];
+                                    $path = (string)$file;
 
-                                // ignores
-                                // kernel sources, dist kernel
-                                // __ which are often __pycache and other testfiles
-                                if(strstr($path, '/usr/src/linux')
-                                    || strstr($path, '-gentoo-dist/')
-                                    || strstr($path, '__')
-                                    ) {
-                                    continue;
-                                }
+                                    // ignores
+                                    // kernel sources, dist kernel
+                                    // __ which are often __pycache and other testfiles
+                                    if(strstr($path, '/usr/src/linux')
+                                        || strstr($path, '-gentoo-dist/')
+                                        || strstr($path, '__')
+                                        ) {
+                                        continue;
+                                    }
 
-                                $hash = md5($path);
+                                    $hash = md5($path);
 
-                                switch((string) $file['type']) {
-                                    case 'sym':
-                                    case 'obj':
-                                        $queryFile = "INSERT IGNORE INTO `".DB_PREFIX."_file` SET
-                                            `name` = '".$DB->real_escape_string($filename)."',
-                                            `path` = '".$DB->real_escape_string($path)."',
-                                            `hash` = '".$DB->real_escape_string($hash)."'";
-                                    break;
+                                    switch((string) $file['type']) {
+                                        case 'sym':
+                                        case 'obj':
+                                            $queryFile = "INSERT IGNORE INTO `".DB_PREFIX."_file` SET
+                                                `name` = '".$DB->real_escape_string($filename)."',
+                                                `path` = '".$DB->real_escape_string($path)."',
+                                                `hash` = '".$DB->real_escape_string($hash)."'";
+                                        break;
 
-                                    case 'dir':
-                                    case 'fif':
-                                    case 'dev':
-                                    default:
-                                        // nothing yet
-                                }
-                                if(!empty($queryFile)) {
-                                    $queryPgk2File = "INSERT IGNORE INTO `".DB_PREFIX."_pkg2file` SET
-                                                    `packageId` = '".$DB->real_escape_string($_packID)."',
-                                                    `fileId` = '".$DB->real_escape_string($hash)."'";
+                                        case 'dir':
+                                        case 'fif':
+                                        case 'dev':
+                                        default:
+                                            // nothing yet
+                                    }
+                                    if(!empty($queryFile)) {
+                                        $queryPgk2File = "INSERT IGNORE INTO `".DB_PREFIX."_pkg2file` SET
+                                                        `packageId` = '".$DB->real_escape_string($_packID)."',
+                                                        `fileId` = '".$DB->real_escape_string($hash)."'";
 
-                                    // if this is triggered often, make sure the DB col length is also increased.
-                                    if(strlen($path) > 200) Helper::sysLog('[WARNING] File path longer than 200 : '.Helper::cleanForLog($queryFile));
-                                    if(QUERY_DEBUG) Helper::sysLog('[QUERY] File insert: '.Helper::cleanForLog($queryFile));
-                                    if(QUERY_DEBUG) Helper::sysLog('[QUERY] File _pkg2file insert: '.Helper::cleanForLog($queryPgk2File));
-                                    try {
-                                        $DB->query($queryFile);
-                                        $DB->query($queryPgk2File);
-                                    } catch (Exception $e) {
-                                        $DB->rollback();
+                                        // if this is triggered often, make sure the DB col length is also increased.
+                                        if(strlen($path) > 200) Helper::sysLog('[WARNING] File path longer than 200 : '.Helper::cleanForLog($queryFile));
+                                        if(QUERY_DEBUG) Helper::sysLog('[QUERY] File insert: '.Helper::cleanForLog($queryFile));
+                                        if(QUERY_DEBUG) Helper::sysLog('[QUERY] File _pkg2file insert: '.Helper::cleanForLog($queryPgk2File));
+                                        try {
+                                            $DB->query($queryFile);
+                                            $DB->query($queryPgk2File);
+                                        } catch (Exception $e) {
+                                            $DB->rollback();
 
-                                        Helper::sysLog("[ERROR] File insert mysql catch: ".$e->getMessage());
+                                            Helper::sysLog("[ERROR] File insert mysql catch: ".$e->getMessage());
 
-                                        exit();
+                                            exit();
+                                        }
                                     }
                                 }
-                            }
-                        break;
+                            break;
+                        }
                     }
                 }
 
@@ -421,18 +449,21 @@ foreach ($inboxFiles as $fileToImport) {
                     exit();
                 }
 
-                unset($_cat);
                 unset($_pack);
                 unset($_catID);
                 unset($_packID);
                 unset($_packXML);
                 unset($_packageName);
-
-                $xmlReader->next("category");
             }
         }
     }
     $xmlReader->close();
+    unset($_cat);
+    unset($_pack);
+    unset($_catID);
+    unset($_packID);
+    unset($_packXML);
+    unset($_packageName);
 
     // could be already moved due an error
     if(file_exists($fileToWorkWith)) {
@@ -458,7 +489,7 @@ if(file_exists($_controlFile)) {
 file_put_contents($_controlFile, $_toWrite);
 
 // file amount is already checked above. Avoids cleaning the cache if nothing is updated
-// first clear all non id cache files
+// first clear all non id cache files. Includes also cache files from query.php
 $cacheFiles = glob(PATH_CACHE.'/_*');
 if(!empty($cacheFiles) && $_purge) {
     foreach($cacheFiles as $cf) {
