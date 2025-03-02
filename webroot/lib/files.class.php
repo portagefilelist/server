@@ -300,8 +300,7 @@ class Files {
 
         // Amount of files
         $queryStr = "SELECT COUNT(f.hash) AS amount
-                    FROM `".DB_PREFIX."_file` AS f
-                    WHERE f.hash IS NOT NULL";
+                    FROM `".DB_PREFIX."_file` AS f";
         if(QUERY_DEBUG) Helper::sysLog("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
 
         try {

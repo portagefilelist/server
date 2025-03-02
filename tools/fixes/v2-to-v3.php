@@ -48,7 +48,7 @@ try {
 }
 
 
-$queryStr = "SELECT hash, name, version, arch, category_id, lastmodified, importcount FROM `pflv2_package`";
+$queryStr = "SELECT hash, name, version, arch, category_id, lastmodified FROM `pflv2_package`";
 try {
     $query = $DB->query($queryStr);
     if($query !== false && $query->num_rows > 0) {

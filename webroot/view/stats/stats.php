@@ -102,29 +102,4 @@
             </tbody>
         </table>
     </div>
-    <div>
-        <h3>Most seen packages</h3>
-        <table class="uk-table uk-table-striped">
-            <thead>
-            <tr>
-                <th role="columnheader">Name</th>
-                <th role="columnheader">#</th>
-            </tr>
-            </thead>
-            <tbody>
-            <?php
-            if(!empty($TemplateData['p']['install'])) {
-                foreach($TemplateData['p']['install'] as $key=>$entry) {
-                    ?>
-                    <tr>
-                        <td><a href="index.php?p=package&id=<?php echo $entry['hash']; ?>"><?php echo $entry['categoryName']; ?>/<?php echo $entry['name']; ?></a></td>
-                        <td><?php echo $entry['importcount']; ?></td>
-                    </tr>
-                    <?php
-                }
-            }
-            ?>
-            </tbody>
-        </table>
-    </div>
 </div>
