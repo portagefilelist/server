@@ -2,6 +2,14 @@
     RewriteEngine On
 
     #https://perishablepress.com/8g-firewall/
+    # all azure cloud
+    RewriteCond %{REMOTE_ADDR} ^40\.77\. [OR]
+    RewriteCond %{REMOTE_ADDR} ^52\.167\. [OR]
+    RewriteCond %{REMOTE_ADDR} ^157\.55\. [OR]
+    RewriteCond %{REMOTE_ADDR} ^20\.171\. [OR]
+    RewriteCond %{REMOTE_ADDR} ^207\.46\.
+    RewriteRule .* - [F,L]
+
     RewriteCond %{HTTP_HOST} (amazonaws|web.am) [NC]
     RewriteRule .* - [F,L]
 
