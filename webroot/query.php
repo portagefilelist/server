@@ -99,7 +99,7 @@ $_search = strtolower($_search);
 $Files->setQueryOptions($queryOptions);
 if(!$Files->prepareSearchValue($_search)) {
     $returnData['error']['code'] = 'SEARCH_FAILED';
-    $returnData['error']['message'] = 'Invalid search criteria. At least two (without wildcard) chars.';
+    $returnData['error']['message'] = 'Invalid search criteria. At least two (without wildcard) or max. 100 chars.';
 
     header('Access-Control-Allow-Origin: *');
     header('Content-Type: application/json');
@@ -111,7 +111,7 @@ $result = $Files->getFiles();
 // search had an error
 if(empty($result)) {
     $returnData['error']['code'] = 'SEARCH_FAILED';
-    $returnData['error']['message'] = 'Invalid search criteria or nothing found. Either use a filename or complete path. Use * as a wildcard. Also check the path of the file. If the packagename is present the file is not recorded.';
+    $returnData['error']['message'] = 'Invalid search criteria or nothing found. Either use a filename or complete path. Use * as a wildcard. Also check the path of the file.';
 
     header('Access-Control-Allow-Origin: *');
     header('Content-Type: application/json');
