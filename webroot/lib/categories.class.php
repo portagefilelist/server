@@ -121,18 +121,18 @@ class Categories {
 
         if(str_contains($searchValue,'*')) {
             $this->_wildcardsearch = true;
-            $searchValue = preg_replace('/\*{1,}/', '%', $searchValue);
+            $searchValue = preg_replace('/\*+/', '%', $searchValue);
 
-            if(strlen($searchValue) < 3) {
+            if(mb_strlen($searchValue) < 3) {
                 return false;
             }
 
-            if(strlen($searchValue) === 3) {
+            if(mb_strlen($searchValue) === 3) {
                 if(substr_count($searchValue, '%') > 1) return false;
             }
         }
 
-        if(strlen($searchValue) < 2) {
+        if(mb_strlen($searchValue) < 2 || mb_strlen($searchValue) > 100) {
             return false;
         }
 

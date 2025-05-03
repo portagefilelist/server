@@ -59,7 +59,7 @@ if(file_exists($cacheFile) && !DEBUG) {
 # template vars
 $TemplateData = array();
 $TemplateData['pagination'] = array();
-$TemplateData['pageTitle'] = 'Find where does a file come from';
+$TemplateData['pageTitle'] = 'Find where does a file come from on a Gentoo install';
 $messageData = array();
 
 # the view

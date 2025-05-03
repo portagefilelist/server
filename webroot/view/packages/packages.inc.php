@@ -80,7 +80,7 @@ if(isset($_GET['ps'])) {
             $TemplateData['pagination']['currentGetParameters']['ps'] = urlencode($searchValue);
         } else {
             $messageData['status'] = "danger";
-            $messageData['message'] = "Invalid search criteria. At least two (without wildcard) chars.";
+            $messageData['message'] = "Invalid search criteria. At least two (without wildcard) or max 100 chars.";
             $messageData['statusCode'] = 404;
         }
     } else {
