@@ -208,10 +208,9 @@ class Files {
 
         $queryFrom = " FROM `".DB_PREFIX."_file` AS f";
 
-        $queryJoin = " LEFT JOIN `".DB_PREFIX."_pkg2file` AS p2f ON p2f.fileId = f.hash
-                        LEFT JOIN `".DB_PREFIX."_package` AS p ON p.hash = p2f.packageId
-                        LEFT JOIN `".DB_PREFIX."_cat2pkg` AS c2p ON c2p.packageId = p.hash
-                        LEFT JOIN `".DB_PREFIX."_category` AS c ON c.hash = c2p.categoryId";
+        $queryJoin = " LEFT JOIN `".DB_PREFIX."_pkg2file` AS p2f ON p2f.fk_file = f.hash
+                        LEFT JOIN `".DB_PREFIX."_package` AS p ON p.hash = p2f.fk_package
+                        LEFT JOIN `".DB_PREFIX."_category` AS c ON c.hash = p.fk_category";
 
         if(str_contains($this->_searchValue, '/')) {
             $queryWhere = " WHERE f.path";

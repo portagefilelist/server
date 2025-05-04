@@ -119,13 +119,12 @@ class Package {
         $ret = array();
 
         if(!empty($hash)) {
-            $queryStr = "SELECT p.hash, p.name, p.version, p.arch,
+            $queryStr = "SELECT p.hash, p.name, p.version, p.arch, p.fk_category,
                                 p.topicality, p.topicalityLastSeen, p.repository,
                                 c.name AS categoryName,
                                 c.hash AS categoryId
                             FROM `".DB_PREFIX."_package` AS p
-                            LEFT JOIN `".DB_PREFIX."_cat2pkg` AS c2p ON p.hash = c2p.packageId
-                            LEFT JOIN `".DB_PREFIX."_category` AS c ON c.hash = c2p.categoryId
+                            LEFT JOIN `".DB_PREFIX."_category` AS c ON c.hash = p.fk_category
                             WHERE p.hash = '".$this->_DB->real_escape_string($hash)."'";
             if(QUERY_DEBUG) Helper::sysLog("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
             try {
@@ -157,9 +156,9 @@ class Package {
         // split since part of it is used later
         $querySelect = "f.hash, f.name, f.path";
         $queryFrom = " FROM `".DB_PREFIX."_pkg2file` AS p2f";
-        $queryJoin = " LEFT JOIN `".DB_PREFIX."_file` AS f ON f.hash = p2f.fileId";
+        $queryJoin = " LEFT JOIN `".DB_PREFIX."_file` AS f ON f.hash = p2f.fk_file";
 
-        $queryWhere = " WHERE p2f.packageId = '".$this->_DB->real_escape_string($hash)."'";
+        $queryWhere = " WHERE p2f.fk_package = '".$this->_DB->real_escape_string($hash)."'";
 
         if(!empty($this->_searchValue)) {
             if(str_contains($this->_searchValue, '/')) {
@@ -274,7 +273,7 @@ class Package {
         if(!empty($pid)) {
             $queryStr = "SELECT pu.useword
                             FROM `".DB_PREFIX."_package_use` AS pu
-                            WHERE pu.packageId = '".$this->_DB->real_escape_string($pid)."'";
+                            WHERE pu.fk_package = '".$this->_DB->real_escape_string($pid)."'";
             try {
                 $query = $this->_DB->query($queryStr);
 
@@ -306,12 +305,11 @@ class Package {
         $ret = array();
 
         if(!empty($name) && !empty($hash) && !empty($catId)) {
-            $queryStr = "SELECT p.hash, p.name, p.version, p.arch,
+            $queryStr = "SELECT p.hash, p.name, p.version, p.arch, p.fk_category,
                                 c.name AS categoryName,
                                 c.hash AS categoryId
                             FROM `".DB_PREFIX."_package` AS p
-                            LEFT JOIN `".DB_PREFIX."_cat2pkg` AS c2p ON c2p.packageId = p.hash
-                            LEFT JOIN `".DB_PREFIX."_category` AS c ON c.hash = c2p.categoryId
+                            LEFT JOIN `".DB_PREFIX."_category` AS c ON c.hash = p.fk_category
                             WHERE p.name = '".$this->_DB->real_escape_string($name)."'
                                 AND p.hash <> '".$this->_DB->real_escape_string($hash)."'
                                 AND c.hash = '".$this->_DB->real_escape_string($catId)."'";

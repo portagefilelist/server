@@ -313,18 +313,13 @@ foreach ($inboxFiles as $fileToImport) {
                 $_packageName = (string)$_packXML['name'];
                 $queryPackage = "INSERT INTO `".DB_PREFIX."_package` SET
                                 `hash` = '".$DB->real_escape_string($_packID)."',
+                                `fk_category` = '".$DB->real_escape_string($_catID)."',
                                 `name` = '".$DB->real_escape_string($_packageName)."',
                                 `version` = '".$DB->real_escape_string((string)$_packXML['version'])."',
                                 `arch` = '".$DB->real_escape_string((string)$_packXML['arch'])."',
                                 `repository` = '".$DB->real_escape_string($_repo)."'
                                 ON DUPLICATE KEY UPDATE `lastmodified` = NOW()";
                 if(QUERY_DEBUG) Helper::sysLog('[QUERY] Package insert: '.Helper::cleanForLog($queryPackage));
-
-                // packageId does contain the category and not only the package name
-                $queryCat2Pkg = "INSERT IGNORE INTO `".DB_PREFIX."_cat2pkg` SET
-                                    `categoryId` = '".$DB->real_escape_string($_catID)."',
-                                    `packageId` = '".$DB->real_escape_string($_packID)."'";
-                if(QUERY_DEBUG) Helper::sysLog('[QUERY] Package _cat2pkg insert: '.Helper::cleanForLog($queryCat2Pkg));
 
                 if(empty($_catID) || empty($_packID)) {
                     Helper::sysLog("[WARNING] Missing category '$_catID' or package '$_packID' id in file: ".$fileToWorkWith);
@@ -337,7 +332,6 @@ foreach ($inboxFiles as $fileToImport) {
 
                     $DB->query($queryCat);
                     $DB->query($queryPackage);
-                    $DB->query($queryCat2Pkg);
 
                 } catch (Exception $e) {
                     $DB->rollback();
@@ -364,7 +358,7 @@ foreach ($inboxFiles as $fileToImport) {
                                     if(!empty($_useWord) && !empty($_packID)) {
                                         $queryUses = "INSERT IGNORE INTO `".DB_PREFIX."_package_use` SET
                                                     `useword` = '".$DB->real_escape_string($_useWord)."',
-                                                    `packageId` = '".$DB->real_escape_string($_packID)."'";
+                                                    `fk_package` = '".$DB->real_escape_string($_packID)."'";
                                         if(QUERY_DEBUG) Helper::sysLog('[QUERY] Use insert: '.Helper::cleanForLog($queryUses));
                                         try {
                                             $DB->query($queryUses);
@@ -415,16 +409,16 @@ foreach ($inboxFiles as $fileToImport) {
                                     }
                                     if(!empty($queryFile)) {
                                         $queryPgk2File = "INSERT IGNORE INTO `".DB_PREFIX."_pkg2file` SET
-                                                        `packageId` = '".$DB->real_escape_string($_packID)."',
-                                                        `fileId` = '".$DB->real_escape_string($hash)."'";
+                                                        `fk_package` = '".$DB->real_escape_string($_packID)."',
+                                                        `fk_file` = '".$DB->real_escape_string($hash)."'";
 
                                         // if this is triggered often, make sure the DB col length is also increased.
                                         if(strlen($path) > 200) Helper::sysLog('[WARNING] File path longer than 200 : '.Helper::cleanForLog($queryFile));
                                         if(QUERY_DEBUG) Helper::sysLog('[QUERY] File insert: '.Helper::cleanForLog($queryFile));
                                         if(QUERY_DEBUG) Helper::sysLog('[QUERY] File _pkg2file insert: '.Helper::cleanForLog($queryPgk2File));
                                         try {
-                                            $DB->query($queryFile);
                                             $DB->query($queryPgk2File);
+                                            $DB->query($queryFile);
                                         } catch (Exception $e) {
                                             $DB->rollback();
 
