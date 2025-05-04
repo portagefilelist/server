@@ -162,8 +162,7 @@ class Packages {
 
         $queryFrom = " FROM `".DB_PREFIX."_package` AS p";
 
-        $queryJoin = " LEFT JOIN `".DB_PREFIX."_cat2pkg` AS c2p ON p.hash = c2p.packageId
-                        LEFT JOIN `".DB_PREFIX."_category` AS c ON c.hash = c2p.categoryId";
+        $queryJoin = " LEFT JOIN `".DB_PREFIX."_category` AS c ON c.hash = p.fk_category";
 
         $queryWhere = " WHERE p.name";
 
@@ -175,7 +174,7 @@ class Packages {
 
         $queryOrder = " ORDER BY";
         if (!empty($this->_queryOptions['sort'])) {
-            $queryOrder .= ' '.$this->_queryOptions['sort'].'';
+            $queryOrder .= ' '.$this->_queryOptions['sort'];
         }
         else {
             $queryOrder .= " ".$this->_sortOptions['default']['col'];
@@ -344,8 +343,7 @@ class Packages {
                         p.lastmodified,
                         c.name AS categoryName
                     FROM `".DB_PREFIX."_package` AS p
-                    LEFT JOIN `".DB_PREFIX."_cat2pkg` AS c2p ON p.hash = c2p.packageId
-                    LEFT JOIN `".DB_PREFIX."_category` AS c ON c.hash = c2p.categoryId
+                    LEFT JOIN `".DB_PREFIX."_category` AS c ON c.hash = p.fk_category
                     ORDER BY p.lastmodified DESC
                     LIMIT 10";
         if(QUERY_DEBUG) Helper::sysLog("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
