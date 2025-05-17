@@ -417,8 +417,8 @@ foreach ($inboxFiles as $fileToImport) {
                                         if(QUERY_DEBUG) Helper::sysLog('[QUERY] File insert: '.Helper::cleanForLog($queryFile));
                                         if(QUERY_DEBUG) Helper::sysLog('[QUERY] File _pkg2file insert: '.Helper::cleanForLog($queryPgk2File));
                                         try {
-                                            $DB->query($queryPgk2File);
                                             $DB->query($queryFile);
+                                            $DB->query($queryPgk2File);
                                         } catch (Exception $e) {
                                             $DB->rollback();
 
