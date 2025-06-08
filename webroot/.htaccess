@@ -7,10 +7,9 @@
     RewriteCond %{REMOTE_ADDR} ^52\.167\. [OR]
     RewriteCond %{REMOTE_ADDR} ^157\.55\. [OR]
     RewriteCond %{REMOTE_ADDR} ^20\.171\. [OR]
-    RewriteCond %{REMOTE_ADDR} ^207\.46\.
-    RewriteRule .* - [F,L]
-
-    RewriteCond %{HTTP_HOST} (amazonaws|web.am) [NC]
+    RewriteCond %{REMOTE_ADDR} ^47\.82\. [OR]
+    RewriteCond %{REMOTE_ADDR} ^207\.46\. [OR]
+    RewriteCond %{REMOTE_ADDR} (amazonaws|web.am) [NC]
     RewriteRule .* - [F,L]
 
     RewriteCond %{HTTP_USER_AGENT} ([a-z0-9]{2000,}) [NC,OR]
@@ -27,7 +26,7 @@
     RewriteCond %{HTTP_USER_AGENT} (semalt|siclab|sindice|sistrix|sitebot|siteexplorer|sitesnagger|skygrid|smartdownload|snoopy|sosospider|spankbot|spbot|sqlmap|stackrambler|stripper|sucker|surftbot) [NC,OR]
     RewriteCond %{HTTP_USER_AGENT} (sux0r|suzukacz|suzuran|takeout|teleport|telesoft|true_robots|turingos|turnit|vampire|vikspider|voideye|webleacher|webreaper|webstripper|webvac|webviewer|webwhacker) [NC,OR]
     RewriteCond %{HTTP_USER_AGENT} (winhttp|wwwoffle|woxbot|xaldon|xxxyy|yamanalab|yioopbot|youda|zeus|zmeu|zune|zyborg) [NC,OR]
-    RewriteCond %{HTTP_USER_AGENT} (facebookexternalhit|meta-externalagent|meta-externalfetcher|facebookcatalog) [NC]
+    RewriteCond %{HTTP_USER_AGENT} (facebookexternalhit|meta-externalagent|meta-externalfetcher|facebookcatalog|dataforseo|amazonbot) [NC]
     RewriteRule .* - [F,L]
 
     RewriteCond %{QUERY_STRING} ^(%2d|-)[^=]+$ [NC,OR]

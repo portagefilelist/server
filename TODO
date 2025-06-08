@@ -1,1 +1,2 @@
 Classes could be refactored and simplified.
+Ignore packages which are not in the current tree at import level.

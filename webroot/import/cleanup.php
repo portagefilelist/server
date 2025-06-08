@@ -145,6 +145,19 @@ try {
 }
 Helper::sysLog('[INFO] Cleanup package done');
 
+Helper::sysLog('[INFO] Cleanup file');
+try {
+    $queryStr = "DELETE f FROM `".DB_PREFIX."_file` AS f
+                LEFT JOIN `".DB_PREFIX."_pkg2file` AS p2f ON p2f.fk_file = f.hash
+                WHERE p2f.fk_file IS NULL";
+    if(QUERY_DEBUG) Helper::sysLog('[QUERY] Cleanup file query: '.Helper::cleanForLog($queryStr));
+    $DB->query($queryStr);
+} catch (Exception $e) {
+    Helper::sysLog("[ERROR] Cleanup package query catch: ".$e->getMessage());
+    exit();
+}
+Helper::sysLog('[INFO] Cleanup file done');
+
 // cleanup statslog table
 Helper::sysLog('[INFO] Cleanup statslog');
 try {
