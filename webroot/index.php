@@ -40,7 +40,8 @@ require_once 'lib/helper.class.php';
 
 # simple cache based on get
 $_cid = '';
-if(isset($_GET['id']) && !empty($_GET['id'])) {
+if((isset($_GET['id']) && !empty($_GET['id']))
+    && (isset($_GET['p']) && $_GET['p'] == "category" || $_GET['p'] == "package")) {
     $_cid = trim($_GET['id']);
     $_cid = Helper::validate($_cid,'nospace') ? $_cid : '';
 }
