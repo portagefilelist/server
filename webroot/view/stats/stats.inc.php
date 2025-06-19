@@ -17,7 +17,6 @@
  * 2023 - 2025 https://www.bananas-playground.net/projekt/portagefilelist/
  */
 
-
 require_once 'lib/packages.class.php';
 $Packages = new Packages($DB);
 
