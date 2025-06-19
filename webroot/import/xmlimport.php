@@ -32,7 +32,7 @@ require_once('../config.php');
 
 // set the error reporting
 ini_set('log_errors',true);
-if(DEBUG === true) {
+if(DEBUG) {
     ini_set('display_errors',true);
 }
 else {

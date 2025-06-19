@@ -14,7 +14,7 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.
  *
  * pre 2023 https://github.com/tuxmainy
- * 2023 https://www.bananas-playground.net/projekt/portagefilelist/
+ * 2023 - 2025 https://www.bananas-playground.net/projekt/portagefilelist/
  */
 
 /**
@@ -22,7 +22,7 @@
  */
 class Helper {
 
-    private const BROWSER_AGENT_STRING = 'Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/119.0';
+    private const string BROWSER_AGENT_STRING = 'Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/119.0';
 
     /**
      * validate the given string with the given type. Optional check the string
@@ -120,84 +120,6 @@ class Helper {
     }
 
     /**
-     * delete and/or empty a directory
-     *
-     * $empty = true => empty the directory but do not delete it
-     *
-     * @param string $directory
-     * @param bool $empty
-     * @param int $fTime If not false remove files older then this value in sec.
-     * @return bool
-     */
-    static function recursive_remove_directory(string $directory, bool $empty = false, int $fTime = 0): bool {
-        // if the path has a slash at the end we remove it here
-        if(str_ends_with($directory, '/')) {
-            $directory = substr($directory,0,-1);
-        }
-
-        // if the path is not valid or is not a directory ...
-        if(!file_exists($directory) || !is_dir($directory)) {
-            // ... we return false and exit the function
-            return false;
-
-        // ... if the path is not readable
-        }elseif(!is_readable($directory)) {
-            // ... we return false and exit the function
-            return false;
-
-        // ... else if the path is readable
-        }
-        else {
-            // we open the directory
-            $handle = opendir($directory);
-
-            // and scan through the items inside
-            while (false !== ($item = readdir($handle))) {
-                // if the filepointer is not the current directory
-                // or the parent directory
-                if($item[0] != '.') {
-                    // we build the new path to delete
-                    $path = $directory.'/'.$item;
-
-                    // if the new path is a directory
-                    if(is_dir($path)) {
-                       // we call this function with the new path
-                        self::recursive_remove_directory($path);
-                    // if the new path is a file
-                    }
-                    else {
-                        // we remove the file
-                        if($fTime !== false && is_int($fTime)) {
-                            // check filemtime
-                            $ft = filemtime($path);
-                            $offset = time()-$fTime;
-                            if($ft <= $offset) {
-                                unlink($path);
-                            }
-                        }
-                        else {
-                            unlink($path);
-                        }
-                    }
-                }
-            }
-            // close the directory
-            closedir($handle);
-
-            // if the option to empty is not set to true
-            if($empty == false) {
-                // try to delete the now empty directory
-                if(!rmdir($directory)) {
-                    // return false if not possible
-                    return false;
-                }
-            }
-            // return success
-            return true;
-        }
-    }
-
-    /**
      * http_build_query with modify array
      * modify will add: key AND value not empty
      * modify will remove: only key with no value
@@ -259,20 +181,6 @@ class Helper {
         }
 
         return $size;
-    }
-
-    /**
-     * Given bytes to human format with unit
-     *
-     * @param int $bytes
-     * @return string
-     */
-    static function bytesToHuman(int $bytes): string {
-        $units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
-        for ($i = 0; $bytes > 1024; $i++) {
-            $bytes /= 1024;
-        }
-        return round($bytes, 2) . ' ' . $units[$i];
     }
 
     /**

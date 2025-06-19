@@ -42,7 +42,7 @@
                 foreach($TemplateData['f']['topsearch'] as $amount=>$value) {
                     ?>
                     <tr>
-                        <td><?php echo $value; ?></a></td>
+                        <td><?php echo Helper::limitWithDots($value,30,"..."); ?></td>
                         <td><?php echo $amount; ?></td>
                     </tr>
                     <?php
