@@ -9,6 +9,7 @@
     RewriteCond %{REMOTE_ADDR} ^20\.171\. [OR]
     RewriteCond %{REMOTE_ADDR} ^47\.82\. [OR]
     RewriteCond %{REMOTE_ADDR} ^207\.46\. [OR]
+	RewriteCond %{REMOTE_ADDR} ^57\.141\. [OR]
     RewriteCond %{REMOTE_ADDR} (amazonaws|web.am) [NC]
     RewriteRule .* - [F,L]
 
