@@ -28,7 +28,7 @@ if(empty($TemplateData['category'])) {
     </tr>
     <tr>
         <td>Gentoo category website:</td>
-        <td><a href="https://packages.gentoo.org/categories/<?php echo $TemplateData['category']['name'] ?? ''; ?>/" target="_blank">external <span uk-icon="link-external"></span></a></td>
+        <td><a href="https://packages.gentoo.org/categories/<?php echo $TemplateData['category']['name'] ?? ''; ?>" target="_blank">external <span uk-icon="link-external"></span></a></td>
     </tr>
 </table>
 
