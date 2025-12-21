@@ -2,7 +2,8 @@
     RewriteEngine On
 
     #https://perishablepress.com/8g-firewall/
-    # all azure cloud
+    # azure, alibaba, facebook, aws, Babbar SAS
+
     RewriteCond %{REMOTE_ADDR} ^40\.77\. [OR]
     RewriteCond %{REMOTE_ADDR} ^52\.167\. [OR]
     RewriteCond %{REMOTE_ADDR} ^157\.55\. [OR]
@@ -115,6 +116,8 @@
     Header set Cross-Origin-Resource-Policy "same-site"
     Header set Permissions-Policy "geolocation=(), camera=(), microphone=()"
     Header set Permissions-Policy "interest-cohort=()"
+
+	Header set X-Clacks-Overhead "GNU Terry Pratchett"
 </IfModule>
 
 <IfModule mod_expires.c>
