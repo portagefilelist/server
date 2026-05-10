@@ -287,6 +287,16 @@ class Files {
     }
 
     /**
+     * This is an alias to getFiles.
+     * Created to simplify the process in query.php
+     *
+     * @return array
+     */
+    public function helperSearch():array {
+        return self::getFiles();
+    }
+
+    /**
      * Return some general stats about files table
      *
      * @return array('topsearch' => array(), 'amount' => '')

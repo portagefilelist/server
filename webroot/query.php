@@ -14,12 +14,13 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.
  *
  * pre 2023 https://github.com/tuxmainy
- * 2023 - 2025 https://www.bananas-playground.net/projekt/portagefilelist/
+ * 2023 - 2026 https://www.bananas-playground.net/projekt/portagefilelist/
  */
 
 /**
  * The endpoint for the e-file
  * query.php?file=SEARCH_STRING
+ * query.php?package=SEARCH_STRING
  */
 
 mb_http_output('UTF-8');
@@ -28,7 +29,7 @@ ini_set('error_reporting',-1); // E_ALL & E_STRICT
 
 require_once 'config.php';
 
-## set the error reporting
+// set the error reporting
 ini_set('log_errors',true);
 if(DEBUG) {
     ini_set('display_errors',true);
@@ -37,22 +38,40 @@ else {
     ini_set('display_errors',false);
 }
 
-# time settings
+// time settings
 date_default_timezone_set(TIMEZONE);
 
-# static helper class
+// static helper class
 require_once 'lib/helper.class.php';
 
 $returnData = array();
 
-$_search = '';
+// we only accept two options and only one at a time
+if(count($_GET) > 2) exit();
+if(isset($_GET['file']) && isset($_GET['package'])) exit();
+if(isset($_GET['file']) && count($_GET) > 1) exit();
+if(isset($_GET['package']) && count($_GET) > 1) exit();
+if(!isset($_GET['file']) && !isset($_GET['package'])) exit();
+
+// if there will be any further additional options, this needs to be splitted and better seperated.
+// see result building below
+$_f_search = '';
+$_p_search = '';
 if(isset($_GET['file']) && !empty($_GET['file'])) {
     if(DEBUG) Helper::sysLog("[DEBUG] query with : ".Helper::cleanForLog($_GET));
-    $_search = trim($_GET['file']);
-    $_search = Helper::validate($_search,'nospaceP') ? $_search : '';
+    $_f_search = trim($_GET['file']);
+    $_f_search = Helper::validate($_f_search,'nospaceP') ? $_f_search : '';
 
-    if(empty($_search)) {
+    if(empty($_f_search)) {
         Helper::sysLog("[WARN] Invalid query GET : ".Helper::cleanForLog($_GET['file']));
+    }
+} elseif(isset($_GET['package']) && !empty($_GET['package'])) {
+    if(DEBUG) Helper::sysLog("[DEBUG] query with : ".Helper::cleanForLog($_GET));
+    $_p_search = trim($_GET['package']);
+    $_p_search = Helper::validate($_p_search,'nospaceP') ? $_p_search : '';
+
+    if(empty($_p_search)) {
+        Helper::sysLog("[WARN] Invalid query GET : ".Helper::cleanForLog($_GET['package']));
     }
 }
 
@@ -69,7 +88,7 @@ if(file_exists($cacheFile) && !DEBUG) {
 }
 
 // still empty
-if(empty($_search)) {
+if(empty($_f_search) && empty($_p_search)) {
     $returnData['error']['code'] = 'NO_SEARCH_CRITERIA';
     $returnData['error']['message'] = 'No search criteria given or invalid input';
 
@@ -83,7 +102,7 @@ $queryOptions = array(
     'limit' => RESULTS_PER_PAGE
 );
 
-## DB connection
+// DB connection
 $DB = new mysqli(DB_HOST, DB_USERNAME,DB_PASSWORD, DB_NAME);
 if ($DB->connect_errno) exit('Can not connect to MySQL Server');
 $DB->set_charset("utf8mb4");
@@ -92,12 +111,17 @@ $driver = new mysqli_driver();
 $driver->report_mode = MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT;
 
 require_once 'lib/files.class.php';
-$Files = new Files($DB);
+$SearchObj = new Files($DB);
+$_searchTermn = strtolower($_f_search);
+if(!empty($_p_search)) {
+    require_once 'lib/packages.class.php';
+    $SearchObj = new Packages($DB);
+    $_searchTermn = strtolower($_p_search);
+}
 
 // do the search for the given request
-$_search = strtolower($_search);
-$Files->setQueryOptions($queryOptions);
-if(!$Files->prepareSearchValue($_search)) {
+$SearchObj->setQueryOptions($queryOptions);
+if(!$SearchObj->prepareSearchValue($_searchTermn)) {
     $returnData['error']['code'] = 'SEARCH_FAILED';
     $returnData['error']['message'] = 'Invalid search criteria. At least two (without wildcard) or max. 100 chars.';
 
@@ -106,12 +130,12 @@ if(!$Files->prepareSearchValue($_search)) {
     echo json_encode($returnData);
     exit();
 }
-$result = $Files->getFiles();
+$result = $SearchObj->helperSearch();
 
 // search had an error
 if(empty($result)) {
     $returnData['error']['code'] = 'SEARCH_FAILED';
-    $returnData['error']['message'] = 'Invalid search criteria or nothing found. Either use a filename or complete path. Use * as a wildcard. Also check the path of the file.';
+    $returnData['error']['message'] = 'Invalid search criteria or nothing found. Use * as a wildcard.';
 
     header('Access-Control-Allow-Origin: *');
     header('Content-Type: application/json');
@@ -132,13 +156,13 @@ if(isset($result['results'])) {
             'archs' => array()
         );
 
-        $_t['path'] = $entry['path'];
+        $_t['path'] = $entry['path']??'';
         $_t['category'] = $entry['categoryName'];
-        $_t['package'] = $entry['packageName'];
-        $_t['archs'] = array($entry['packageArch']);
+        $_t['package'] = $entry['packageName']??$entry['name'];
+        $_t['archs'] = array($entry['packageArch']??$entry['arch']);
         $_t['file'] = $entry['name'];
-        $_t['version'] = $entry['packageVersion'];
-        $_t['repository'] = $entry['packageRepo'];
+        $_t['version'] = $entry['packageVersion']??$entry['version'];
+        $_t['repository'] = $entry['packageRepo']??$entry['repository'];
 
         $returnData['result'][] = $_t;
     }

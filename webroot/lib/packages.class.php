@@ -157,6 +157,7 @@ class Packages {
                         p.name,
                         p.version,
                         p.arch,
+                        p.repository,
                         c.name AS categoryName,
                         c.hash AS categoryId";
 
@@ -226,6 +227,16 @@ class Packages {
         }
 
         return $ret;
+    }
+
+    /**
+     * This is an alias to getPackages.
+     * Created to simplify the process in query.php
+     *
+     * @return array
+     */
+    public function helperSearch():array {
+        return self::getPackages();
     }
 
     /**
