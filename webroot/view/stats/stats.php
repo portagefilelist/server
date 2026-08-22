@@ -14,7 +14,7 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.
  *
  * pre 2023 https://github.com/tuxmainy
- * 2023 - 2025 https://www.bananas-playground.net/projekt/portagefilelist/
+ * 2023 - 2026 https://www.bananas-playground.net/projekt/portagefilelist/
  */
 ?>
 <h1>Statistics</h1>
@@ -39,11 +39,11 @@
             <tbody>
             <?php
             if(!empty($TemplateData['f']['topsearch'])) {
-                foreach($TemplateData['f']['topsearch'] as $amount=>$value) {
+                foreach($TemplateData['f']['topsearch'] as $key=>$value) {
                     ?>
                     <tr>
                         <td><?php echo Helper::limitWithDots($value,30,"..."); ?></td>
-                        <td><?php echo $amount; ?></td>
+                        <td>&nbsp;</td>
                     </tr>
                     <?php
                 }

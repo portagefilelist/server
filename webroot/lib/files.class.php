@@ -14,7 +14,7 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.
  *
  * pre 2023 https://github.com/tuxmainy
- * 2023 - 2025 https://www.bananas-playground.net/projekt/portagefilelist/
+ * 2023 - 2026 https://www.bananas-playground.net/projekt/portagefilelist/
  */
 
 class Files {
@@ -287,6 +287,16 @@ class Files {
     }
 
     /**
+     * This is an alias to getFiles.
+     * Created to simplify the process in query.php
+     *
+     * @return array
+     */
+    public function helperSearch():array {
+        return self::getFiles();
+    }
+
+    /**
      * Return some general stats about files table
      *
      * @return array('topsearch' => array(), 'amount' => '')
@@ -322,16 +332,18 @@ class Files {
                     GROUP BY sl.value
                     HAVING amount > 2
                     ORDER BY amount DESC
-                    LIMIT 10";
+                    LIMIT 12";
         if(QUERY_DEBUG) Helper::sysLog("[QUERY] ".__METHOD__." query: ".Helper::cleanForLog($queryStr));
 
         try {
             $query = $this->_DB->query($queryStr);
+            $_ignore = array("brctl", "glxgears"); // those are the example searches in about and wiki
 
             if($query !== false && $query->num_rows > 0) {
                 while(($row = $query->fetch_assoc()) != false) {
-                    if(!isset($tsf[$row['amount']])) {
-                        $tsf[$row['amount']] = str_replace("%", "*", $row['value']);
+                    //if(!isset($tsf[$row['amount']])) {
+                    if(!in_array($row['value'], $_ignore)) {
+                        $tsf[] = str_replace("%", "*", $row['value']);
                     }
                 }
             }
