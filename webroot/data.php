@@ -14,7 +14,7 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.
  *
  * pre 2023 https://github.com/tuxmainy
- * 2023 - 2025 https://www.bananas-playground.net/projekt/portagefilelist/
+ * 2023 - 2026 https://www.bananas-playground.net/projekt/portagefilelist/
  */
 
 mb_http_output('UTF-8');
@@ -87,6 +87,7 @@ if(isset($_FILES['foo'])) {
         Helper::sysLog("ERROR Upload incomplete FILES: ".Helper::cleanForLog($_FILES));
         http_response_code(500);
         echo "Upload incomplete.";
+        exit();
     }
 }
 http_response_code(200);
