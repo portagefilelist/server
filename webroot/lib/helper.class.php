@@ -14,7 +14,7 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl-3.0.
  *
  * pre 2023 https://github.com/tuxmainy
- * 2023 - 2025 https://www.bananas-playground.net/projekt/portagefilelist/
+ * 2023 - 2026 https://www.bananas-playground.net/projekt/portagefilelist/
  */
 
 /**
@@ -202,7 +202,7 @@ class Helper {
      * @param string $msg The string to be written to the log
      */
     static function sysLog(string $msg): void {
-        error_log(date("c")." ".self::cleanForLog($_SERVER['REMOTE_ADDR'])." ".self::cleanForLog($_SERVER['HTTP_USER_AGENT'])." ".$msg."\n", 3, LOGFILE);
+        error_log(date("c")." ".self::cleanForLog($_SERVER['REMOTE_ADDR']??'-')." ".self::cleanForLog($_SERVER['HTTP_USER_AGENT']??'-')." ".$msg."\n", 3, LOGFILE);
     }
 
     /**
